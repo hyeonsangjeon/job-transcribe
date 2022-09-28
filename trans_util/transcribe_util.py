@@ -3,6 +3,7 @@ import boto3
 from botocore.exceptions import ClientError
 import pandas as pd
 import io
+import requests
 
 logger = logging.getLogger(__name__)
 def start_job(job_name, media_uri, media_format, language_code, transcribe_client,vocabulary_name=None):
@@ -45,20 +46,26 @@ def start_job(job_name, media_uri, media_format, language_code, transcribe_clien
 def read_dataframe_metadata(bucket_name, prefix_name, file):
     client = boto3.client('s3')
     prefix = prefix_name
-    response = client.list_objects_v2(Bucket=bucket_name, Prefix=prefix)
-    for content in response.get('Contents', []):
-        name = content['Key'].split('/')[-1]
-        result =''
-        if name == file:
-            print(content)
-            key = content['Key']
-            print('key', key)
-            print('Bucket', name)
-            obj = client.get_object(Bucket=bucket_name, Key=key)
-            result = pd.read_csv(io.BytesIO(obj["Body"].read()), sep='|', names = ['file_name', 'ground_truth', 'word_lenth'], header=0)
-            break;
-        #else:
-        #    print('file does not exist!!!')
+    paginator = client.get_paginator('list_objects_v2')
+    response_iterator = paginator.paginate(
+        Bucket=bucket_name,
+        Prefix=prefix
+    )
+
+    for page in response_iterator:
+        for content in page['Contents']:
+            name = content['Key'].split('/')[-1]
+            result =''
+            if name == file:
+                # print(content)
+                key = content['Key']
+                # print('key: ', key)
+                # print('Bucket :', bucket_name)
+                obj = client.get_object(Bucket=bucket_name, Key=key)
+                result = pd.read_csv(io.BytesIO(obj["Body"].read()), sep='|', names = ['file_name', 'ground_truth', 'word_lenth'], header=0)
+                return result
+                break
+
     return result
 
 
@@ -146,3 +153,23 @@ def delete_job(job_name, transcribe_client):
         logger.exception("Couldn't delete job %s.", job_name)
         raise
 # snippet-end:[python.example_code.transcribe.DeleteTranscriptionJob]
+
+
+def get_transcribe_sentence(job_name, transcribe_client):
+    job_simple = get_job(job_name, transcribe_client)
+    transcript_simple = requests.get(job_simple['Transcript']['TranscriptFileUri']).json()
+    full_sentence =  transcript_simple['results']['transcripts'][0]['transcript']
+    return full_sentence
+
+
+
+def api_error_log(message):
+    with open('./api_error.log', 'a') as f:
+        f.write(message)
+        f.write('\n')
+
+
+def read_txt(filename):
+    with open(filename, 'r') as f:
+        txt = f.read()
+    return txt
