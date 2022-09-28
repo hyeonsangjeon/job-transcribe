@@ -4,6 +4,7 @@ from botocore.exceptions import ClientError
 import pandas as pd
 import io
 import requests
+import json
 
 logger = logging.getLogger(__name__)
 def start_job(job_name, media_uri, media_format, language_code, transcribe_client,vocabulary_name=None):
@@ -173,3 +174,9 @@ def read_txt(filename):
     with open(filename, 'r') as f:
         txt = f.read()
     return txt
+
+
+def read_json(filename):
+    with open(filename, 'r') as f:
+        json_data = json.load(f)
+    return json_data

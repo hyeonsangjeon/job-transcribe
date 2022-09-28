@@ -77,7 +77,6 @@ buildNumber.properties
 old/
 .metadata
 bin/
-tmp/
 *.tmp
 *.bak
 *.swp

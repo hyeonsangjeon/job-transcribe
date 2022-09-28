@@ -38,7 +38,7 @@ if __name__ == '__main__':
             meta_df._set_value(i, 'cer', cer)
 
 
-    meta_df.to_csv('./result.csv')
+    meta_df.to_csv('./result/result_3922.csv')
 
 
 
