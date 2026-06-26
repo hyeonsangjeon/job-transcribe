@@ -1,0 +1,1056 @@
+{
+  "metadata": {
+    "project": "job-transcribe",
+    "analysis_script": "analysis/analyze_asr_benchmarks.py",
+    "rng_seed": 20260625,
+    "disclaimer": "2023 public product/open model experiment; not current vendor performance, not an official benchmark, and not internal performance data.",
+    "source_files": {
+      "single_speaker": [
+        "result/result_3922.csv",
+        "result/openai_whisper_base_result_3922.csv",
+        "result/openai_whisper_medium_result_3922.csv",
+        "result/openai_whisper_large_result_3922.csv"
+      ],
+      "call_center": [
+        "result/cs_hangul_result.csv",
+        "result/cs_number_result.csv"
+      ]
+    }
+  },
+  "single_speaker": {
+    "summary": [
+      {
+        "model_id": "whisper_large",
+        "model": "Whisper large",
+        "n": 3922,
+        "mean_cer": 0.0222423073,
+        "mean_cer_ci95_low": 0.0207802343,
+        "mean_cer_ci95_high": 0.0237002266,
+        "median_cer": 0.0,
+        "std_cer": 0.0474799231,
+        "p75_cer": 0.0357142857,
+        "p90_cer": 0.0740740741,
+        "p95_cer": 0.1071428571,
+        "p99_cer": 0.1923076923,
+        "max_cer": 0.6666666667,
+        "perfect_rate": 0.7027027027,
+        "pass_1pct_rate": 0.7027027027,
+        "pass_3pct_rate": 0.7287098419,
+        "pass_5pct_rate": 0.8319734829,
+        "pass_10pct_rate": 0.9431412545,
+        "over_10pct_rate": 0.0568587455,
+        "over_20pct_rate": 0.0089240184,
+        "length_cer_pearson": -0.0396227669,
+        "length_cer_spearman": 0.0651931041
+      },
+      {
+        "model_id": "whisper_medium",
+        "model": "Whisper medium",
+        "n": 3922,
+        "mean_cer": 0.0263610621,
+        "mean_cer_ci95_low": 0.0248649145,
+        "mean_cer_ci95_high": 0.0278197771,
+        "median_cer": 0.0,
+        "std_cer": 0.0473149245,
+        "p75_cer": 0.0434782609,
+        "p90_cer": 0.0869565217,
+        "p95_cer": 0.1176470588,
+        "p99_cer": 0.2065833333,
+        "max_cer": 0.425,
+        "perfect_rate": 0.6511983682,
+        "pass_1pct_rate": 0.6511983682,
+        "pass_3pct_rate": 0.679500255,
+        "pass_5pct_rate": 0.7950025497,
+        "pass_10pct_rate": 0.9275879653,
+        "over_10pct_rate": 0.0724120347,
+        "over_20pct_rate": 0.0101988781,
+        "length_cer_pearson": -0.0174879897,
+        "length_cer_spearman": 0.0821190741
+      },
+      {
+        "model_id": "aws_transcribe",
+        "model": "AWS Transcribe",
+        "n": 3922,
+        "mean_cer": 0.0372732822,
+        "mean_cer_ci95_low": 0.0355128839,
+        "mean_cer_ci95_high": 0.0390001302,
+        "median_cer": 0.0,
+        "std_cer": 0.0567050578,
+        "p75_cer": 0.0588235294,
+        "p90_cer": 0.1153846154,
+        "p95_cer": 0.1578125,
+        "p99_cer": 0.2343438914,
+        "max_cer": 0.4705882353,
+        "perfect_rate": 0.5611932687,
+        "pass_1pct_rate": 0.5611932687,
+        "pass_3pct_rate": 0.5920448751,
+        "pass_5pct_rate": 0.7100968893,
+        "pass_10pct_rate": 0.8768485467,
+        "over_10pct_rate": 0.1231514533,
+        "over_20pct_rate": 0.0178480367,
+        "length_cer_pearson": -0.0803239691,
+        "length_cer_spearman": -0.0013767122
+      },
+      {
+        "model_id": "whisper_base",
+        "model": "Whisper base",
+        "n": 3922,
+        "mean_cer": 0.0934601788,
+        "mean_cer_ci95_low": 0.0903587742,
+        "mean_cer_ci95_high": 0.096561847,
+        "median_cer": 0.0693664796,
+        "std_cer": 0.099233739,
+        "p75_cer": 0.1428571429,
+        "p90_cer": 0.2222222222,
+        "p95_cer": 0.28,
+        "p99_cer": 0.4375,
+        "max_cer": 0.7567567568,
+        "perfect_rate": 0.2911779704,
+        "pass_1pct_rate": 0.2911779704,
+        "pass_3pct_rate": 0.3067312596,
+        "pass_5pct_rate": 0.4112697603,
+        "pass_10pct_rate": 0.6267210607,
+        "over_10pct_rate": 0.3732789393,
+        "over_20pct_rate": 0.1236613972,
+        "length_cer_pearson": -0.0596411323,
+        "length_cer_spearman": 0.0088784193
+      }
+    ],
+    "thresholds": [
+      {
+        "model_id": "aws_transcribe",
+        "model": "AWS Transcribe",
+        "cer_threshold": 0.0,
+        "pass_rate": 0.5611932687
+      },
+      {
+        "model_id": "aws_transcribe",
+        "model": "AWS Transcribe",
+        "cer_threshold": 0.01,
+        "pass_rate": 0.5611932687
+      },
+      {
+        "model_id": "aws_transcribe",
+        "model": "AWS Transcribe",
+        "cer_threshold": 0.03,
+        "pass_rate": 0.5920448751
+      },
+      {
+        "model_id": "aws_transcribe",
+        "model": "AWS Transcribe",
+        "cer_threshold": 0.05,
+        "pass_rate": 0.7100968893
+      },
+      {
+        "model_id": "aws_transcribe",
+        "model": "AWS Transcribe",
+        "cer_threshold": 0.1,
+        "pass_rate": 0.8768485467
+      },
+      {
+        "model_id": "aws_transcribe",
+        "model": "AWS Transcribe",
+        "cer_threshold": 0.15,
+        "pass_rate": 0.9467108618
+      },
+      {
+        "model_id": "aws_transcribe",
+        "model": "AWS Transcribe",
+        "cer_threshold": 0.2,
+        "pass_rate": 0.9821519633
+      },
+      {
+        "model_id": "whisper_base",
+        "model": "Whisper base",
+        "cer_threshold": 0.0,
+        "pass_rate": 0.2911779704
+      },
+      {
+        "model_id": "whisper_base",
+        "model": "Whisper base",
+        "cer_threshold": 0.01,
+        "pass_rate": 0.2911779704
+      },
+      {
+        "model_id": "whisper_base",
+        "model": "Whisper base",
+        "cer_threshold": 0.03,
+        "pass_rate": 0.3067312596
+      },
+      {
+        "model_id": "whisper_base",
+        "model": "Whisper base",
+        "cer_threshold": 0.05,
+        "pass_rate": 0.4112697603
+      },
+      {
+        "model_id": "whisper_base",
+        "model": "Whisper base",
+        "cer_threshold": 0.1,
+        "pass_rate": 0.6267210607
+      },
+      {
+        "model_id": "whisper_base",
+        "model": "Whisper base",
+        "cer_threshold": 0.15,
+        "pass_rate": 0.7776644569
+      },
+      {
+        "model_id": "whisper_base",
+        "model": "Whisper base",
+        "cer_threshold": 0.2,
+        "pass_rate": 0.8763386028
+      },
+      {
+        "model_id": "whisper_medium",
+        "model": "Whisper medium",
+        "cer_threshold": 0.0,
+        "pass_rate": 0.6511983682
+      },
+      {
+        "model_id": "whisper_medium",
+        "model": "Whisper medium",
+        "cer_threshold": 0.01,
+        "pass_rate": 0.6511983682
+      },
+      {
+        "model_id": "whisper_medium",
+        "model": "Whisper medium",
+        "cer_threshold": 0.03,
+        "pass_rate": 0.679500255
+      },
+      {
+        "model_id": "whisper_medium",
+        "model": "Whisper medium",
+        "cer_threshold": 0.05,
+        "pass_rate": 0.7950025497
+      },
+      {
+        "model_id": "whisper_medium",
+        "model": "Whisper medium",
+        "cer_threshold": 0.1,
+        "pass_rate": 0.9275879653
+      },
+      {
+        "model_id": "whisper_medium",
+        "model": "Whisper medium",
+        "cer_threshold": 0.15,
+        "pass_rate": 0.9724630291
+      },
+      {
+        "model_id": "whisper_medium",
+        "model": "Whisper medium",
+        "cer_threshold": 0.2,
+        "pass_rate": 0.9898011219
+      },
+      {
+        "model_id": "whisper_large",
+        "model": "Whisper large",
+        "cer_threshold": 0.0,
+        "pass_rate": 0.7027027027
+      },
+      {
+        "model_id": "whisper_large",
+        "model": "Whisper large",
+        "cer_threshold": 0.01,
+        "pass_rate": 0.7027027027
+      },
+      {
+        "model_id": "whisper_large",
+        "model": "Whisper large",
+        "cer_threshold": 0.03,
+        "pass_rate": 0.7287098419
+      },
+      {
+        "model_id": "whisper_large",
+        "model": "Whisper large",
+        "cer_threshold": 0.05,
+        "pass_rate": 0.8319734829
+      },
+      {
+        "model_id": "whisper_large",
+        "model": "Whisper large",
+        "cer_threshold": 0.1,
+        "pass_rate": 0.9431412545
+      },
+      {
+        "model_id": "whisper_large",
+        "model": "Whisper large",
+        "cer_threshold": 0.15,
+        "pass_rate": 0.9806221316
+      },
+      {
+        "model_id": "whisper_large",
+        "model": "Whisper large",
+        "cer_threshold": 0.2,
+        "pass_rate": 0.9910759816
+      }
+    ],
+    "quality_gate_policies": [
+      {
+        "model_id": "aws_transcribe",
+        "model": "AWS Transcribe",
+        "policy": "strict",
+        "pass_threshold": 0.03,
+        "review_threshold": 0.1,
+        "pass_rate": 0.5920448751,
+        "review_rate": 0.2848036716,
+        "block_rate": 0.1231514533
+      },
+      {
+        "model_id": "aws_transcribe",
+        "model": "AWS Transcribe",
+        "policy": "balanced",
+        "pass_threshold": 0.05,
+        "review_threshold": 0.15,
+        "pass_rate": 0.7100968893,
+        "review_rate": 0.2366139725,
+        "block_rate": 0.0532891382
+      },
+      {
+        "model_id": "aws_transcribe",
+        "model": "AWS Transcribe",
+        "policy": "lenient",
+        "pass_threshold": 0.1,
+        "review_threshold": 0.2,
+        "pass_rate": 0.8768485467,
+        "review_rate": 0.1053034166,
+        "block_rate": 0.0178480367
+      },
+      {
+        "model_id": "whisper_base",
+        "model": "Whisper base",
+        "policy": "strict",
+        "pass_threshold": 0.03,
+        "review_threshold": 0.1,
+        "pass_rate": 0.3067312596,
+        "review_rate": 0.3199898011,
+        "block_rate": 0.3732789393
+      },
+      {
+        "model_id": "whisper_base",
+        "model": "Whisper base",
+        "policy": "balanced",
+        "pass_threshold": 0.05,
+        "review_threshold": 0.15,
+        "pass_rate": 0.4112697603,
+        "review_rate": 0.3663946966,
+        "block_rate": 0.2223355431
+      },
+      {
+        "model_id": "whisper_base",
+        "model": "Whisper base",
+        "policy": "lenient",
+        "pass_threshold": 0.1,
+        "review_threshold": 0.2,
+        "pass_rate": 0.6267210607,
+        "review_rate": 0.2496175421,
+        "block_rate": 0.1236613972
+      },
+      {
+        "model_id": "whisper_medium",
+        "model": "Whisper medium",
+        "policy": "strict",
+        "pass_threshold": 0.03,
+        "review_threshold": 0.1,
+        "pass_rate": 0.679500255,
+        "review_rate": 0.2480877104,
+        "block_rate": 0.0724120347
+      },
+      {
+        "model_id": "whisper_medium",
+        "model": "Whisper medium",
+        "policy": "balanced",
+        "pass_threshold": 0.05,
+        "review_threshold": 0.15,
+        "pass_rate": 0.7950025497,
+        "review_rate": 0.1774604793,
+        "block_rate": 0.0275369709
+      },
+      {
+        "model_id": "whisper_medium",
+        "model": "Whisper medium",
+        "policy": "lenient",
+        "pass_threshold": 0.1,
+        "review_threshold": 0.2,
+        "pass_rate": 0.9275879653,
+        "review_rate": 0.0622131566,
+        "block_rate": 0.0101988781
+      },
+      {
+        "model_id": "whisper_large",
+        "model": "Whisper large",
+        "policy": "strict",
+        "pass_threshold": 0.03,
+        "review_threshold": 0.1,
+        "pass_rate": 0.7287098419,
+        "review_rate": 0.2144314125,
+        "block_rate": 0.0568587455
+      },
+      {
+        "model_id": "whisper_large",
+        "model": "Whisper large",
+        "policy": "balanced",
+        "pass_threshold": 0.05,
+        "review_threshold": 0.15,
+        "pass_rate": 0.8319734829,
+        "review_rate": 0.1486486486,
+        "block_rate": 0.0193778684
+      },
+      {
+        "model_id": "whisper_large",
+        "model": "Whisper large",
+        "policy": "lenient",
+        "pass_threshold": 0.1,
+        "review_threshold": 0.2,
+        "pass_rate": 0.9431412545,
+        "review_rate": 0.0479347272,
+        "block_rate": 0.0089240184
+      }
+    ],
+    "win_counts": [
+      {
+        "model_id": "whisper_large",
+        "model": "Whisper large",
+        "best_or_tied_count": 3351,
+        "sole_best_count": 275,
+        "worst_or_tied_count": 1160,
+        "sole_worst_count": 49
+      },
+      {
+        "model_id": "aws_transcribe",
+        "model": "AWS Transcribe",
+        "best_or_tied_count": 2648,
+        "sole_best_count": 262,
+        "worst_or_tied_count": 1639,
+        "sole_worst_count": 418
+      },
+      {
+        "model_id": "whisper_medium",
+        "model": "Whisper medium",
+        "best_or_tied_count": 3089,
+        "sole_best_count": 147,
+        "worst_or_tied_count": 1255,
+        "sole_worst_count": 70
+      },
+      {
+        "model_id": "whisper_base",
+        "model": "Whisper base",
+        "best_or_tied_count": 1341,
+        "sole_best_count": 25,
+        "worst_or_tied_count": 3327,
+        "sole_worst_count": 1981
+      }
+    ],
+    "length_bins": [
+      {
+        "model_id": "aws_transcribe",
+        "model": "AWS Transcribe",
+        "length_bin": "<=20",
+        "n": 371,
+        "mean_cer": 0.0531745172,
+        "median_cer": 0.0,
+        "perfect_rate": 0.6091644205
+      },
+      {
+        "model_id": "aws_transcribe",
+        "model": "AWS Transcribe",
+        "length_bin": "21-30",
+        "n": 1623,
+        "mean_cer": 0.0372562911,
+        "median_cer": 0.0,
+        "perfect_rate": 0.5995070856
+      },
+      {
+        "model_id": "aws_transcribe",
+        "model": "AWS Transcribe",
+        "length_bin": "31-40",
+        "n": 1199,
+        "mean_cer": 0.0354416357,
+        "median_cer": 0.0,
+        "perfect_rate": 0.553794829
+      },
+      {
+        "model_id": "aws_transcribe",
+        "model": "AWS Transcribe",
+        "length_bin": "41-50",
+        "n": 393,
+        "mean_cer": 0.0363551919,
+        "median_cer": 0.0285714286,
+        "perfect_rate": 0.4529262087
+      },
+      {
+        "model_id": "aws_transcribe",
+        "model": "AWS Transcribe",
+        "length_bin": "51+",
+        "n": 336,
+        "mean_cer": 0.0274077229,
+        "median_cer": 0.0198039216,
+        "perfect_rate": 0.4761904762
+      },
+      {
+        "model_id": "whisper_base",
+        "model": "Whisper base",
+        "length_bin": "<=20",
+        "n": 371,
+        "mean_cer": 0.1069445736,
+        "median_cer": 0.0714285714,
+        "perfect_rate": 0.423180593
+      },
+      {
+        "model_id": "whisper_base",
+        "model": "Whisper base",
+        "length_bin": "21-30",
+        "n": 1623,
+        "mean_cer": 0.0936712422,
+        "median_cer": 0.0625,
+        "perfect_rate": 0.3382624769
+      },
+      {
+        "model_id": "whisper_base",
+        "model": "Whisper base",
+        "length_bin": "31-40",
+        "n": 1199,
+        "mean_cer": 0.0954365318,
+        "median_cer": 0.0769230769,
+        "perfect_rate": 0.2543786489
+      },
+      {
+        "model_id": "whisper_base",
+        "model": "Whisper base",
+        "length_bin": "41-50",
+        "n": 393,
+        "mean_cer": 0.0873530265,
+        "median_cer": 0.064516129,
+        "perfect_rate": 0.1857506361
+      },
+      {
+        "model_id": "whisper_base",
+        "model": "Whisper base",
+        "length_bin": "51+",
+        "n": 336,
+        "mean_cer": 0.077642314,
+        "median_cer": 0.0681818182,
+        "perfect_rate": 0.1726190476
+      },
+      {
+        "model_id": "whisper_large",
+        "model": "Whisper large",
+        "length_bin": "<=20",
+        "n": 371,
+        "mean_cer": 0.0285925403,
+        "median_cer": 0.0,
+        "perfect_rate": 0.7870619946
+      },
+      {
+        "model_id": "whisper_large",
+        "model": "Whisper large",
+        "length_bin": "21-30",
+        "n": 1623,
+        "mean_cer": 0.0223326754,
+        "median_cer": 0.0,
+        "perfect_rate": 0.7356746765
+      },
+      {
+        "model_id": "whisper_large",
+        "model": "Whisper large",
+        "length_bin": "31-40",
+        "n": 1199,
+        "mean_cer": 0.0207866634,
+        "median_cer": 0.0,
+        "perfect_rate": 0.6905754796
+      },
+      {
+        "model_id": "whisper_large",
+        "model": "Whisper large",
+        "length_bin": "41-50",
+        "n": 393,
+        "mean_cer": 0.0249901144,
+        "median_cer": 0.0,
+        "perfect_rate": 0.6030534351
+      },
+      {
+        "model_id": "whisper_large",
+        "model": "Whisper large",
+        "length_bin": "51+",
+        "n": 336,
+        "mean_cer": 0.0167745242,
+        "median_cer": 0.0,
+        "perfect_rate": 0.6101190476
+      },
+      {
+        "model_id": "whisper_medium",
+        "model": "Whisper medium",
+        "length_bin": "<=20",
+        "n": 371,
+        "mean_cer": 0.0286283984,
+        "median_cer": 0.0,
+        "perfect_rate": 0.7574123989
+      },
+      {
+        "model_id": "whisper_medium",
+        "model": "Whisper medium",
+        "length_bin": "21-30",
+        "n": 1623,
+        "mean_cer": 0.0257650723,
+        "median_cer": 0.0,
+        "perfect_rate": 0.6956253851
+      },
+      {
+        "model_id": "whisper_medium",
+        "model": "Whisper medium",
+        "length_bin": "31-40",
+        "n": 1199,
+        "mean_cer": 0.0269286817,
+        "median_cer": 0.0,
+        "perfect_rate": 0.6255212677
+      },
+      {
+        "model_id": "whisper_medium",
+        "model": "Whisper medium",
+        "length_bin": "41-50",
+        "n": 393,
+        "mean_cer": 0.0294782278,
+        "median_cer": 0.0,
+        "perfect_rate": 0.5419847328
+      },
+      {
+        "model_id": "whisper_medium",
+        "model": "Whisper medium",
+        "length_bin": "51+",
+        "n": 336,
+        "mean_cer": 0.0210648939,
+        "median_cer": 0.0,
+        "perfect_rate": 0.5386904762
+      }
+    ],
+    "paired_deltas": [
+      {
+        "left_model_id": "aws_transcribe",
+        "left_model": "AWS Transcribe",
+        "right_model_id": "whisper_base",
+        "right_model": "Whisper base",
+        "mean_delta_cer_left_minus_right": -0.0561868966,
+        "mean_delta_ci95_low": -0.0592673023,
+        "mean_delta_ci95_high": -0.0533450705,
+        "left_better_count": 2195,
+        "right_better_count": 467,
+        "tie_count": 1260,
+        "left_better_rate_excluding_ties": 0.824567994
+      },
+      {
+        "left_model_id": "aws_transcribe",
+        "left_model": "AWS Transcribe",
+        "right_model_id": "whisper_medium",
+        "right_model": "Whisper medium",
+        "mean_delta_cer_left_minus_right": 0.0109122202,
+        "mean_delta_ci95_low": 0.0091979241,
+        "mean_delta_ci95_high": 0.0126216303,
+        "left_better_count": 579,
+        "right_better_count": 1066,
+        "tie_count": 2277,
+        "left_better_rate_excluding_ties": 0.3519756839
+      },
+      {
+        "left_model_id": "aws_transcribe",
+        "left_model": "AWS Transcribe",
+        "right_model_id": "whisper_large",
+        "right_model": "Whisper large",
+        "mean_delta_cer_left_minus_right": 0.015030975,
+        "mean_delta_ci95_low": 0.0132366669,
+        "mean_delta_ci95_high": 0.0167533089,
+        "left_better_count": 414,
+        "right_better_count": 1158,
+        "tie_count": 2350,
+        "left_better_rate_excluding_ties": 0.2633587786
+      },
+      {
+        "left_model_id": "whisper_base",
+        "left_model": "Whisper base",
+        "right_model_id": "aws_transcribe",
+        "right_model": "AWS Transcribe",
+        "mean_delta_cer_left_minus_right": 0.0561868966,
+        "mean_delta_ci95_low": 0.0533450705,
+        "mean_delta_ci95_high": 0.0592673023,
+        "left_better_count": 467,
+        "right_better_count": 2195,
+        "tie_count": 1260,
+        "left_better_rate_excluding_ties": 0.175432006
+      },
+      {
+        "left_model_id": "whisper_base",
+        "left_model": "Whisper base",
+        "right_model_id": "whisper_medium",
+        "right_model": "Whisper medium",
+        "mean_delta_cer_left_minus_right": 0.0670991168,
+        "mean_delta_ci95_low": 0.0642896197,
+        "mean_delta_ci95_high": 0.0699427367,
+        "left_better_count": 134,
+        "right_better_count": 2335,
+        "tie_count": 1453,
+        "left_better_rate_excluding_ties": 0.054272985
+      },
+      {
+        "left_model_id": "whisper_base",
+        "left_model": "Whisper base",
+        "right_model_id": "whisper_large",
+        "right_model": "Whisper large",
+        "mean_delta_cer_left_minus_right": 0.0712178716,
+        "mean_delta_ci95_low": 0.0685034264,
+        "mean_delta_ci95_high": 0.0741863313,
+        "left_better_count": 107,
+        "right_better_count": 2436,
+        "tie_count": 1379,
+        "left_better_rate_excluding_ties": 0.0420762878
+      },
+      {
+        "left_model_id": "whisper_medium",
+        "left_model": "Whisper medium",
+        "right_model_id": "aws_transcribe",
+        "right_model": "AWS Transcribe",
+        "mean_delta_cer_left_minus_right": -0.0109122202,
+        "mean_delta_ci95_low": -0.0126216303,
+        "mean_delta_ci95_high": -0.0091979241,
+        "left_better_count": 1066,
+        "right_better_count": 579,
+        "tie_count": 2277,
+        "left_better_rate_excluding_ties": 0.6480243161
+      },
+      {
+        "left_model_id": "whisper_medium",
+        "left_model": "Whisper medium",
+        "right_model_id": "whisper_base",
+        "right_model": "Whisper base",
+        "mean_delta_cer_left_minus_right": -0.0670991168,
+        "mean_delta_ci95_low": -0.0699427367,
+        "mean_delta_ci95_high": -0.0642896197,
+        "left_better_count": 2335,
+        "right_better_count": 134,
+        "tie_count": 1453,
+        "left_better_rate_excluding_ties": 0.945727015
+      },
+      {
+        "left_model_id": "whisper_medium",
+        "left_model": "Whisper medium",
+        "right_model_id": "whisper_large",
+        "right_model": "Whisper large",
+        "mean_delta_cer_left_minus_right": 0.0041187548,
+        "mean_delta_ci95_low": 0.0029466925,
+        "mean_delta_ci95_high": 0.0053384579,
+        "left_better_count": 319,
+        "right_better_count": 594,
+        "tie_count": 3009,
+        "left_better_rate_excluding_ties": 0.3493975904
+      },
+      {
+        "left_model_id": "whisper_large",
+        "left_model": "Whisper large",
+        "right_model_id": "aws_transcribe",
+        "right_model": "AWS Transcribe",
+        "mean_delta_cer_left_minus_right": -0.015030975,
+        "mean_delta_ci95_low": -0.0167533089,
+        "mean_delta_ci95_high": -0.0132366669,
+        "left_better_count": 1158,
+        "right_better_count": 414,
+        "tie_count": 2350,
+        "left_better_rate_excluding_ties": 0.7366412214
+      },
+      {
+        "left_model_id": "whisper_large",
+        "left_model": "Whisper large",
+        "right_model_id": "whisper_base",
+        "right_model": "Whisper base",
+        "mean_delta_cer_left_minus_right": -0.0712178716,
+        "mean_delta_ci95_low": -0.0741863313,
+        "mean_delta_ci95_high": -0.0685034264,
+        "left_better_count": 2436,
+        "right_better_count": 107,
+        "tie_count": 1379,
+        "left_better_rate_excluding_ties": 0.9579237122
+      },
+      {
+        "left_model_id": "whisper_large",
+        "left_model": "Whisper large",
+        "right_model_id": "whisper_medium",
+        "right_model": "Whisper medium",
+        "mean_delta_cer_left_minus_right": -0.0041187548,
+        "mean_delta_ci95_low": -0.0053384579,
+        "mean_delta_ci95_high": -0.0029466925,
+        "left_better_count": 594,
+        "right_better_count": 319,
+        "tie_count": 3009,
+        "left_better_rate_excluding_ties": 0.6506024096
+      }
+    ]
+  },
+  "call_center": {
+    "observations": [
+      {
+        "scenario": "PB bond order",
+        "cer": 0.1303901437,
+        "provider_id": "aws",
+        "provider": "AWS",
+        "basis": "hangul ground truth"
+      },
+      {
+        "scenario": "Startup business loan",
+        "cer": 0.0727424749,
+        "provider_id": "aws",
+        "provider": "AWS",
+        "basis": "hangul ground truth"
+      },
+      {
+        "scenario": "Auto insurance surcharge",
+        "cer": 0.1199388846,
+        "provider_id": "aws",
+        "provider": "AWS",
+        "basis": "hangul ground truth"
+      },
+      {
+        "scenario": "PB bond order",
+        "cer": 0.2471794872,
+        "provider_id": "azure",
+        "provider": "Azure",
+        "basis": "hangul ground truth"
+      },
+      {
+        "scenario": "Startup business loan",
+        "cer": 0.0647302905,
+        "provider_id": "azure",
+        "provider": "Azure",
+        "basis": "hangul ground truth"
+      },
+      {
+        "scenario": "Auto insurance surcharge",
+        "cer": 0.115355233,
+        "provider_id": "azure",
+        "provider": "Azure",
+        "basis": "hangul ground truth"
+      },
+      {
+        "scenario": "PB bond order",
+        "cer": 0.3391215526,
+        "provider_id": "clova",
+        "provider": "Clova",
+        "basis": "hangul ground truth"
+      },
+      {
+        "scenario": "Startup business loan",
+        "cer": 0.1330578512,
+        "provider_id": "clova",
+        "provider": "Clova",
+        "basis": "hangul ground truth"
+      },
+      {
+        "scenario": "Auto insurance surcharge",
+        "cer": 0.3079877112,
+        "provider_id": "clova",
+        "provider": "Clova",
+        "basis": "hangul ground truth"
+      },
+      {
+        "scenario": "PB bond order",
+        "cer": 0.4917525773,
+        "provider_id": "gcp",
+        "provider": "GCP",
+        "basis": "hangul ground truth"
+      },
+      {
+        "scenario": "Startup business loan",
+        "cer": 0.17764804,
+        "provider_id": "gcp",
+        "provider": "GCP",
+        "basis": "hangul ground truth"
+      },
+      {
+        "scenario": "Auto insurance surcharge",
+        "cer": 0.2966948501,
+        "provider_id": "gcp",
+        "provider": "GCP",
+        "basis": "hangul ground truth"
+      },
+      {
+        "scenario": "PB bond order",
+        "cer": 0.2364380757,
+        "provider_id": "aws",
+        "provider": "AWS",
+        "basis": "numeric ground truth"
+      },
+      {
+        "scenario": "Startup business loan",
+        "cer": 0.0896147404,
+        "provider_id": "aws",
+        "provider": "AWS",
+        "basis": "numeric ground truth"
+      },
+      {
+        "scenario": "Auto insurance surcharge",
+        "cer": 0.1451489687,
+        "provider_id": "aws",
+        "provider": "AWS",
+        "basis": "numeric ground truth"
+      },
+      {
+        "scenario": "PB bond order",
+        "cer": 0.1742738589,
+        "provider_id": "azure",
+        "provider": "Azure",
+        "basis": "numeric ground truth"
+      },
+      {
+        "scenario": "Startup business loan",
+        "cer": 0.0556478405,
+        "provider_id": "azure",
+        "provider": "Azure",
+        "basis": "numeric ground truth"
+      },
+      {
+        "scenario": "Auto insurance surcharge",
+        "cer": 0.0879204893,
+        "provider_id": "azure",
+        "provider": "Azure",
+        "basis": "numeric ground truth"
+      },
+      {
+        "scenario": "PB bond order",
+        "cer": 0.2332635983,
+        "provider_id": "clova",
+        "provider": "Clova",
+        "basis": "numeric ground truth"
+      },
+      {
+        "scenario": "Startup business loan",
+        "cer": 0.1126760563,
+        "provider_id": "clova",
+        "provider": "Clova",
+        "basis": "numeric ground truth"
+      },
+      {
+        "scenario": "Auto insurance surcharge",
+        "cer": 0.2709776751,
+        "provider_id": "clova",
+        "provider": "Clova",
+        "basis": "numeric ground truth"
+      },
+      {
+        "scenario": "PB bond order",
+        "cer": 0.4231578947,
+        "provider_id": "gcp",
+        "provider": "GCP",
+        "basis": "numeric ground truth"
+      },
+      {
+        "scenario": "Startup business loan",
+        "cer": 0.1629072682,
+        "provider_id": "gcp",
+        "provider": "GCP",
+        "basis": "numeric ground truth"
+      },
+      {
+        "scenario": "Auto insurance surcharge",
+        "cer": 0.2858243451,
+        "provider_id": "gcp",
+        "provider": "GCP",
+        "basis": "numeric ground truth"
+      }
+    ],
+    "provider_summary": [
+      {
+        "basis": "hangul ground truth",
+        "provider_id": "aws",
+        "provider": "AWS",
+        "n": 3,
+        "mean_cer": 0.1076905011,
+        "median_cer": 0.1199388846,
+        "min_cer": 0.0727424749,
+        "max_cer": 0.1303901437,
+        "pass_10pct_rate": 0.3333333333,
+        "over_20pct_rate": 0.0
+      },
+      {
+        "basis": "hangul ground truth",
+        "provider_id": "azure",
+        "provider": "Azure",
+        "n": 3,
+        "mean_cer": 0.1424216702,
+        "median_cer": 0.115355233,
+        "min_cer": 0.0647302905,
+        "max_cer": 0.2471794872,
+        "pass_10pct_rate": 0.3333333333,
+        "over_20pct_rate": 0.3333333333
+      },
+      {
+        "basis": "hangul ground truth",
+        "provider_id": "clova",
+        "provider": "Clova",
+        "n": 3,
+        "mean_cer": 0.260055705,
+        "median_cer": 0.3079877112,
+        "min_cer": 0.1330578512,
+        "max_cer": 0.3391215526,
+        "pass_10pct_rate": 0.0,
+        "over_20pct_rate": 0.6666666667
+      },
+      {
+        "basis": "hangul ground truth",
+        "provider_id": "gcp",
+        "provider": "GCP",
+        "n": 3,
+        "mean_cer": 0.3220318225,
+        "median_cer": 0.2966948501,
+        "min_cer": 0.17764804,
+        "max_cer": 0.4917525773,
+        "pass_10pct_rate": 0.0,
+        "over_20pct_rate": 0.6666666667
+      },
+      {
+        "basis": "numeric ground truth",
+        "provider_id": "azure",
+        "provider": "Azure",
+        "n": 3,
+        "mean_cer": 0.1059473962,
+        "median_cer": 0.0879204893,
+        "min_cer": 0.0556478405,
+        "max_cer": 0.1742738589,
+        "pass_10pct_rate": 0.6666666667,
+        "over_20pct_rate": 0.0
+      },
+      {
+        "basis": "numeric ground truth",
+        "provider_id": "aws",
+        "provider": "AWS",
+        "n": 3,
+        "mean_cer": 0.1570672616,
+        "median_cer": 0.1451489687,
+        "min_cer": 0.0896147404,
+        "max_cer": 0.2364380757,
+        "pass_10pct_rate": 0.3333333333,
+        "over_20pct_rate": 0.3333333333
+      },
+      {
+        "basis": "numeric ground truth",
+        "provider_id": "clova",
+        "provider": "Clova",
+        "n": 3,
+        "mean_cer": 0.2056391099,
+        "median_cer": 0.2332635983,
+        "min_cer": 0.1126760563,
+        "max_cer": 0.2709776751,
+        "pass_10pct_rate": 0.0,
+        "over_20pct_rate": 0.6666666667
+      },
+      {
+        "basis": "numeric ground truth",
+        "provider_id": "gcp",
+        "provider": "GCP",
+        "n": 3,
+        "mean_cer": 0.290629836,
+        "median_cer": 0.2858243451,
+        "min_cer": 0.1629072682,
+        "max_cer": 0.4231578947,
+        "pass_10pct_rate": 0.0,
+        "over_20pct_rate": 0.6666666667
+      }
+    ]
+  }
+}

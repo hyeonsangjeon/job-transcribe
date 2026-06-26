@@ -7,6 +7,8 @@ javadocs/*
 logs/
 .idea
 __pycache__/
+.venv/
+.ruff_cache/
 
 # IntelliJ IDEA
 **/.idea

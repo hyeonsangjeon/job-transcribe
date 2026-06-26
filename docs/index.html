@@ -1,0 +1,349 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>한국어 ASR 벤치마크 다시 보기 | Job Transcribe</title>
+    <meta
+      name="description"
+      content="2023년 공개 제품과 공개 모델로 수행한 한국어 ASR/STT 벤치마크를 CER, threshold, paired comparison, 콜센터 시나리오 관점에서 다시 분석합니다."
+    />
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <header class="topbar">
+      <a class="brand" href="#top" aria-label="Job Transcribe report home">
+        <span class="brand-mark" aria-hidden="true">JT</span>
+        <span>Job Transcribe</span>
+      </a>
+      <nav class="topnav" aria-label="Primary">
+        <a href="#single-speaker">Single</a>
+        <a href="#explorer">Explorer</a>
+        <a href="#call-center">Call center</a>
+        <a href="#limits">Limits</a>
+      </nav>
+    </header>
+
+    <div class="shell" id="top">
+      <aside class="left-nav" aria-label="Sections">
+        <div class="nav-label">Report</div>
+        <a href="#summary">Summary</a>
+        <a href="#dataset">Dataset</a>
+        <a href="#single-speaker">Single speaker</a>
+        <a href="#explorer">Explorer</a>
+        <a href="#call-center">Call center</a>
+        <a href="#method">Method</a>
+        <a href="#limits">Limits</a>
+      </aside>
+
+      <main class="content">
+        <section class="hero" id="summary">
+          <div class="kicker">2023 public experiment revisit</div>
+          <h1>3,922문장과 3개 콜센터 시나리오로 다시 본 한국어 STT 벤치마크</h1>
+          <p class="lead">
+            2023년에 직접 설계하고 수행했던 한국어 ASR/STT 실험을 실제 레포 데이터로 다시 분석했다.
+            평균 CER 하나가 아니라 분포, threshold 통과율, paired comparison, worst case,
+            숫자 표기 민감도까지 함께 본다.
+          </p>
+          <div class="notice">
+            이 분석은 2023년에 공개적으로 접근 가능한 제품과 오픈소스 모델을 사용해 수행한
+            개인 프로젝트성 실험 결과를 재정리한 것이다. 현재 Microsoft/Azure, AWS, Clova,
+            GCP, OpenAI/Whisper 제품 성능을 대표하지 않으며, 각 회사의 공식 벤치마크나
+            내부 성능 데이터가 아니다.
+          </div>
+          <div class="metric-strip" aria-label="Key metrics">
+            <div>
+              <span class="metric-value">3,922</span>
+              <span class="metric-label">single-speaker utterances</span>
+            </div>
+            <div>
+              <span class="metric-value">2.22%</span>
+              <span class="metric-label">Whisper large mean CER</span>
+            </div>
+            <div>
+              <span class="metric-value">83.20%</span>
+              <span class="metric-label">Whisper large CER <= 5%</span>
+            </div>
+          </div>
+        </section>
+
+        <section class="section" id="dataset">
+          <div class="section-head">
+            <div>
+              <div class="kicker">Dataset</div>
+              <h2>두 개의 평가면</h2>
+            </div>
+            <p>
+              단일 화자 데이터는 모델 성능 분포를 보기 위한 중심 벤치마크로, 콜센터 데이터는
+              숫자와 금융 도메인 문맥에 대한 작은 case analysis로 사용했다.
+            </p>
+          </div>
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>Area</th>
+                <th>Samples</th>
+                <th>Compared systems</th>
+                <th>Interpretation</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Single speaker</td>
+                <td>3,922 utterances</td>
+                <td>AWS Transcribe, Whisper base, Whisper medium, Whisper large</td>
+                <td>같은 화자/녹음 조건에서 모델별 CER 분포와 threshold 통과율 비교</td>
+              </tr>
+              <tr>
+                <td>Financial call center</td>
+                <td>3 scenarios x 2 ground-truth bases</td>
+                <td>AWS, Azure, Clova, GCP</td>
+                <td>n=3 case analysis. Provider ranking이 아니라 숫자/도메인 민감도 확인</td>
+              </tr>
+            </tbody>
+          </table>
+        </section>
+
+        <section class="section" id="single-speaker">
+          <div class="section-head">
+            <div>
+              <div class="kicker">Single speaker</div>
+              <h2>평균보다 분포와 threshold</h2>
+            </div>
+            <p>
+              단일 화자 3,922문장에서는 Whisper large와 medium이 강한 결과를 보였다.
+              하지만 실제 의사결정에는 평균 CER와 함께 완전 인식률, 5% threshold,
+              10% 초과 tail risk를 함께 봐야 한다.
+            </p>
+          </div>
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>Model</th>
+                <th>Mean CER</th>
+                <th>Median CER</th>
+                <th>Perfect</th>
+                <th>&lt;=5% CER</th>
+                <th>&gt;10% CER</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Whisper large</td>
+                <td>2.22%</td>
+                <td>0.00%</td>
+                <td>70.27%</td>
+                <td>83.20%</td>
+                <td>5.69%</td>
+              </tr>
+              <tr>
+                <td>Whisper medium</td>
+                <td>2.64%</td>
+                <td>0.00%</td>
+                <td>65.12%</td>
+                <td>79.50%</td>
+                <td>7.24%</td>
+              </tr>
+              <tr>
+                <td>AWS Transcribe</td>
+                <td>3.73%</td>
+                <td>0.00%</td>
+                <td>56.12%</td>
+                <td>71.01%</td>
+                <td>12.32%</td>
+              </tr>
+              <tr>
+                <td>Whisper base</td>
+                <td>9.35%</td>
+                <td>6.94%</td>
+                <td>29.12%</td>
+                <td>41.13%</td>
+                <td>37.33%</td>
+              </tr>
+            </tbody>
+          </table>
+          <figure class="figure">
+            <img src="./assets/single_speaker_mean_cer.png" alt="Single-speaker mean CER by model" />
+            <figcaption>
+              Figure 1. 단일 화자 3,922문장 기준 평균 CER와 95% bootstrap confidence interval.
+              Source: <code>result/*.csv</code>.
+            </figcaption>
+          </figure>
+          <figure class="figure">
+            <img src="./assets/single_speaker_threshold_pass_rates.png" alt="Pass rate by CER threshold" />
+            <figcaption>
+              Figure 2. CER threshold별 pass rate. 운영 기준을 가정하면 평균 CER만 볼 때와 다른 질문을 할 수 있다.
+            </figcaption>
+          </figure>
+        </section>
+
+        <section class="section" id="explorer">
+          <div class="section-head">
+            <div>
+              <div class="kicker">Interactive</div>
+              <h2>Model Performance Explorer</h2>
+            </div>
+            <p>
+              Threshold를 직접 바꾸면서 pass/fail 비율이 어떻게 움직이는지 확인한다.
+              Call-center 모드에서는 정답지 기준을 바꿔 provider별 scenario pass 비중을 본다.
+            </p>
+          </div>
+
+          <div class="explorer" data-app-root>
+            <div class="controls" aria-label="Explorer controls">
+              <fieldset>
+                <legend>Dataset</legend>
+                <div class="segmented" role="group" aria-label="Dataset">
+                  <button type="button" class="is-active" data-dataset="single">Single speaker</button>
+                  <button type="button" data-dataset="call">Call center</button>
+                </div>
+              </fieldset>
+
+              <fieldset class="basis-control" hidden>
+                <legend>Ground truth basis</legend>
+                <select id="basis-select" aria-label="Ground truth basis">
+                  <option value="hangul ground truth">Hangul ground truth</option>
+                  <option value="numeric ground truth">Numeric ground truth</option>
+                </select>
+              </fieldset>
+
+              <fieldset>
+                <legend>Model / Provider</legend>
+                <select id="entity-select" aria-label="Model or provider"></select>
+              </fieldset>
+
+              <fieldset>
+                <legend>CER threshold</legend>
+                <div class="slider-row">
+                  <input id="threshold-slider" type="range" min="0" max="6" step="1" value="3" aria-label="CER threshold" />
+                  <output id="threshold-output" for="threshold-slider">5%</output>
+                </div>
+              </fieldset>
+            </div>
+
+            <div class="chart-panel">
+              <div class="chart-title-row">
+                <div>
+                  <h3 id="chart-title">Pass rate by model</h3>
+                  <p id="chart-subtitle">CER <= 5% 기준</p>
+                </div>
+                <div class="legend" aria-label="Chart legend">
+                  <span><i class="swatch pass"></i>Pass</span>
+                  <span><i class="swatch fail"></i>Fail</span>
+                </div>
+              </div>
+              <div class="chart-wrap">
+                <svg id="rate-chart" role="img" aria-labelledby="chart-title chart-subtitle"></svg>
+              </div>
+              <div class="tooltip" id="tooltip" hidden></div>
+            </div>
+
+            <div class="summary-grid" aria-label="Selected summary">
+              <div class="summary-cell">
+                <span class="summary-label">Selected</span>
+                <strong id="selected-label">Whisper large</strong>
+              </div>
+              <div class="summary-cell">
+                <span class="summary-label">Mean CER</span>
+                <strong id="mean-cer">2.22%</strong>
+              </div>
+              <div class="summary-cell">
+                <span class="summary-label">Pass at threshold</span>
+                <strong id="pass-rate">83.20%</strong>
+              </div>
+              <div class="summary-cell">
+                <span class="summary-label">Tail / max risk</span>
+                <strong id="risk-rate">5.69% >10%</strong>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section class="section" id="call-center">
+          <div class="section-head">
+            <div>
+              <div class="kicker">Call center</div>
+              <h2>Ranking보다 표기 민감도</h2>
+            </div>
+            <p>
+              콜센터 데이터는 3개 시나리오뿐이다. 평균값은 보조 요약으로만 읽고,
+              한글 정답지와 숫자 정답지의 차이, PB/대출/보험 시나리오별 난이도를 본다.
+            </p>
+          </div>
+          <figure class="figure">
+            <img src="./assets/call_center_provider_mean_cer.png" alt="Call-center mean CER by provider" />
+            <figcaption>
+              Figure 3. 금융 콜센터 3개 시나리오의 provider별 평균 CER. n=3 case summary로만 읽는다.
+            </figcaption>
+          </figure>
+          <figure class="figure">
+            <img src="./assets/call_center_scenario_heatmap.png" alt="Call-center CER heatmap by scenario" />
+            <figcaption>
+              Figure 4. 시나리오 x provider CER heatmap. PB bond order는 여러 provider에서 상대적으로 높은 CER를 보였다.
+            </figcaption>
+          </figure>
+        </section>
+
+        <section class="section" id="method">
+          <div class="section-head">
+            <div>
+              <div class="kicker">Reproduce</div>
+              <h2>실제 결과 파일만 사용</h2>
+            </div>
+            <p>
+              이 페이지의 JSON과 PNG는 모두 레포의 실제 결과 파일에서 생성된다. Mock CSV는 사용하지 않는다.
+            </p>
+          </div>
+          <pre><code>uv run --python /usr/bin/python3 --with pandas --with numpy --with matplotlib python analysis/analyze_asr_benchmarks.py</code></pre>
+          <ul class="check-list">
+            <li>단일 화자 4개 결과 CSV의 <code>file_name</code> 집합 일치 검증</li>
+            <li>콜센터 결과 row count와 scenario count 일치 검증</li>
+            <li><code>docs/assets/*.png</code>와 <code>docs/data/asr-benchmark.json</code> 재생성</li>
+          </ul>
+        </section>
+
+        <section class="section" id="limits">
+          <div class="section-head">
+            <div>
+              <div class="kicker">Limits</div>
+              <h2>해석 범위</h2>
+            </div>
+            <p>
+              이 글은 모델이나 vendor의 현재 우열을 일반화하려는 문서가 아니다.
+              2023년 당시 실험 자산을 재현 가능한 분석과 시각화로 정리한 것이다.
+            </p>
+          </div>
+          <div class="limit-list">
+            <p>현재 Microsoft/Azure, AWS, Clova, GCP, OpenAI/Whisper 성능을 대표하지 않는다.</p>
+            <p>각 회사의 공식 벤치마크, 내부 성능 데이터, 비공개 benchmark가 아니다.</p>
+            <p>단일 화자 3,922건은 같은 화자와 녹음 조건 안에서의 비교다.</p>
+            <p>콜센터 데이터는 3개 시나리오의 case analysis이며 provider ranking 근거로 쓰지 않는다.</p>
+            <p>CER는 의미 보존, 화자 분리, 타임스탬프, punctuation quality를 직접 평가하지 않는다.</p>
+          </div>
+        </section>
+      </main>
+
+      <aside class="right-rail" aria-label="On this page">
+        <div class="rail-box">
+          <div class="nav-label">On this page</div>
+          <a href="#summary">Summary</a>
+          <a href="#dataset">Dataset</a>
+          <a href="#single-speaker">Single speaker</a>
+          <a href="#explorer">Explorer</a>
+          <a href="#call-center">Call center</a>
+          <a href="#method">Method</a>
+          <a href="#limits">Limits</a>
+        </div>
+        <div class="rail-box">
+          <div class="nav-label">Generated From</div>
+          <p><code>analysis/outputs/*</code></p>
+          <p><code>docs/assets/*.png</code></p>
+          <p><code>docs/data/asr-benchmark.json</code></p>
+        </div>
+      </aside>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/d3@7"></script>
+    <script src="./app.js"></script>
+  </body>
+</html>

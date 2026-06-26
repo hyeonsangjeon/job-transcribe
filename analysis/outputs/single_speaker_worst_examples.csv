@@ -1,0 +1,81 @@
+model_id,model,file_name,text_length,cer,ground_truth,transcribe_sentence
+aws_transcribe,AWS Transcribe,4cceac65ea2c11f2f06f58fea3d70e6f.wav,24,0.4705882352941176,서류 웨이트 및 비엘 웨이트가 동일 한가요?,서류및 가 동일한 가요.
+aws_transcribe,AWS Transcribe,629d93de3ec5d156ad8c9b6a00eaa5a4.wav,32,0.3928571428571428,보이그룹 디크런치가 거대한 궁전을 힙합 스웨그로 표현했다.,고위 GROUP 다 크런치가 거대한 궁전을 힙합으로 표현했다.
+aws_transcribe,AWS Transcribe,498ce296c3be8b593437771c461c0a56.wav,31,0.391304347826087,자이언트 코즈웨이는 영국의 네 번째 경이로 알려져 있다.,는 영국의 네 번째 경위로 알려져 있다.
+aws_transcribe,AWS Transcribe,ee493219e400a353b6d02219970c4fbc.wav,17,0.3636363636363636,그 은행 문은 곧 닫힐 거에요.,은행 문은 곧 다칠 거예요
+aws_transcribe,AWS Transcribe,673f9e35a60d2ed4f71b8e7b1c5f405e.wav,15,0.3636363636363636,주걱이 부엌의 어디에 있죠?,거기 부엌에 어디에 있죠?
+aws_transcribe,AWS Transcribe,4b31fce909ab53c27ed8b0c3d378d8b0.wav,19,0.3571428571428571,그 사람이 짖으라면 나는 짖어야죠.,그 사람이 지질하면 나는 지저야죠
+aws_transcribe,AWS Transcribe,ee004ce3130ac8700f9ddc46bc76ab63.wav,21,0.3571428571428571,당신은 몇 월 몇 일에 방문 하십니까?,장 씨는 몇 월 며칠에 방문하십니까.
+aws_transcribe,AWS Transcribe,8a7438889c08046ab8607e6f6f360caa.wav,33,0.3461538461538461,손흥민에 위에 서고 지동원이 섀도우 스트라이커처럼 움직였다.,손흥민의 위에서 고 지동원이 쉐처럼 움직였다.
+aws_transcribe,AWS Transcribe,7df881456761d223eb47323e4eb62206.wav,22,0.3333333333333333,밑줄 친 낱말과 모음 배열이 같은 것은?,난 말과 모은 배열이 같은 것은.
+aws_transcribe,AWS Transcribe,3761f0c6209a08816de84456b9416b7f.wav,20,0.3333333333333333,그녀가 소파에 한가로이 앉아 있어요.,그녀가 한 가루에 앉아 있어요
+aws_transcribe,AWS Transcribe,493143db762253c9970468cbe7fd8ebf.wav,17,0.3333333333333333,그는 넓은 이마를 갖고 있어요.,넓은 이 말을 갖고 있어요.
+aws_transcribe,AWS Transcribe,5d87c8ca2529b784cbeedd398c0fcdf8.wav,43,0.3235294117647059,사우스웨스트 에어라인은 특히 시간을 지키는 항공기 도착의 중요성을 강조했어요.,는 특히 시간을 지키는 항공기 도착의 중요성을 강조했어요.
+aws_transcribe,AWS Transcribe,7c4c0dc3fe3581897b9dd26a6063e23e.wav,25,0.3157894736842105,세목 업체와 같은 소프트웨어 문제라 생각해요.,제목업체와 같은 문제라 생각해요.
+aws_transcribe,AWS Transcribe,ddec6bdf0e2b7eae89a3ec118deaa1a6.wav,26,0.3157894736842105,당신은 셰익스피어 작품을 읽어 본 적이 있나요?,당신은 제품을 읽어본 적이 있나요?
+aws_transcribe,AWS Transcribe,08714bf0447031a98afb4b4c0ed135fc.wav,22,0.3125,이 사진은 우리 서비스의 간략한 팁이야!,이 사진은 우리 서비스에 간략하게
+aws_transcribe,AWS Transcribe,161c14f85292c945a969f6b701528cf7.wav,20,0.3076923076923077,새 신은 꾹 밟아 주는 게 예의에요.,씨는 꾹 밟아 주는 게 예의예요.
+aws_transcribe,AWS Transcribe,42d390a2c6c6ccd9600ea8ea85efdd27.wav,28,0.3,그것은 차 바퀴 위에 오르는 단일 섀시에 구축된다.,그것은 차받기 위해 오르는 단일씨의 구축된다.
+aws_transcribe,AWS Transcribe,60acf908234193e0158c8c473c5d5053.wav,21,0.2941176470588235,게이트웨이가 끊기는 이유는 무엇인가요?,가 끊기는 이유는 무엇인가요?
+aws_transcribe,AWS Transcribe,7f0439b84a1eb77ef8fda1cba7fa7af1.wav,40,0.2903225806451613,훗날 뇌안탈을 소탕하려는 새녘족의 타곤에 의해 처참한 대살육이 일어난다.,훗날 뇌안타를 소탕하려는 세정욕에 타고 네 의해 처참한 대사육이 일어난다.
+aws_transcribe,AWS Transcribe,51bc0289ee46bd5b160cdac42d0a5b9e.wav,22,0.2857142857142857,혹시 쟤. 김해리 아니야? 김해리 맞지?,혹시 제 김혜리 아니야? 김혜리 많지?
+whisper_base,Whisper base,f36b986b12055500f555156b9b01f99b.wav,24,0.7567567567567568,정말? 한번 가봐야겠다. 알려 줘서 고마워!, 정말 한 번 가봐야겠다 이제 I will just go for I'm out of power
+whisper_base,Whisper base,2d424a7848edb3fa7f46502457e4df5a.wav,23,0.7407407407407407,배드민턴은 왜 이름이 배드민턴이 됐을까요?, BAD MINTER은 왜 이름이 BAD MINTER이 될까요?
+whisper_base,Whisper base,b387e44eaee6e678ea0091c6f285663c.wav,38,0.7037037037037037,네팔인은 나마스떼라고 말하며 양손을 머리에 얹고 허리 굽혀 인사해요., 에파리는 남아시대라고 말하며 양손을 머리에 옮고 허리 두표 인사 에파리는 남아시대라고 말하며 양손을 머리에 옮고 허리 두표 인사
+whisper_base,Whisper base,7d3ce5f0cfb8662b9d6b1719a362390b.wav,32,0.6666666666666666,그 뉴스 보도에는 이 정도로 넓은 자리를 할애해야 합니다., 그 뉴스 보드에는 이 정도로 넓은 자리를 후inctions 영상 inclusiveINAUDIBLE
+whisper_base,Whisper base,6a866c01a75c5b29b9d4d27c103ff3ea.wav,40,0.6515151515151515,부엌에서의 식기세척기의 도래는 집안에서의 청결을 개선시키는데 기여했어요., 부어 캐소의 시키세척기의 도래는 집안에서의 청결을 개선시키는데 연구aires 보은 방introdu Fine에서의 연구고가 에 messaging
+whisper_base,Whisper base,cd391a7f50b012226d9abf8c3ce765e9.wav,19,0.6428571428571429,씁쓸한 도식은 씁쓸한 일상을 낳아., 습스란 도시근 습스란 일상을 아
+whisper_base,Whisper base,855e1d730c5e238a183bbfb528ac9309.wav,29,0.625,실제 몇몇 입주한 잘나가던 벤처기업이 보따리를 쌌다., 실제 몇 년 입주한 잘나가던 벤척이어기 Councillor 고건 이�YN
+whisper_base,Whisper base,ed16ddcf334208547f60508fadb926d0.wav,41,0.6086956521739131,퓨리토 센텔라 그린레벨 뷔페 세럼과 섞어서 사용하시면 더욱더 효과적입니다., 3Q Santella Green Level BPS Serum과 섞어서 사용하시면 더욱 더 효과적입니다.
+whisper_base,Whisper base,21b38f0e12eb7f7f887f4fdf381859db.wav,38,0.6046511627906976,그것은 카운터 웨이트일 때만 가능하니 벌크로 카운터 웨이트를 세팅해., 그것은 Counterweight일 때만 가능하니 벌크로 Counterweight를 세팅해
+whisper_base,Whisper base,5abc52cb49ab074949a3f68579fffad6.wav,35,0.5769230769230769,그들은 음식을 먹을 돈이 충분치 않아 굶어 죽을 수도 있습니다., 그대로 음식을 먹을 뿐이 충분하지 않아 말� además는
+whisper_base,Whisper base,161c14f85292c945a969f6b701528cf7.wav,20,0.5714285714285714,새 신은 꾹 밟아 주는 게 예의에요., 해시 씨는 꼭 발바주는 게 예의해요.
+whisper_base,Whisper base,f7c0870a38033d6d2f1f360545c4e682.wav,19,0.5714285714285714,저는 그 차량의 뒷좌석에 앉았어요., 그 차량에 빛자석이 안 갔어요
+whisper_base,Whisper base,11850f8cb87ba26572b6dfe22d4d41f4.wav,23,0.55,나 어제 잠을 늦게 자서 낮잠을 자야겠어., 아 어제 잠을 늦게 자서 여자가 자 ngày cel
+whisper_base,Whisper base,21a35084a6fd2977a1981d8b11cf5366.wav,18,0.5384615384615384,두 좌석 사이의 공간이 넓습니다., 2주 6석 4일 공간이 널습니다.
+whisper_base,Whisper base,7f3d35a0197551a96665f8284ee52d5f.wav,31,0.5294117647058824,갠드크랩 랜섬웨어를 이용하는 신규 공격 그룹이 포착됐다., GEND CREP LENSER MARE를 이용하는 신규 공격 그룹이 포착됐다.
+whisper_base,Whisper base,b0122f9ce0eb81c905ba6816a5b1be13.wav,26,0.5238095238095238,어웨어 민트와 같은 제품이 나온 이유일 겁니다., OA-Mintua 같은 제품이 나온 U1 겁니다.
+whisper_base,Whisper base,51bc0289ee46bd5b160cdac42d0a5b9e.wav,22,0.5,혹시 쟤. 김해리 아니야? 김해리 맞지?, 혹시 제 김혜의 아냐? 김혜이 맞지?
+whisper_base,Whisper base,c69d164c6fcb85e30aa950a407b99a16.wav,45,0.5,자원과 생태계를 보전하고 재생시키기 위해 선형계보다 폐회로가 전형적으로 사용된다., 아원과 생태계를 보전하고 재생시키기 위해 선영개보다 폐회로가 선영적으로 선영 아원과 생태계를 보전하고 재생시키기 위해 선영
+whisper_base,Whisper base,837d484e8fa5518a134a75203f59e7b9.wav,15,0.5,브로드웨이 공연은 어땠어요?, Pro2way 공연은 어땠어요?
+whisper_base,Whisper base,a3677ee472e119662c6d07c3090bd3e7.wav,22,0.5,너의 어머니와 부엌에 대해 의논 잘했어., 어이 어머니와 부어캐데이 은원 잘했어
+whisper_medium,Whisper medium,5d87c8ca2529b784cbeedd398c0fcdf8.wav,43,0.425,사우스웨스트 에어라인은 특히 시간을 지키는 항공기 도착의 중요성을 강조했어요., South West Air Line은 특히 시간을 지키는 항공기 도착에 중요성을 강조했어요.
+whisper_medium,Whisper medium,f7d908ca980e3bcf374746b1f1f217ed.wav,38,0.3888888888888889,쉐이프 포 우먼이란 남아프리카의 여성 전용 체육관 체인들을 뜻합니다., Shape for Women이란 남아프리카 여성 전용 체육관 체인들을 뜻합니다.
+whisper_medium,Whisper medium,592f28c650300223f114035451e63ce2.wav,19,0.3888888888888889,알이즈웰이 진짜 유명해지기는 했죠., R-is-well이 진짜 유명해지기는 했죠.
+whisper_medium,Whisper medium,c40dd7a6cde161cabe3b096b663ac7f1.wav,29,0.3809523809523809,뒷자리에 앉아서 목소리가 잘 들리지 않을 줄 알았어., 목소리 잘 들리지 않을 줄 알았어.
+whisper_medium,Whisper medium,b0122f9ce0eb81c905ba6816a5b1be13.wav,26,0.3636363636363636,어웨어 민트와 같은 제품이 나온 이유일 겁니다., AWAY MINT와 같은 제품이 나온 이유일 겁니다.
+whisper_medium,Whisper medium,673f9e35a60d2ed4f71b8e7b1c5f405e.wav,15,0.3636363636363636,주걱이 부엌의 어디에 있죠?, 거기 부엌에 어디에 있죠?
+whisper_medium,Whisper medium,2174733668069879a6b73c98547afd4c.wav,15,0.3636363636363636,당신은 넋을 잃지는 마세요., 당신은 넉스를 치는 마세요.
+whisper_medium,Whisper medium,b665e7789d578ec2028490044630beb8.wav,17,0.3076923076923077,쉽게 얻은 것은 쉽게 잃습니다., 이 책을 얻은 것은 쉽게 읽습니다.
+whisper_medium,Whisper medium,65cc64619d3e2a2fa49d1215ccb37c1b.wav,46,0.2926829268292683,스터플빔은 평가를 개념화하기 위한 시도 중에 나타난 여덟 가지 문제점을 제시했어요., CoupleBeam은 평가를 개념화하기 위한 시도 중에 나타난 8가지 문제점을 제시했어요.
+whisper_medium,Whisper medium,4b31fce909ab53c27ed8b0c3d378d8b0.wav,19,0.2857142857142857,그 사람이 짖으라면 나는 짖어야죠., 그 사람이 지지라면 나는 지져야죠.
+whisper_medium,Whisper medium,efbde913f36581233e0d3c2a4e8874b1.wav,28,0.2857142857142857,동남아 자체가 설렁설렁 일하는 것과 궤를 같이한다., 국나마 자체가 설렁설렁이라는 것과 괴를 같이 한다.
+whisper_medium,Whisper medium,ace191003324a4dfa2c628decba6970f.wav,43,0.28125,수신자에 맞게 의도된 출처의 정보는 그 수단에 맞는 신호 형식으로 보내집니다., 출처의 정보는 그 수단에 맞는 신호 형식으로 보내집니다.
+whisper_medium,Whisper medium,9187eac5d8673b09d69b330c9dd33770.wav,25,0.2777777777777778,굳게 닫힌 문을 열자 끔직한 광경이 펼쳐졌다., 해다친 문을 열자 끔찍한 광경이 펼쳐졌다.
+whisper_medium,Whisper medium,a624469c4c39cf972143b2aa48c768ae.wav,15,0.2727272727272727,저는 부엌일을 많이 합니다., 저는 부엉리를 많이 합니다
+whisper_medium,Whisper medium,5a4258e2b6a1a124d5dd21295ccc905d.wav,34,0.2692307692307692,산란기인 여름에는 어획이 금지돼 수입 냉동꽃게만 유통돼 왔다., 살랑기인 여름에는 어획이 금지되 수입 냉동곶개만 유통되었다.
+whisper_medium,Whisper medium,f1f285042aa9eb32e4f9850dd0d0fae9.wav,31,0.2666666666666666,여러분은 커러넷이라는웹사이트를 사용해 보는 건 어떨까요?, 여러분은 Curranet 이라는 웹사이트를 사용해 보는 건 어떨까요?
+whisper_medium,Whisper medium,af827a33179ba47d3d5c9b1dee3f825c.wav,24,0.2631578947368421,오웬은 놀라울 정도로 나날이 자라고 있구나., 오후에는 놀라울 정도로 나날이 잘하고 있구나.
+whisper_medium,Whisper medium,7f0439b84a1eb77ef8fda1cba7fa7af1.wav,40,0.2580645161290322,훗날 뇌안탈을 소탕하려는 새녘족의 타곤에 의해 처참한 대살육이 일어난다., 훗날 뇌한타를 소탕하려는 세정욕의 타곤에 의해 처참한 대사륙이 일어난다.
+whisper_medium,Whisper medium,9d0196ccd540a4eaa9f2e56e2daf2e70.wav,26,0.25,모션 이벤트는 웹페이지에서 확인할 수 있습니다., motion 이벤트는 웹페이지에서 확인할 수 있습니다.
+whisper_medium,Whisper medium,b81d59ce8655830e191622a4633366d6.wav,21,0.25,너를 위해 이 초콜릿 케잌을 준비했어., 너를 위해 이 초콜렛 케이크를 준비했어
+whisper_large,Whisper large,52be6d352d89a498cb163f9d909a2985.wav,15,0.6666666666666666,미디엄 웰던으로 부탁할게요., Medium Well Done으로 부탁할게요.
+whisper_large,Whisper large,c69d164c6fcb85e30aa950a407b99a16.wav,45,0.6630434782608695,자원과 생태계를 보전하고 재생시키기 위해 선형계보다 폐회로가 전형적으로 사용된다., 아원과 생태계를 보전하고 재생시키기 위해 선형계보다 폐회로가 선형적으로 더 판동하는 카드가 사 intellectually lowered. 이� Herbert Johnson Karen мне같은 카드 갈 수
+whisper_large,Whisper large,e3d356f221bbc249c9246eb64ded2c14.wav,21,0.5,스퀘어 스톤은 비싸기 때문일 것이에요., Square Stone은 비싸기 때문일 것이에요.
+whisper_large,Whisper large,40a6bd53df7b4a695291f3d8764bda8c.wav,44,0.5,사우스캐롤라이나의 찰스턴은 쿠두 커피 앤 크래프트 비어의 오트밀 건포도 쿠키야., South Carolina의 Charleston은 쿠두 커피 앤 크래프트 비어의 오트밀 건포도 쿠키야.
+whisper_large,Whisper large,732ee4a49be5f7e44a0fab0812eac9ea.wav,15,0.4545454545454545,그는 그냥 넋을 잃고 있어., 저는 그냥 넉스를 읽고 있어.
+whisper_large,Whisper large,5d87c8ca2529b784cbeedd398c0fcdf8.wav,43,0.4,사우스웨스트 에어라인은 특히 시간을 지키는 항공기 도착의 중요성을 강조했어요., South West Airline은 특히 시간을 지키는 항공기 도착의 중요성을 강조했어요.
+whisper_large,Whisper large,592f28c650300223f114035451e63ce2.wav,19,0.3888888888888889,알이즈웰이 진짜 유명해지기는 했죠., R is well이 진짜 유명해지기는 했죠.
+whisper_large,Whisper large,f7d908ca980e3bcf374746b1f1f217ed.wav,38,0.3888888888888889,쉐이프 포 우먼이란 남아프리카의 여성 전용 체육관 체인들을 뜻합니다., shape for women이란 남아프리카 여성 전용 체육관 체인들을 뜻합니다.
+whisper_large,Whisper large,b0122f9ce0eb81c905ba6816a5b1be13.wav,26,0.3636363636363636,어웨어 민트와 같은 제품이 나온 이유일 겁니다., Away Mint와 같은 제품이 나온 이유일 겁니다.
+whisper_large,Whisper large,2174733668069879a6b73c98547afd4c.wav,15,0.3636363636363636,당신은 넋을 잃지는 마세요., 당신은 럭스를 치는 마세요.
+whisper_large,Whisper large,673f9e35a60d2ed4f71b8e7b1c5f405e.wav,15,0.3636363636363636,주걱이 부엌의 어디에 있죠?, 거기 부엌에 어디에 있죠?
+whisper_large,Whisper large,b387e44eaee6e678ea0091c6f285663c.wav,38,0.34375,네팔인은 나마스떼라고 말하며 양손을 머리에 얹고 허리 굽혀 인사해요., 메파리는 namaste라고 말하며 양손을 머리에 얹고 허리 굽혀 인사해요.
+whisper_large,Whisper large,d28fd372b338c7476734928a4684dc2c.wav,20,0.3333333333333333,이 영어 캠프의 이름은 쎄쎄쎄입니다., 이 영어 캠프의 이름은 SeseSe입니다.
+whisper_large,Whisper large,102c3538471add5d25789f2227e173e6.wav,24,0.3333333333333333,니가 새우 좋아해서 많이 넣었어마니 넣었어., 네가 새우 좋아해서 많이 넣었어.
+whisper_large,Whisper large,161c14f85292c945a969f6b701528cf7.wav,20,0.3076923076923077,새 신은 꾹 밟아 주는 게 예의에요., 3시는 꾹 밟아주는 게 예의예요.
+whisper_large,Whisper large,75c3fb391e2f4cdfd457f4845b1de2e9.wav,16,0.3,너 왜 일이 왜 일찍 끝났어?, 너 왜 일찍 끝났어?
+whisper_large,Whisper large,f1f285042aa9eb32e4f9850dd0d0fae9.wav,31,0.2903225806451613,여러분은 커러넷이라는웹사이트를 사용해 보는 건 어떨까요?, 여러분은 ColourNet이라는 웹사이트를 사용해 보는 건 어떨까요?
+whisper_large,Whisper large,4b31fce909ab53c27ed8b0c3d378d8b0.wav,19,0.2857142857142857,그 사람이 짖으라면 나는 짖어야죠., 그 사람이 지지라면 나는 지져야죠.
+whisper_large,Whisper large,0e7763e0e158eace792bbbaf4756a078.wav,28,0.2727272727272727,공원 안에서 세그웨이를 빌릴 수 있는 곳이 있나요?, 공원 안에서 Segway를 빌릴 수 있는 곳이 있나요?
+whisper_large,Whisper large,2da74734ada90a8e04cc835445c3deda.wav,37,0.2702702702702703,산업자본이 지배하는 특례법 은행만이 경쟁촉진 수단이 아니란 얘기다., 깐업자본이 지배하는 특례법 은행 만이 경쟁촉진 수단이 아니란 얘기力이라고 Ihrar

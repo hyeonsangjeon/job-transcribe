@@ -1,0 +1,25 @@
+scenario,cer,provider_id,provider,basis
+PB bond order,0.1303901437371663,aws,AWS,hangul ground truth
+Startup business loan,0.0727424749163879,aws,AWS,hangul ground truth
+Auto insurance surcharge,0.119938884644767,aws,AWS,hangul ground truth
+PB bond order,0.2471794871794871,azure,Azure,hangul ground truth
+Startup business loan,0.0647302904564315,azure,Azure,hangul ground truth
+Auto insurance surcharge,0.1153552330022918,azure,Azure,hangul ground truth
+PB bond order,0.3391215526046987,clova,Clova,hangul ground truth
+Startup business loan,0.1330578512396694,clova,Clova,hangul ground truth
+Auto insurance surcharge,0.3079877112135176,clova,Clova,hangul ground truth
+PB bond order,0.4917525773195876,gcp,GCP,hangul ground truth
+Startup business loan,0.1776480400333611,gcp,GCP,hangul ground truth
+Auto insurance surcharge,0.2966948501152959,gcp,GCP,hangul ground truth
+PB bond order,0.2364380757420675,aws,AWS,numeric ground truth
+Startup business loan,0.0896147403685092,aws,AWS,numeric ground truth
+Auto insurance surcharge,0.1451489686783804,aws,AWS,numeric ground truth
+PB bond order,0.1742738589211618,azure,Azure,numeric ground truth
+Startup business loan,0.0556478405315614,azure,Azure,numeric ground truth
+Auto insurance surcharge,0.087920489296636,azure,Azure,numeric ground truth
+PB bond order,0.2332635983263598,clova,Clova,numeric ground truth
+Startup business loan,0.1126760563380281,clova,Clova,numeric ground truth
+Auto insurance surcharge,0.270977675134719,clova,Clova,numeric ground truth
+PB bond order,0.4231578947368421,gcp,GCP,numeric ground truth
+Startup business loan,0.162907268170426,gcp,GCP,numeric ground truth
+Auto insurance surcharge,0.285824345146379,gcp,GCP,numeric ground truth

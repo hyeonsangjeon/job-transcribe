@@ -1,0 +1,5 @@
+model_id,model,best_or_tied_count,sole_best_count,worst_or_tied_count,sole_worst_count
+whisper_large,Whisper large,3351,275,1160,49
+aws_transcribe,AWS Transcribe,2648,262,1639,418
+whisper_medium,Whisper medium,3089,147,1255,70
+whisper_base,Whisper base,1341,25,3327,1981

@@ -1,0 +1,53 @@
+{
+  "single_speaker_rows": 3922,
+  "single_speaker_models": [
+    "AWS Transcribe",
+    "Whisper base",
+    "Whisper medium",
+    "Whisper large"
+  ],
+  "call_center_rows": 24,
+  "call_center_providers": [
+    "AWS",
+    "Azure",
+    "Clova",
+    "GCP"
+  ],
+  "outputs": [
+    "analysis/outputs/call_center_long.csv",
+    "analysis/outputs/call_center_provider_summary.csv",
+    "analysis/outputs/model_performance_summary.md",
+    "analysis/outputs/quality_gate_policy_simulation.csv",
+    "analysis/outputs/run_metadata.json",
+    "analysis/outputs/single_speaker_disagreement_examples.csv",
+    "analysis/outputs/single_speaker_length_bins.csv",
+    "analysis/outputs/single_speaker_long.csv",
+    "analysis/outputs/single_speaker_model_summary.csv",
+    "analysis/outputs/single_speaker_model_win_counts.csv",
+    "analysis/outputs/single_speaker_paired_deltas.csv",
+    "analysis/outputs/single_speaker_threshold_pass_rates.csv",
+    "analysis/outputs/single_speaker_worst_examples.csv"
+  ],
+  "assets": [
+    "blog/assets/call_center_provider_mean_cer.png",
+    "blog/assets/call_center_scenario_heatmap.png",
+    "blog/assets/quality_gate_balanced.png",
+    "blog/assets/single_speaker_cer_distribution.png",
+    "blog/assets/single_speaker_length_bins.png",
+    "blog/assets/single_speaker_mean_cer.png",
+    "blog/assets/single_speaker_threshold_pass_rates.png"
+  ],
+  "docs_assets": [
+    "docs/assets/call_center_provider_mean_cer.png",
+    "docs/assets/call_center_scenario_heatmap.png",
+    "docs/assets/quality_gate_balanced.png",
+    "docs/assets/single_speaker_cer_distribution.png",
+    "docs/assets/single_speaker_length_bins.png",
+    "docs/assets/single_speaker_mean_cer.png",
+    "docs/assets/single_speaker_threshold_pass_rates.png"
+  ],
+  "interactive_data": [
+    "blog/interactive/data/asr-benchmark.json",
+    "docs/data/asr-benchmark.json"
+  ]
+}
