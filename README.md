@@ -2,8 +2,6 @@
 
 한국어 ASR/STT 모델과 클라우드 STT 결과를 실제 실험 데이터로 비교한 벤치마크 프로젝트입니다. 단일 화자 3,922문장과 금융 콜센터 3개 시나리오를 대상으로 CER(Character Error Rate), 완전 인식률, threshold별 pass rate, worst/disagreement 사례를 분석합니다.
 
-이 레포의 블로그 방향과 UI/UX 스펙은 [blog/BLOG_SPEC.md](blog/BLOG_SPEC.md)에 정리되어 있습니다.
-
 ## Scope
 
 이 분석은 2023년에 공개적으로 접근 가능한 제품과 오픈소스 모델을 사용해 수행한 개인 프로젝트성 실험 결과를 재정리한 것입니다.
@@ -155,7 +153,6 @@ python3 -m http.server 8765 --bind 127.0.0.1
 현재 산출물:
 
 - GitHub Pages 출판 페이지: [docs/index.html](docs/index.html)
-- 블로그 스펙: [blog/BLOG_SPEC.md](blog/BLOG_SPEC.md)
 - 블로그 초안: [blog/korean-asr-benchmark-draft.md](blog/korean-asr-benchmark-draft.md)
 - 정적 PNG 차트: [blog/assets](blog/assets)
 - D3.js 기반 `Model Performance Explorer`: [blog/interactive/index.html](blog/interactive/index.html)
@@ -179,7 +176,6 @@ analysis/
   analyze_asr_benchmarks.py
   outputs/
 blog/
-  BLOG_SPEC.md
   korean-asr-benchmark-draft.md
   assets/
   interactive/
