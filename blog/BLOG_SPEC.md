@@ -205,6 +205,7 @@ Source: `analysis/outputs/model_performance_summary.md`
 - 시나리오별 raw CER은 어떻게 다른가?
 - provider별 요약 CER은 보조적으로 어떤 패턴을 보이는가?
 - 숫자 표기 기준으로 바꾸면 결과가 어떻게 변하는가?
+- 보험료 할증 문의 persona에서 한글 정답지와 숫자 정답지 CER가 provider별로 어떻게 달라지는가?
 - PB, 대출, 보험 시나리오 중 어떤 시나리오가 가장 어려운가?
 - n=3인 콜센터 결과는 어떻게 조심스럽게 해석해야 하는가?
 
@@ -225,6 +226,19 @@ Source: `analysis/outputs/model_performance_summary.md`
 
 Source: `analysis/outputs/model_performance_summary.md`
 
+보험료 할증 문의 persona의 표기 기준별 CER는 본문에서 쉬운 예시로 사용한다.
+
+| Insurance persona | AWS | Azure | Clova | GCP |
+|---|---:|---:|---:|---:|
+| Hangul ground truth CER | 11.99% | 11.54% | 30.80% | 29.67% |
+| Numeric ground truth CER | 14.51% | 8.79% | 27.10% | 28.58% |
+
+해석 원칙:
+
+- 이 표는 provider ranking이 아니라 숫자 표기 정책이 CER를 바꿀 수 있다는 예시다.
+- 같은 의미의 숫자도 `오육칠팔`, `5678`, `오십만 원`, `50만 원`처럼 표기가 다르면 문자 단위 CER가 달라진다.
+- 콜센터 결과는 n=3이므로 평균보다 scenario별 raw CER와 오류 유형을 우선 설명한다.
+
 ## 7. Evaluation Metrics
 
 ### 7.1 CER
@@ -237,6 +251,9 @@ CER(Character Error Rate)는 정답 문장과 모델 출력 문장 사이의 문
 
 - 단일 화자 결과는 `result/*.csv`에 저장된 기존 `cer` 값을 그대로 사용한다.
 - 기존 측정은 레포 스크립트에서 `nlptutti.get_cer(...)`를 호출해 산출된 값이다.
+- `measure_nlp_cer_job.py`는 AWS Transcribe 결과와 정답지를 비교해 단일 화자 CER를 저장했다.
+- `oepnai_job.py`는 Whisper transcript와 정답지를 비교해 Whisper CER를 저장했다.
+- `measure_cs_job.py`는 한글 정답지와 숫자 정답지를 각각 provider transcript와 비교해 콜센터 CER를 저장했다.
 - 블로그 재분석 단계에서 공백, 문장부호, 영문 대소문자, 숫자를 새로 정규화해 재계산하지 않는다.
 - 콜센터 데이터는 한글 표기 정답지와 숫자 표기 정답지를 별도 기준으로 두고 각각의 CER를 비교한다.
 - 향후 새로운 정규화 정책을 도입하면 모든 결과를 재계산하고, 기존 2023 결과와 분리해 표시한다.

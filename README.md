@@ -36,6 +36,22 @@
 
 목업 CSV는 사용하지 않습니다. `analysis/outputs/*`, `blog/assets/*`, `docs/assets/*`, `blog/interactive/data/asr-benchmark.json`, `docs/data/asr-benchmark.json`은 위 원천 데이터에서 재생성되는 파생 산출물입니다.
 
+## Measurement Method
+
+CER(Character Error Rate)는 정답 문장과 STT 인식 결과가 문자 단위로 얼마나 다른지 보는 값입니다. 낮을수록 정답과 더 비슷합니다.
+
+원래 측정 방식:
+
+- 단일 화자 AWS 결과는 [measure_nlp_cer_job.py](measure_nlp_cer_job.py)에서 STT 결과를 가져온 뒤 `nlptutti.get_cer(ground_truth_sentence, transcribe_sentence)["cer"]`로 측정했습니다.
+- Whisper 결과는 [oepnai_job.py](oepnai_job.py)에서 모델 transcript를 만든 뒤 같은 방식으로 CER를 저장했습니다.
+- 콜센터 결과는 [measure_cs_job.py](measure_cs_job.py)에서 `preprocess/cs_hangul_data.csv`와 `preprocess/cs_num_data.csv`를 각각 읽고, AWS/Azure/Clova/GCP transcript와 정답지를 비교했습니다.
+
+현재 재분석 방식:
+
+- [analysis/analyze_asr_benchmarks.py](analysis/analyze_asr_benchmarks.py)는 기존 결과 CSV의 `cer` 값을 그대로 사용합니다.
+- 블로그 재분석 단계에서 공백, 문장부호, 영문 대소문자, 숫자를 새로 정규화해 CER를 재계산하지 않습니다.
+- 따라서 결과를 해석할 때는 "2023년 당시 측정 스크립트와 저장된 결과 파일 기준"이라고 읽어야 합니다.
+
 ## Current Results
 
 단일 화자 3,922문장 기준:
@@ -61,6 +77,28 @@
 | numeric ground truth | GCP | 29.06% | 28.58% | 42.32% |
 
 콜센터 결과는 표본 수가 작기 때문에 provider ranking이 아니라 시나리오별 오류 양상과 숫자 표기 민감도를 보기 위한 자료입니다.
+
+보험료 할증 문의 persona에서는 정답지 표기 기준에 따라 CER가 다음처럼 달라졌습니다.
+
+| Insurance persona | AWS | Azure | Clova | GCP |
+|---|---:|---:|---:|---:|
+| Hangul ground truth CER | 11.99% | 11.54% | 30.80% | 29.67% |
+| Numeric ground truth CER | 14.51% | 8.79% | 27.10% | 28.58% |
+
+예를 들어 "십오억"과 "15억"은 뜻은 같아도 문자 표기가 다르기 때문에 CER에서는 다른 결과가 됩니다. 그래서 콜센터 결과는 provider 순위보다 숫자 표기 정책이 오류율에 미치는 영향을 보는 자료로 읽습니다.
+
+## Settings Guide
+
+Explorer 설정값은 다음처럼 읽습니다.
+
+| Setting | 쉬운 설명 |
+|---|---|
+| Dataset | `Single speaker`는 3,922문장 기본 벤치마크, `Call center`는 금융/보험 상담 3개 시나리오입니다. |
+| Ground truth basis | `Hangul`은 숫자를 한글로 쓴 정답지, `Numeric`은 숫자를 숫자 형태로 쓴 정답지입니다. |
+| Model / Provider | 자세히 볼 모델 또는 STT provider를 고릅니다. |
+| CER threshold | 이 값 이하의 CER를 pass로 봅니다. 5%면 CER가 5% 이하인 문장만 통과입니다. |
+| Pass / Fail | Pass는 threshold 이하, Fail은 threshold 초과입니다. |
+| Mean CER / Tail risk | Mean CER는 평균 오류율이고, Tail risk는 크게 틀린 결과가 얼마나 남는지 보는 값입니다. |
 
 ## Reproduce
 
@@ -90,6 +128,25 @@ uv run --python /usr/bin/python3 --with pandas --with numpy --with matplotlib py
 - 단일 화자 4개 결과 CSV의 `file_name` 집합 일치
 - 콜센터 결과 row count와 scenario count 일치
 - 필수 컬럼 존재 여부
+
+## Test The Page
+
+공개 페이지 테스트:
+
+1. `https://hyeonsangjeon.github.io/job-transcribe/`를 엽니다.
+2. 첫 화면에 제목, 면책 문구, 3개 metric card가 보이는지 확인합니다.
+3. Explorer 기본값이 `Single speaker`, `CER threshold 5%`, `Whisper large`인지 확인합니다.
+4. `Pass at threshold`가 `83.20%`, `Mean CER`가 `2.22%`이면 기본 데이터 로드가 정상입니다.
+5. Dataset을 `Call center`로 바꾸고 threshold를 `10%`로 둔 뒤, `Ground truth basis`를 `Numeric`, provider를 `Azure`로 바꿉니다.
+6. `Pass`가 `66.67%`, `Mean CER`가 `10.59%`, `Tail / max risk`가 `max 17.43%`이면 call-center 데이터 로드가 정상입니다.
+
+로컬 페이지 테스트:
+
+```bash
+python3 -m http.server 8765 --bind 127.0.0.1
+```
+
+브라우저에서 `http://127.0.0.1:8765/docs/`를 열고 공개 페이지와 같은 값이 보이는지 확인합니다.
 
 ## Blog And UI
 

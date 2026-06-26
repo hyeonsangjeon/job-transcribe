@@ -32,6 +32,8 @@ Source analysis: `analysis/analyze_asr_benchmarks.py`
 
 기본 지표는 CER(Character Error Rate)다. CER는 정답 문장과 인식 결과 문장 사이의 문자 단위 편집 거리 기반 오류율이다. 한국어 STT에서는 띄어쓰기, 숫자 표기, 영문/고유명사 표기, 문장부호 처리에 따라 CER가 민감하게 변할 수 있다. 그래서 이 글에서는 CER를 핵심 지표로 쓰되, CER 하나로 품질을 단정하지 않는다.
 
+원래 실험에서 CER는 `nlptutti`로 측정했다. 단일 화자 AWS 결과는 `measure_nlp_cer_job.py`에서 Transcribe 결과를 가져온 뒤 `nlptutti.get_cer(ground_truth_sentence, transcribe_sentence)["cer"]`를 저장했다. Whisper 결과도 `oepnai_job.py`에서 모델 transcript를 만든 뒤 같은 방식으로 CER를 저장했다. 콜센터 결과는 `measure_cs_job.py`에서 한글 표기 정답지와 숫자 표기 정답지를 각각 읽고, AWS/Azure/Clova/GCP transcript와 비교해 `cer_aws`, `cer_azure`, `cer_clova`, `cer_gcp` 컬럼을 만들었다.
+
 이번 재분석에서는 기존 결과 CSV의 `cer` 값을 그대로 사용한다. 블로그 작성 단계에서 공백, 문장부호, 영문 대소문자, 숫자를 새로 정규화해 CER를 재계산하지 않았다. 향후 다른 정규화 정책을 적용한다면, 2023년 결과와 분리해서 별도 지표로 표시해야 한다.
 
 단일 화자 데이터는 다음 지표로 읽었다.
@@ -181,6 +183,15 @@ Source: `analysis/outputs/call_center_provider_summary.csv`.
 
 한글 표기 정답지 기준에서는 AWS 평균 CER가 10.77%, Azure가 14.24%였다. 숫자 표기 정답지 기준에서는 Azure 평균 CER가 10.59%, AWS가 15.71%였다. 이 차이는 "어느 provider가 더 좋다"보다 "정답지 표기 정책이 결과를 얼마나 바꾸는가"를 보여준다.
 
+보험료 할증 문의 persona만 따로 보면 이 민감도가 더 쉽게 보인다.
+
+| Insurance persona | AWS | Azure | Clova | GCP |
+|---|---:|---:|---:|---:|
+| Hangul ground truth CER | 11.99% | 11.54% | 30.80% | 29.67% |
+| Numeric ground truth CER | 14.51% | 8.79% | 27.10% | 28.58% |
+
+Azure는 숫자 표기 정답지 기준에서 11.54%에서 8.79%로 낮아졌고, AWS는 11.99%에서 14.51%로 높아졌다. 같은 상담 음성이라도 정답지의 숫자 표기 방식과 provider transcript의 표기 방식이 맞물리면 CER가 다른 방향으로 움직인다. 예를 들어 "오육칠팔", "5678", "오십만 원", "50만 원"처럼 의미상 가까운 표현도 문자 단위로는 다르게 계산된다. 그래서 콜센터 결과는 평균 ranking보다 숫자/도메인 표기 정책을 설명하는 case analysis로 읽어야 한다.
+
 ![Call center scenario heatmap](./assets/call_center_scenario_heatmap.png)
 
 Figure 7. 시나리오 x provider CER heatmap. 콜센터 데이터는 3개 시나리오의 case analysis로 해석한다.  
@@ -230,6 +241,16 @@ uv run --python /usr/bin/python3 --with pandas --with numpy --with matplotlib py
 - `analysis/outputs/call_center_provider_summary.csv`
 - `analysis/outputs/quality_gate_policy_simulation.csv`
 - `blog/assets/*.png`
+- `docs/assets/*.png`
+- `docs/data/asr-benchmark.json`
+
+공개 페이지는 다음 순서로 테스트한다.
+
+1. `https://hyeonsangjeon.github.io/job-transcribe/`를 열고 제목, 면책 문구, metric card가 보이는지 확인한다.
+2. Explorer 기본값인 Single speaker, CER threshold 5%, Whisper large에서 `Pass at threshold`가 83.20%, `Mean CER`가 2.22%인지 확인한다.
+3. Dataset을 Call center로 바꾸고 threshold를 10%로 둔 뒤, Ground truth basis를 Numeric, provider를 Azure로 선택한다.
+4. `Pass`가 66.67%, `Mean CER`가 10.59%, `Tail / max risk`가 `max 17.43%`인지 확인한다.
+5. 로컬에서는 `python3 -m http.server 8765 --bind 127.0.0.1`를 실행한 뒤 `http://127.0.0.1:8765/docs/`에서 같은 값을 확인한다.
 
 ## 한계
 

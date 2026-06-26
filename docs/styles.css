@@ -504,6 +504,46 @@ output {
   margin: 28px 0;
 }
 
+.explain-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px;
+}
+
+.explain-item {
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--surface);
+  padding: 16px;
+}
+
+.explain-item strong {
+  display: block;
+  margin-bottom: 8px;
+  color: var(--text);
+  font-size: 16px;
+}
+
+.explain-item p {
+  margin: 8px 0 0;
+  color: #302d29;
+  font-size: 14px;
+  line-height: 1.55;
+}
+
+.explain-item pre {
+  margin: 10px 0 0;
+  padding: 12px;
+  font-size: 12px;
+  line-height: 1.45;
+}
+
+.body-note {
+  margin: 14px 0 0;
+  color: var(--muted);
+  font-size: 15px;
+}
+
 .data-table {
   width: 100%;
   border-collapse: collapse;
@@ -655,7 +695,8 @@ output {
   .metric-strip,
   .section-head,
   .controls,
-  .summary-grid {
+  .summary-grid,
+  .explain-grid {
     grid-template-columns: 1fr;
   }
 

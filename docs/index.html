@@ -19,7 +19,9 @@
       <nav class="topnav" aria-label="Primary">
         <a href="#single-speaker">Single</a>
         <a href="#explorer">Explorer</a>
-        <a href="#call-center">Call center</a>
+        <a href="#settings">Settings</a>
+        <a href="#method">Method</a>
+        <a href="#test">Test</a>
         <a href="#limits">Limits</a>
       </nav>
     </header>
@@ -31,8 +33,10 @@
         <a href="#dataset">Dataset</a>
         <a href="#single-speaker">Single speaker</a>
         <a href="#explorer">Explorer</a>
+        <a href="#settings">Settings</a>
         <a href="#call-center">Call center</a>
         <a href="#method">Method</a>
+        <a href="#test">Test</a>
         <a href="#limits">Limits</a>
       </aside>
 
@@ -259,6 +263,56 @@
           </div>
         </section>
 
+        <section class="section" id="settings">
+          <div class="section-head">
+            <div>
+              <div class="kicker">Settings</div>
+              <h2>설정값 읽는 법</h2>
+            </div>
+            <p>
+              Explorer의 설정값은 "어떤 데이터에서, 어떤 모델을, 어느 정도 오류까지 통과로 볼지"를
+              정하는 값이다. 낮은 CER는 정답 문장과 더 비슷하다는 뜻이다.
+            </p>
+          </div>
+          <div class="explain-grid">
+            <div class="explain-item">
+              <strong>Dataset</strong>
+              <p><b>Single speaker</b>는 단일 화자 3,922문장 테스트다. 모델별 기본 성능 비교에 쓴다.</p>
+              <p><b>Call center</b>는 금융 콜센터 3개 시나리오다. 표본이 작아서 순위가 아니라 사례 분석으로 본다.</p>
+            </div>
+            <div class="explain-item">
+              <strong>Ground truth basis</strong>
+              <p>정답지를 어떤 표기로 볼지 정한다. <b>Hangul</b>은 숫자도 한글처럼 적은 정답지다.</p>
+              <p><b>Numeric</b>은 숫자를 숫자 형태로 적은 정답지다. 숫자 표기 때문에 CER가 달라질 수 있다.</p>
+              <p>예를 들어 "십오억"과 "15억"은 뜻은 같아도 문자 모양이 달라서 CER에서는 다르게 계산된다.</p>
+            </div>
+            <div class="explain-item">
+              <strong>Model / Provider</strong>
+              <p>요약 카드에서 자세히 볼 대상을 고른다. Single speaker에서는 모델, Call center에서는 provider를 고른다.</p>
+            </div>
+            <div class="explain-item">
+              <strong>CER threshold</strong>
+              <p>통과로 인정할 최대 오류율이다. 예를 들어 5%는 CER가 5% 이하인 문장만 pass로 센다.</p>
+              <p>값을 낮추면 기준이 엄격해지고, 값을 높이면 더 많은 문장이 pass가 된다.</p>
+            </div>
+            <div class="explain-item">
+              <strong>Pass / Fail</strong>
+              <p><b>Pass</b>는 선택한 threshold 이하의 결과다. <b>Fail</b>은 threshold를 넘은 결과다.</p>
+              <p>Call center에서는 3개 시나리오 중 몇 개가 통과했는지를 비율로 보여준다.</p>
+            </div>
+            <div class="explain-item">
+              <strong>Mean CER / Tail risk</strong>
+              <p><b>Mean CER</b>는 평균 오류율이다. 낮을수록 이 데이터에서는 정답과 더 가까웠다.</p>
+              <p><b>Tail risk</b>는 크게 틀린 결과가 얼마나 남는지 보는 값이다. 평균이 낮아도 tail risk가 크면 검수가 필요하다.</p>
+            </div>
+            <div class="explain-item">
+              <strong>NLPtutti CER</strong>
+              <p>원래 측정 스크립트는 <code>nlptutti.get_cer(정답, 인식결과)</code>를 호출하고, 반환값의 <code>cer</code>를 CSV에 저장했다.</p>
+              <p>이 페이지는 그 저장된 <code>cer</code> 값을 다시 요약하고 시각화한다. 블로그 단계에서 새로 정규화해 재계산하지 않는다.</p>
+            </div>
+          </div>
+        </section>
+
         <section class="section" id="call-center">
           <div class="section-head">
             <div>
@@ -282,6 +336,38 @@
               Figure 4. 시나리오 x provider CER heatmap. PB bond order는 여러 provider에서 상대적으로 높은 CER를 보였다.
             </figcaption>
           </figure>
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>Insurance persona</th>
+                <th>AWS</th>
+                <th>Azure</th>
+                <th>Clova</th>
+                <th>GCP</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Hangul ground truth CER</td>
+                <td>11.99%</td>
+                <td>11.54%</td>
+                <td>30.80%</td>
+                <td>29.67%</td>
+              </tr>
+              <tr>
+                <td>Numeric ground truth CER</td>
+                <td>14.51%</td>
+                <td>8.79%</td>
+                <td>27.10%</td>
+                <td>28.58%</td>
+              </tr>
+            </tbody>
+          </table>
+          <p class="body-note">
+            보험료 할증 문의 persona에서는 숫자 표기 기준을 바꾸자 provider별 CER가 다른 방향으로 움직였다.
+            Azure는 11.54%에서 8.79%로 낮아졌고, AWS는 11.99%에서 14.51%로 높아졌다.
+            이 차이는 provider ranking보다 "정답지 표기 정책이 CER에 미치는 영향"으로 읽어야 한다.
+          </p>
         </section>
 
         <section class="section" id="method">
@@ -296,10 +382,73 @@
           </div>
           <pre><code>uv run --python /usr/bin/python3 --with pandas --with numpy --with matplotlib python analysis/analyze_asr_benchmarks.py</code></pre>
           <ul class="check-list">
+            <li>원 측정은 <code>measure_nlp_cer_job.py</code>, <code>oepnai_job.py</code>, <code>measure_cs_job.py</code>에서 <code>nlptutti.get_cer(...)</code>로 수행</li>
+            <li>재분석 스크립트는 기존 결과 CSV의 <code>cer</code> 값을 그대로 사용하고 새 CER를 만들지 않음</li>
             <li>단일 화자 4개 결과 CSV의 <code>file_name</code> 집합 일치 검증</li>
             <li>콜센터 결과 row count와 scenario count 일치 검증</li>
             <li><code>docs/assets/*.png</code>와 <code>docs/data/asr-benchmark.json</code> 재생성</li>
           </ul>
+          <div class="explain-grid">
+            <div class="explain-item">
+              <strong>Single speaker 측정 흐름</strong>
+              <p>음성 파일을 STT 모델 또는 서비스에 넣고 transcript를 만든 뒤, 정답 문장과 transcript를 NLPtutti CER로 비교했다.</p>
+              <p>결과는 <code>result/result_3922.csv</code>와 Whisper별 <code>result/openai_whisper_*_result_3922.csv</code>에 저장되어 있다.</p>
+            </div>
+            <div class="explain-item">
+              <strong>Call center 측정 흐름</strong>
+              <p><code>measure_cs_job.py</code>가 한글 정답지와 숫자 정답지를 따로 읽고, AWS/Azure/Clova/GCP transcript와 각각 비교했다.</p>
+              <p>그래서 같은 보험 상담 transcript라도 <code>cs_hangul_result.csv</code>와 <code>cs_number_result.csv</code>에서 CER가 달라질 수 있다.</p>
+            </div>
+          </div>
+        </section>
+
+        <section class="section" id="test">
+          <div class="section-head">
+            <div>
+              <div class="kicker">Test</div>
+              <h2>테스트하는 방법</h2>
+            </div>
+            <p>
+              페이지가 제대로 동작하는지는 공개 URL에서 빠르게 확인할 수 있고, 분석 결과는 로컬에서
+              스크립트를 다시 실행해 재생성할 수 있다.
+            </p>
+          </div>
+          <div class="explain-grid">
+            <div class="explain-item">
+              <strong>1. 공개 페이지 열기</strong>
+              <p><code>https://hyeonsangjeon.github.io/job-transcribe/</code>를 연다.</p>
+              <p>상단 제목, 면책 문구, 3개 metric card가 보이면 첫 화면은 정상이다.</p>
+            </div>
+            <div class="explain-item">
+              <strong>2. Explorer 기본값 확인</strong>
+              <p>처음에는 Single speaker, CER threshold 5%, Whisper large가 선택되어 있다.</p>
+              <p>Pass at threshold가 <b>83.20%</b>, Mean CER가 <b>2.22%</b>이면 기본 데이터가 정상 로드된 것이다.</p>
+            </div>
+            <div class="explain-item">
+              <strong>3. Call center 전환 확인</strong>
+              <p>Dataset을 Call center로 바꾸고 threshold를 10%로 둔다.</p>
+              <p>Ground truth basis를 Numeric으로 바꾼 뒤 Azure를 선택한다.</p>
+              <p>Pass가 <b>66.67%</b>, Mean CER가 <b>10.59%</b>, Tail / max risk가 <b>max 17.43%</b>이면 정상이다.</p>
+              <p>보험 persona만 보면 Numeric 기준 Azure CER는 <b>8.79%</b>, Hangul 기준 Azure CER는 <b>11.54%</b>다.</p>
+            </div>
+            <div class="explain-item">
+              <strong>4. 로컬에서 재생성</strong>
+              <p>레포 루트에서 아래 명령을 실행한다.</p>
+              <pre><code>uv run --python /usr/bin/python3 --with pandas --with numpy --with matplotlib python analysis/analyze_asr_benchmarks.py</code></pre>
+              <p><code>docs/assets/*.png</code>와 <code>docs/data/asr-benchmark.json</code>이 다시 만들어지면 분석 재생성이 정상이다.</p>
+            </div>
+            <div class="explain-item">
+              <strong>5. 로컬 페이지 확인</strong>
+              <p>아래 명령으로 정적 서버를 띄운다.</p>
+              <pre><code>python3 -m http.server 8765 --bind 127.0.0.1</code></pre>
+              <p><code>http://127.0.0.1:8765/docs/</code>를 열고 공개 페이지와 같은 값이 보이는지 확인한다.</p>
+            </div>
+            <div class="explain-item">
+              <strong>6. 해석할 때 주의</strong>
+              <p>이 테스트는 2023년 공개 제품/공개 모델 실험이다. 현재 vendor 성능을 대표하지 않는다.</p>
+              <p>콜센터 결과는 3개 시나리오뿐이므로 provider ranking으로 쓰지 않는다.</p>
+            </div>
+          </div>
         </section>
 
         <section class="section" id="limits">
@@ -330,8 +479,10 @@
           <a href="#dataset">Dataset</a>
           <a href="#single-speaker">Single speaker</a>
           <a href="#explorer">Explorer</a>
+          <a href="#settings">Settings</a>
           <a href="#call-center">Call center</a>
           <a href="#method">Method</a>
+          <a href="#test">Test</a>
           <a href="#limits">Limits</a>
         </div>
         <div class="rail-box">
