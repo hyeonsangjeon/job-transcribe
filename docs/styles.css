@@ -335,6 +335,15 @@ h3 {
   font-size: 19px;
 }
 
+.article-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px 14px;
+  align-items: center;
+  color: var(--muted);
+  font-size: 15px;
+}
+
 .explorer {
   border: 1px solid var(--border-strong);
   border-radius: 8px;
@@ -670,12 +679,17 @@ output {
 
 @media (max-width: 760px) {
   body {
+    overflow-x: hidden;
     font-size: 16px;
   }
 
   .topbar {
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr);
     gap: 10px;
-    overflow: hidden;
+    width: 100vw;
+    max-width: 100vw;
+    overflow: clip;
     padding: 0 16px;
   }
 
@@ -688,9 +702,17 @@ output {
   }
 
   .topnav {
+    flex: 1 1 auto;
     gap: 2px;
     min-width: 0;
+    max-width: 100%;
     overflow-x: auto;
+    overscroll-behavior-x: contain;
+    scrollbar-width: none;
+  }
+
+  .topnav::-webkit-scrollbar {
+    display: none;
   }
 
   .topnav a {
@@ -700,7 +722,20 @@ output {
   }
 
   .shell {
+    width: 100%;
+    max-width: 100vw;
     padding: 24px 16px 72px;
+  }
+
+  .content,
+  .hero,
+  .section,
+  .lead,
+  .notice,
+  .article-prose,
+  .essay-lead {
+    min-width: 0;
+    max-width: 100%;
   }
 
   .hero {
@@ -712,8 +747,18 @@ output {
   }
 
   h1 {
-    font-size: 34px;
-    word-break: keep-all;
+    font-size: 31px;
+    max-width: 100%;
+    overflow-wrap: anywhere;
+    word-break: break-word;
+  }
+
+  .lead,
+  .notice,
+  .article-prose p,
+  .section-head p {
+    overflow-wrap: anywhere;
+    word-break: break-word;
   }
 
   .segmented button {
@@ -762,5 +807,18 @@ output {
 @media (max-width: 420px) {
   .brand span:not(.brand-mark) {
     display: none;
+  }
+}
+
+@media (max-width: 520px) {
+  .brand span:not(.brand-mark) {
+    display: none;
+  }
+
+  .topbar,
+  .shell {
+    margin-left: 0;
+    margin-right: 0;
+    max-width: 390px;
   }
 }

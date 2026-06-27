@@ -3,22 +3,27 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Job Transcribe Korean ASR Benchmark</title>
+    <title>한국어 ASR 벤치마크 다시 보기 | Job Transcribe</title>
     <meta
       name="description"
-      content="2023 public-product Korean ASR/STT benchmark analysis with model performance charts and threshold explorer."
+      content="2023년 공개 제품과 공개 모델로 수행한 한국어 ASR/STT 벤치마크를 CER, threshold, paired comparison, 콜센터 시나리오 관점에서 다시 분석합니다."
     />
     <link rel="stylesheet" href="./styles.css" />
   </head>
   <body>
     <header class="topbar">
-      <a class="brand" href="#top" aria-label="Job Transcribe home">
+      <a class="brand" href="#top" aria-label="Job Transcribe report home">
         <span class="brand-mark" aria-hidden="true">JT</span>
         <span>Job Transcribe</span>
       </a>
       <nav class="topnav" aria-label="Primary">
+        <a href="#story">Story</a>
+        <a href="#single-speaker">Single</a>
         <a href="#explorer">Explorer</a>
-        <a href="#evidence">Charts</a>
+        <a href="#settings">Settings</a>
+        <a href="#method">Method</a>
+        <a href="#test">Test</a>
+        <a href="#lessons">Lessons</a>
         <a href="#limits">Limits</a>
       </nav>
     </header>
@@ -27,25 +32,32 @@
       <aside class="left-nav" aria-label="Sections">
         <div class="nav-label">Report</div>
         <a href="#summary">Summary</a>
-        <a href="#explorer">Model Explorer</a>
-        <a href="#evidence">Static Evidence</a>
+        <a href="#story">Story</a>
+        <a href="#dataset">Dataset</a>
+        <a href="#single-speaker">Single speaker</a>
+        <a href="#explorer">Explorer</a>
+        <a href="#settings">Settings</a>
+        <a href="#call-center">Call center</a>
         <a href="#method">Method</a>
+        <a href="#test">Test</a>
+        <a href="#lessons">Lessons learned</a>
         <a href="#limits">Limits</a>
       </aside>
 
       <main class="content">
         <section class="hero" id="summary">
-          <div class="kicker">Korean ASR Benchmark · 2023 data revisit</div>
-          <h1>3,922문장과 3개 콜센터 시나리오로 본 한국어 STT 성능</h1>
+          <div class="kicker">2023 public experiment revisit</div>
+          <h1>3,922문장과 3개 콜센터 시나리오로 다시 본 한국어 STT 벤치마크</h1>
           <p class="lead">
-            2023년에 직접 설계하고 수행했던 공개 제품/공개 모델 기반 한국어 ASR 실험을
-            실제 레포 데이터로 다시 분석했다. 평균 CER, threshold 통과율, paired comparison,
-            worst case, 콜센터 시나리오 차이를 함께 읽는다.
+            2023년에 직접 설계하고 수행했던 한국어 ASR/STT 실험을 실제 레포 데이터로 다시 분석했다.
+            평균 CER 하나가 아니라 분포, threshold 통과율, paired comparison, worst case,
+            숫자 표기 민감도까지 함께 본다.
           </p>
           <div class="notice">
-            이 결과는 2023년 당시 공개적으로 접근 가능한 제품과 오픈소스 모델을 사용한
-            개인 프로젝트성 실험이다. 현재 Microsoft/Azure, AWS, Clova, GCP, OpenAI/Whisper
-            성능을 대표하지 않으며, 공식 벤치마크나 내부 성능 데이터가 아니다.
+            이 분석은 2023년에 공개적으로 접근 가능한 제품과 오픈소스 모델을 사용해 수행한
+            개인 프로젝트성 실험 결과를 재정리한 것이다. 현재 Microsoft/Azure, AWS, Clova,
+            GCP, OpenAI/Whisper 제품 성능을 대표하지 않으며, 각 회사의 공식 벤치마크나
+            내부 성능 데이터가 아니다.
           </div>
           <div class="metric-strip" aria-label="Key metrics">
             <div>
@@ -63,6 +75,209 @@
           </div>
         </section>
 
+        <section class="section" id="story">
+          <div class="section-head">
+            <div>
+              <div class="kicker">Essay</div>
+              <h2>기고문 뒤에 남은 실험 기록</h2>
+            </div>
+            <p>
+              이 글은 모델 순위표를 다시 만드는 작업이 아니다. 2023년에 공개 제품과 공개 모델로
+              한국어 STT를 테스트하면서, 어떤 질문을 세웠고 어떤 기준으로 결과를 읽었는지 정리한 기록이다.
+            </p>
+          </div>
+
+          <article class="article-prose">
+            <p class="essay-lead">
+              당시의 질문은 단순했다. "한국어 음성을 텍스트로 바꾸는 일을 실제 업무에 붙인다면,
+              어떤 모델이 얼마나 잘 맞히는가?" 하지만 테스트를 시작하자 곧 더 중요한 질문이 생겼다.
+              "잘 맞혔다"는 말을 어떤 숫자로, 어떤 정답지 기준으로, 어느 정도의 오류 허용선 안에서 말할 것인가.
+            </p>
+            <p class="article-links">
+              당시 공개 기고문:
+              <a href="https://www.itdaily.kr/news/articleView.html?idxno=213297">ITDaily</a>
+              <a href="https://www.comworld.co.kr/news/articleView.html?idxno=50818">ComputerWorld</a>
+            </p>
+
+            <h3>상황: 모델 출력보다 먼저 평가 기준이 필요했다</h3>
+            <p>
+              공개 클라우드 STT와 오픈소스 Whisper 모델은 모두 transcript를 반환하지만, 그 transcript가
+              같은 방식으로 틀리지는 않았다. 어떤 결과는 띄어쓰기만 달랐고, 어떤 결과는 숫자를 한글로 풀어썼고,
+              어떤 결과는 고유명사나 외래어에서 크게 흔들렸다. 그래서 원문과 출력문을 눈으로 읽는 것만으로는
+              비교가 끝나지 않았다. 같은 음성, 같은 정답지, 같은 오류 계산식이 필요했다.
+            </p>
+            <p>
+              이때 별도로 만든 것이 Compute STT Error Rate, 즉 Nlptutti 패키지다. 공개 레포는
+              <a href="https://github.com/hyeonsangjeon/computing-Korean-STT-error-rates">computing-Korean-STT-error-rates</a>이고,
+              테스트 코드에서는 <code>nlptutti</code>로 import해 사용했다. Nlptutti는 <code>get_cer</code>,
+              <code>get_wer</code>, <code>get_crr</code>와 키워드 패턴 유틸리티로 구성했다.
+              내부적으로 Levenshtein edit distance를 사용해 substitutions, deletions, insertions를 세고,
+              공백과 문장부호 처리 같은 한국어 STT 평가의 민감한 기준을 코드로 고정했다.
+            </p>
+            <p>
+              직접 만들었던 이유도 분명했다. 기존 방식처럼 reference 길이만 분모로 두면 insertion이 많은 transcript에서
+              CER가 1을 넘거나 원하는 0-1 범위 밖으로 튈 수 있었다. 그래서 Nlptutti는 오류항
+              <code>S+D+I</code>를 numerator로 두되, denominator를 <code>S+D+I+C</code>로 잡아 insertion까지 포함한
+              normalized error rate로 계산했다. 이 작은 정규화 항이 한국어 STT 결과를 반복 비교할 수 있게 만든
+              핵심이었다.
+            </p>
+
+            <h3>진행: 두 개의 테스트면으로 나눴다</h3>
+            <p>
+              첫 번째 테스트는 단일 화자 3,922문장 벤치마크였다. 같은 <code>file_name</code>과
+              <code>ground_truth</code>를 기준으로 AWS Transcribe와 Whisper base, medium, large의 transcript를 모았다.
+              각 행에는 정답 문장, 모델 출력, CER가 남도록 했다. 이 데이터는 모델별 평균 성능뿐 아니라
+              문장 단위로 누가 더 자주 낮은 CER를 보였는지 비교할 수 있는 기준면이 됐다.
+            </p>
+            <p>
+              중심 데이터인 3,922문장은 직접 읽고 녹음한 내 음성 데이터였다. 반향이 적은 환경에서 문장을 하나씩
+              WAV 파일로 남겼고, 누적 리딩과 녹음 시간은 거의 8시간에 가까웠다. 실험 설계부터 녹음, STT 실행,
+              결과 수집, metric 고정까지 약 3개월 동안 직접 리딩한 작업이었다.
+            </p>
+            <p>
+              두 번째 테스트는 금융 콜센터를 가정한 3개 persona였다. PB 채권 주문, 신생기업 대출 안내,
+              자동차 보험료 할증 문의처럼 숫자와 도메인 용어가 많이 나오는 상담을 팀에서 짧게 추가 녹음하고
+              검증했다. 약 30분 규모의 보조 케이스였기 때문에 provider 순위를 내기 위한 용도가 아니었다.
+              대신 같은 상담이 한글 정답지와 숫자 정답지에서 얼마나 다르게 평가되는지,
+              숫자 표기 정책이 CER를 어떻게 흔드는지 보기 위한 case analysis였다.
+            </p>
+
+            <h3>액션: 평균 하나 대신 운영 가능한 메트릭을 골랐다</h3>
+            <p>
+              결과를 읽을 때는 평균 CER만 보지 않았다. 평균은 전체 경향을 주지만, 실제 workflow에서는
+              "자동 통과시킬 수 있는 문장이 몇 개인가", "검수 queue로 보내야 할 tail이 얼마나 남는가"가 더 직접적이다.
+              그래서 완전 인식률, 5% 이하 pass rate, 10% 초과 tail risk, paired delta, worst/disagreement examples,
+              scenario heatmap을 함께 만들었다.
+            </p>
+            <p>
+              가장 번거로웠던 부분은 모델을 실행하는 것보다 결과를 같은 좌표에 올리는 일이었다.
+              provider마다 JSON, TXT, CSV 형태가 달랐고, 한국어에서는 띄어쓰기와 문장부호, 숫자 표기 하나가
+              CER를 크게 바꿨다. 특히 보험료 할증 문의처럼 번호, 금액, 날짜가 섞인 상담에서는
+              "의미는 비슷하지만 문자는 다른" 결과가 반복됐다. 그래서 이 글의 콜센터 결과는 ranking이 아니라
+              정답지 정책과 도메인 민감도를 설명하는 자료로 읽어야 한다.
+            </p>
+
+            <h3>결론: 벤치마크는 리더보드보다 측정 규칙이다</h3>
+            <p>
+              단일 화자 데이터에서는 Whisper large와 medium이 강한 결과를 보였고, AWS Transcribe는 Whisper base보다
+              안정적인 결과를 보였다. 하지만 이 결론은 2023년 당시의 공개 제품/공개 모델, 이 레포의 데이터,
+              당시 CER 산출 방식 안에서만 유효하다. 더 오래 남는 교훈은 특정 모델명이 아니라 측정 방법이다.
+              ASR 품질 평가는 평균 하나로 끝나지 않고, 정답지 정책과 threshold, tail risk를 함께 공개해야
+              읽는 사람이 결과를 재현하고 해석할 수 있다.
+            </p>
+          </article>
+        </section>
+
+        <section class="section" id="dataset">
+          <div class="section-head">
+            <div>
+              <div class="kicker">Dataset</div>
+              <h2>두 개의 평가면</h2>
+            </div>
+            <p>
+              단일 화자 데이터는 모델 성능 분포를 보기 위한 중심 벤치마크로, 콜센터 데이터는
+              숫자와 금융 도메인 문맥에 대한 작은 case analysis로 사용했다.
+            </p>
+          </div>
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>Area</th>
+                <th>Samples</th>
+                <th>Compared systems</th>
+                <th>Interpretation</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Single speaker</td>
+                <td>3,922 utterances</td>
+                <td>AWS Transcribe, Whisper base, Whisper medium, Whisper large</td>
+                <td>같은 화자/녹음 조건에서 모델별 CER 분포와 threshold 통과율 비교</td>
+              </tr>
+              <tr>
+                <td>Financial call center</td>
+                <td>3 scenarios x 2 ground-truth bases</td>
+                <td>AWS, Azure, Clova, GCP</td>
+                <td>n=3 case analysis. Provider ranking이 아니라 숫자/도메인 민감도 확인</td>
+              </tr>
+            </tbody>
+          </table>
+        </section>
+
+        <section class="section" id="single-speaker">
+          <div class="section-head">
+            <div>
+              <div class="kicker">Single speaker</div>
+              <h2>평균보다 분포와 threshold</h2>
+            </div>
+            <p>
+              단일 화자 3,922문장에서는 Whisper large와 medium이 강한 결과를 보였다.
+              하지만 실제 의사결정에는 평균 CER와 함께 완전 인식률, 5% threshold,
+              10% 초과 tail risk를 함께 봐야 한다.
+            </p>
+          </div>
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>Model</th>
+                <th>Mean CER</th>
+                <th>Median CER</th>
+                <th>Perfect</th>
+                <th>&lt;=5% CER</th>
+                <th>&gt;10% CER</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Whisper large</td>
+                <td>2.22%</td>
+                <td>0.00%</td>
+                <td>70.27%</td>
+                <td>83.20%</td>
+                <td>5.69%</td>
+              </tr>
+              <tr>
+                <td>Whisper medium</td>
+                <td>2.64%</td>
+                <td>0.00%</td>
+                <td>65.12%</td>
+                <td>79.50%</td>
+                <td>7.24%</td>
+              </tr>
+              <tr>
+                <td>AWS Transcribe</td>
+                <td>3.73%</td>
+                <td>0.00%</td>
+                <td>56.12%</td>
+                <td>71.01%</td>
+                <td>12.32%</td>
+              </tr>
+              <tr>
+                <td>Whisper base</td>
+                <td>9.35%</td>
+                <td>6.94%</td>
+                <td>29.12%</td>
+                <td>41.13%</td>
+                <td>37.33%</td>
+              </tr>
+            </tbody>
+          </table>
+          <figure class="figure">
+            <img src="./assets/single_speaker_mean_cer.png" alt="Single-speaker mean CER by model" />
+            <figcaption>
+              Figure 1. 단일 화자 3,922문장 기준 평균 CER와 95% bootstrap confidence interval.
+              Source: <code>result/*.csv</code>.
+            </figcaption>
+          </figure>
+          <figure class="figure">
+            <img src="./assets/single_speaker_threshold_pass_rates.png" alt="Pass rate by CER threshold" />
+            <figcaption>
+              Figure 2. CER threshold별 pass rate. 운영 기준을 가정하면 평균 CER만 볼 때와 다른 질문을 할 수 있다.
+            </figcaption>
+          </figure>
+        </section>
+
         <section class="section" id="explorer">
           <div class="section-head">
             <div>
@@ -70,8 +285,8 @@
               <h2>Model Performance Explorer</h2>
             </div>
             <p>
-              CER threshold를 바꾸면서 모델별 pass/fail 비율이 어떻게 움직이는지 확인한다.
-              Call-center 모드에서는 provider와 정답지 기준별 scenario pass 비중을 본다.
+              Threshold를 직접 바꾸면서 pass/fail 비율이 어떻게 움직이는지 확인한다.
+              Call-center 모드에서는 정답지 기준을 바꿔 provider별 scenario pass 비중을 본다.
             </p>
           </div>
 
@@ -101,15 +316,7 @@
               <fieldset>
                 <legend>CER threshold</legend>
                 <div class="slider-row">
-                  <input
-                    id="threshold-slider"
-                    type="range"
-                    min="0"
-                    max="6"
-                    step="1"
-                    value="3"
-                    aria-label="CER threshold"
-                  />
+                  <input id="threshold-slider" type="range" min="0" max="6" step="1" value="3" aria-label="CER threshold" />
                   <output id="threshold-output" for="threshold-slider">5%</output>
                 </div>
               </fieldset>
@@ -153,65 +360,250 @@
           </div>
         </section>
 
-        <section class="section" id="evidence">
+        <section class="section" id="settings">
           <div class="section-head">
             <div>
-              <div class="kicker">Evidence</div>
-              <h2>Static Charts</h2>
+              <div class="kicker">Settings</div>
+              <h2>설정값 읽는 법</h2>
             </div>
             <p>
-              모든 그림은 레포 결과 파일에서 재생성된다. Call-center 차트는 n=3 case summary로만 읽는다.
+              Explorer의 설정값은 "어떤 데이터에서, 어떤 모델을, 어느 정도 오류까지 통과로 볼지"를
+              정하는 값이다. 낮은 CER는 정답 문장과 더 비슷하다는 뜻이다.
             </p>
           </div>
+          <div class="explain-grid">
+            <div class="explain-item">
+              <strong>Dataset</strong>
+              <p><b>Single speaker</b>는 단일 화자 3,922문장 테스트다. 모델별 기본 성능 비교에 쓴다.</p>
+              <p><b>Call center</b>는 금융 콜센터 3개 시나리오다. 표본이 작아서 순위가 아니라 사례 분석으로 본다.</p>
+            </div>
+            <div class="explain-item">
+              <strong>Ground truth basis</strong>
+              <p>정답지를 어떤 표기로 볼지 정한다. <b>Hangul</b>은 숫자도 한글처럼 적은 정답지다.</p>
+              <p><b>Numeric</b>은 숫자를 숫자 형태로 적은 정답지다. 숫자 표기 때문에 CER가 달라질 수 있다.</p>
+              <p>예를 들어 "십오억"과 "15억"은 뜻은 같아도 문자 모양이 달라서 CER에서는 다르게 계산된다.</p>
+            </div>
+            <div class="explain-item">
+              <strong>Model / Provider</strong>
+              <p>요약 카드에서 자세히 볼 대상을 고른다. Single speaker에서는 모델, Call center에서는 provider를 고른다.</p>
+            </div>
+            <div class="explain-item">
+              <strong>CER threshold</strong>
+              <p>통과로 인정할 최대 오류율이다. 예를 들어 5%는 CER가 5% 이하인 문장만 pass로 센다.</p>
+              <p>값을 낮추면 기준이 엄격해지고, 값을 높이면 더 많은 문장이 pass가 된다.</p>
+            </div>
+            <div class="explain-item">
+              <strong>Pass / Fail</strong>
+              <p><b>Pass</b>는 선택한 threshold 이하의 결과다. <b>Fail</b>은 threshold를 넘은 결과다.</p>
+              <p>Call center에서는 3개 시나리오 중 몇 개가 통과했는지를 비율로 보여준다.</p>
+            </div>
+            <div class="explain-item">
+              <strong>Mean CER / Tail risk</strong>
+              <p><b>Mean CER</b>는 평균 오류율이다. 낮을수록 이 데이터에서는 정답과 더 가까웠다.</p>
+              <p><b>Tail risk</b>는 크게 틀린 결과가 얼마나 남는지 보는 값이다. 평균이 낮아도 tail risk가 크면 검수가 필요하다.</p>
+            </div>
+            <div class="explain-item">
+              <strong>Nlptutti CER</strong>
+              <p>원래 측정 스크립트는 <code>nlptutti.get_cer(정답, 인식결과)</code>를 호출하고, 반환값의 <code>cer</code>를 CSV에 저장했다.</p>
+              <p>이 함수는 <code>S+D+I</code> 오류항을 세고, denominator에 insertion을 포함한 <code>S+D+I+C</code>를 사용해 과도한 삽입 오류가 값 전체를 흔들지 않게 했다.</p>
+              <p>이 페이지는 저장된 <code>cer</code> 값을 다시 요약하고 시각화한다. 블로그 단계에서 새로 정규화해 재계산하지 않는다.</p>
+            </div>
+          </div>
+        </section>
 
+        <section class="section" id="call-center">
+          <div class="section-head">
+            <div>
+              <div class="kicker">Call center</div>
+              <h2>Ranking보다 표기 민감도</h2>
+            </div>
+            <p>
+              콜센터 데이터는 3개 시나리오뿐이다. 평균값은 보조 요약으로만 읽고,
+              한글 정답지와 숫자 정답지의 차이, PB/대출/보험 시나리오별 난이도를 본다.
+            </p>
+          </div>
           <figure class="figure">
-            <img src="../assets/single_speaker_mean_cer.png" alt="Single-speaker mean CER by model" />
-            <figcaption>Figure 1. 단일 화자 3,922문장 기준 평균 CER와 95% bootstrap confidence interval.</figcaption>
+            <img src="./assets/call_center_provider_mean_cer.png" alt="Call-center mean CER by provider" />
+            <figcaption>
+              Figure 3. 금융 콜센터 3개 시나리오의 provider별 평균 CER. n=3 case summary로만 읽는다.
+            </figcaption>
           </figure>
-
           <figure class="figure">
-            <img src="../assets/single_speaker_threshold_pass_rates.png" alt="Pass rate by CER threshold" />
-            <figcaption>Figure 2. CER threshold별 pass rate. 평균보다 운영 기준에 가까운 관점이다.</figcaption>
+            <img src="./assets/call_center_scenario_heatmap.png" alt="Call-center CER heatmap by scenario" />
+            <figcaption>
+              Figure 4. 시나리오 x provider CER heatmap. PB bond order는 여러 provider에서 상대적으로 높은 CER를 보였다.
+            </figcaption>
           </figure>
-
-          <figure class="figure">
-            <img src="../assets/call_center_scenario_heatmap.png" alt="Call-center CER heatmap by scenario" />
-            <figcaption>Figure 3. 시나리오 x provider CER heatmap. 콜센터 결과는 ranking이 아니라 case analysis다.</figcaption>
-          </figure>
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>Insurance persona</th>
+                <th>AWS</th>
+                <th>Azure</th>
+                <th>Clova</th>
+                <th>GCP</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Hangul ground truth CER</td>
+                <td>11.99%</td>
+                <td>11.54%</td>
+                <td>30.80%</td>
+                <td>29.67%</td>
+              </tr>
+              <tr>
+                <td>Numeric ground truth CER</td>
+                <td>14.51%</td>
+                <td>8.79%</td>
+                <td>27.10%</td>
+                <td>28.58%</td>
+              </tr>
+            </tbody>
+          </table>
+          <p class="body-note">
+            보험료 할증 문의 persona에서는 숫자 표기 기준을 바꾸자 provider별 CER가 다른 방향으로 움직였다.
+            Azure는 11.54%에서 8.79%로 낮아졌고, AWS는 11.99%에서 14.51%로 높아졌다.
+            이 차이는 provider ranking보다 "정답지 표기 정책이 CER에 미치는 영향"으로 읽어야 한다.
+          </p>
         </section>
 
         <section class="section" id="method">
           <div class="section-head">
             <div>
-              <div class="kicker">Method</div>
-              <h2>Reproducibility</h2>
+              <div class="kicker">Reproduce</div>
+              <h2>실제 결과 파일만 사용</h2>
             </div>
             <p>
-              분석은 기존 결과 CSV의 <code>cer</code> 값을 그대로 사용한다. 블로그 재분석 단계에서
-              공백, 문장부호, 영문 대소문자, 숫자를 새로 정규화해 재계산하지 않는다.
+              이 페이지의 JSON과 PNG는 모두 레포의 실제 결과 파일에서 생성된다. Mock CSV는 사용하지 않는다.
             </p>
           </div>
           <pre><code>uv run --python /usr/bin/python3 --with pandas --with numpy --with matplotlib python analysis/analyze_asr_benchmarks.py</code></pre>
           <ul class="check-list">
+            <li>원 측정은 <code>measure_nlp_cer_job.py</code>, <code>oepnai_job.py</code>, <code>measure_cs_job.py</code>에서 <code>nlptutti.get_cer(...)</code>로 수행</li>
+            <li>재분석 스크립트는 기존 결과 CSV의 <code>cer</code> 값을 그대로 사용하고 새 CER를 만들지 않음</li>
             <li>단일 화자 4개 결과 CSV의 <code>file_name</code> 집합 일치 검증</li>
             <li>콜센터 결과 row count와 scenario count 일치 검증</li>
-            <li>D3용 JSON은 <code>blog/interactive/data/asr-benchmark.json</code>으로 재생성</li>
+            <li><code>docs/assets/*.png</code>와 <code>docs/data/asr-benchmark.json</code> 재생성</li>
           </ul>
+          <div class="explain-grid">
+            <div class="explain-item">
+              <strong>Single speaker 측정 흐름</strong>
+              <p>직접 녹음한 3,922개 WAV 파일을 STT 모델 또는 서비스에 넣고 transcript를 만든 뒤, 정답 문장과 transcript를 Nlptutti CER로 비교했다.</p>
+              <p>결과는 <code>result/result_3922.csv</code>와 Whisper별 <code>result/openai_whisper_*_result_3922.csv</code>에 저장되어 있다.</p>
+            </div>
+            <div class="explain-item">
+              <strong>Call center 측정 흐름</strong>
+              <p><code>measure_cs_job.py</code>가 한글 정답지와 숫자 정답지를 따로 읽고, AWS/Azure/Clova/GCP transcript와 각각 비교했다.</p>
+              <p>그래서 같은 보험 상담 transcript라도 <code>cs_hangul_result.csv</code>와 <code>cs_number_result.csv</code>에서 CER가 달라질 수 있다.</p>
+            </div>
+          </div>
+        </section>
+
+        <section class="section" id="test">
+          <div class="section-head">
+            <div>
+              <div class="kicker">Test</div>
+              <h2>테스트하는 방법</h2>
+            </div>
+            <p>
+              페이지가 제대로 동작하는지는 공개 URL에서 빠르게 확인할 수 있고, 분석 결과는 로컬에서
+              스크립트를 다시 실행해 재생성할 수 있다.
+            </p>
+          </div>
+          <div class="explain-grid">
+            <div class="explain-item">
+              <strong>1. 공개 페이지 열기</strong>
+              <p><code>https://hyeonsangjeon.github.io/job-transcribe/</code>를 연다.</p>
+              <p>상단 제목, 면책 문구, 3개 metric card가 보이면 첫 화면은 정상이다.</p>
+            </div>
+            <div class="explain-item">
+              <strong>2. Explorer 기본값 확인</strong>
+              <p>처음에는 Single speaker, CER threshold 5%, Whisper large가 선택되어 있다.</p>
+              <p>Pass at threshold가 <b>83.20%</b>, Mean CER가 <b>2.22%</b>이면 기본 데이터가 정상 로드된 것이다.</p>
+            </div>
+            <div class="explain-item">
+              <strong>3. Call center 전환 확인</strong>
+              <p>Dataset을 Call center로 바꾸고 threshold를 10%로 둔다.</p>
+              <p>Ground truth basis를 Numeric으로 바꾼 뒤 Azure를 선택한다.</p>
+              <p>Pass가 <b>66.67%</b>, Mean CER가 <b>10.59%</b>, Tail / max risk가 <b>max 17.43%</b>이면 정상이다.</p>
+              <p>보험 persona만 보면 Numeric 기준 Azure CER는 <b>8.79%</b>, Hangul 기준 Azure CER는 <b>11.54%</b>다.</p>
+            </div>
+            <div class="explain-item">
+              <strong>4. 로컬에서 재생성</strong>
+              <p>레포 루트에서 아래 명령을 실행한다.</p>
+              <pre><code>uv run --python /usr/bin/python3 --with pandas --with numpy --with matplotlib python analysis/analyze_asr_benchmarks.py</code></pre>
+              <p><code>docs/assets/*.png</code>와 <code>docs/data/asr-benchmark.json</code>이 다시 만들어지면 분석 재생성이 정상이다.</p>
+            </div>
+            <div class="explain-item">
+              <strong>5. 로컬 페이지 확인</strong>
+              <p>아래 명령으로 정적 서버를 띄운다.</p>
+              <pre><code>python3 -m http.server 8765 --bind 127.0.0.1</code></pre>
+              <p><code>http://127.0.0.1:8765/docs/</code>를 열고 공개 페이지와 같은 값이 보이는지 확인한다.</p>
+            </div>
+            <div class="explain-item">
+              <strong>6. 해석할 때 주의</strong>
+              <p>이 테스트는 2023년 공개 제품/공개 모델 실험이다. 현재 vendor 성능을 대표하지 않는다.</p>
+              <p>콜센터 결과는 3개 시나리오뿐이므로 provider ranking으로 쓰지 않는다.</p>
+            </div>
+          </div>
+        </section>
+
+        <section class="section" id="lessons">
+          <div class="section-head">
+            <div>
+              <div class="kicker">Lessons learned</div>
+              <h2>테스트를 하면서 남은 교훈</h2>
+            </div>
+            <p>
+              이 프로젝트에서 가장 오래 남은 작업은 모델 호출 코드가 아니라 평가 기준을 고정하는 일이었다.
+              아래 항목은 이번 재분석에서도 그대로 유지한 원칙이다.
+            </p>
+          </div>
+          <div class="lesson-list">
+            <p>
+              <strong>1. 평균 CER만으로는 운영 판단이 부족하다.</strong>
+              평균은 전체 경향을 보여주지만, 실제 제품에서는 threshold 통과율과 tail risk가 더 직접적인 의사결정 지표가 된다.
+            </p>
+            <p>
+              <strong>2. 정답지 정책은 모델 성능만큼 중요하다.</strong>
+              한국어 STT에서는 띄어쓰기, 문장부호, 숫자 표기, 외래어 표기가 CER를 크게 바꾼다.
+              그래서 한글 정답지와 숫자 정답지를 분리하고, 콜센터 결과를 ranking이 아니라 표기 민감도 사례로 읽었다.
+            </p>
+            <p>
+              <strong>3. 측정 도구를 직접 만든 이유는 반복성 때문이다.</strong>
+              Compute STT Error Rate 프로젝트에서 Nlptutti를 만든 덕분에 3,922문장과 콜센터 transcript를 같은 함수로 계산했다.
+              insertion이 많은 결과에서도 denominator를 <code>S+D+I+C</code>로 고정해 0-1 범위 안에서 비교 가능한 CER를 남겼고,
+              나중에 다시 분석할 때도 기존 CSV의 <code>cer</code> 값을 추적할 수 있었다.
+            </p>
+            <p>
+              <strong>4. 작은 case analysis는 순위표가 아니다.</strong>
+              콜센터 3개 시나리오는 숫자와 도메인 표현이 어떤 오류를 만드는지 보기 위한 자료다.
+              이 결과를 현재 vendor 성능이나 일반적인 우열로 확장하지 않는다.
+            </p>
+            <p>
+              <strong>5. 재현 가능한 레포 구조가 결국 기록을 살린다.</strong>
+              직접 읽고 녹음한 3,922문장, 원천 결과, 전처리 CSV, 분석 스크립트, 파생 JSON/PNG가 남아 있었기 때문에
+              약 3개월 동안 진행했던 3년 전 실험을 새 mock data 없이 다시 읽을 수 있었다.
+            </p>
+          </div>
         </section>
 
         <section class="section" id="limits">
           <div class="section-head">
             <div>
-              <div class="kicker">Caveats</div>
-              <h2>Limits</h2>
+              <div class="kicker">Limits</div>
+              <h2>해석 범위</h2>
             </div>
             <p>
-              이 분석은 2023년 당시 데이터셋, 공개 모델/서비스 상태, 평가 스크립트에 묶여 있다.
+              이 글은 모델이나 vendor의 현재 우열을 일반화하려는 문서가 아니다.
+              2023년 당시 실험 자산을 재현 가능한 분석과 시각화로 정리한 것이다.
             </p>
           </div>
           <div class="limit-list">
-            <p>현재 제품 성능, SLA, vendor capability, procurement decision을 대표하지 않는다.</p>
-            <p>단일 화자 3,922건은 같은 화자/녹음 조건 안에서의 비교다.</p>
+            <p>현재 Microsoft/Azure, AWS, Clova, GCP, OpenAI/Whisper 성능을 대표하지 않는다.</p>
+            <p>각 회사의 공식 벤치마크, 내부 성능 데이터, 비공개 benchmark가 아니다.</p>
+            <p>단일 화자 3,922건은 같은 화자와 녹음 조건 안에서의 비교다.</p>
             <p>콜센터 데이터는 3개 시나리오의 case analysis이며 provider ranking 근거로 쓰지 않는다.</p>
             <p>CER는 의미 보존, 화자 분리, 타임스탬프, punctuation quality를 직접 평가하지 않는다.</p>
           </div>
@@ -222,16 +614,22 @@
         <div class="rail-box">
           <div class="nav-label">On this page</div>
           <a href="#summary">Summary</a>
+          <a href="#story">Story</a>
+          <a href="#dataset">Dataset</a>
+          <a href="#single-speaker">Single speaker</a>
           <a href="#explorer">Explorer</a>
-          <a href="#evidence">Charts</a>
+          <a href="#settings">Settings</a>
+          <a href="#call-center">Call center</a>
           <a href="#method">Method</a>
+          <a href="#test">Test</a>
+          <a href="#lessons">Lessons learned</a>
           <a href="#limits">Limits</a>
         </div>
         <div class="rail-box">
-          <div class="nav-label">Sources</div>
+          <div class="nav-label">Generated From</div>
           <p><code>analysis/outputs/*</code></p>
-          <p><code>blog/assets/*.png</code></p>
-          <p><code>blog/interactive/data/asr-benchmark.json</code></p>
+          <p><code>docs/assets/*.png</code></p>
+          <p><code>docs/data/asr-benchmark.json</code></p>
         </div>
       </aside>
     </div>

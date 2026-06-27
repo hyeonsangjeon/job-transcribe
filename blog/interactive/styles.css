@@ -306,6 +306,44 @@ h3 {
   color: var(--muted);
 }
 
+.article-prose {
+  display: grid;
+  gap: 18px;
+  color: #302d29;
+  font-size: 17px;
+}
+
+.article-prose p {
+  margin: 0;
+}
+
+.article-prose h3 {
+  margin-top: 18px;
+  font-size: 22px;
+}
+
+.article-prose a {
+  border-bottom: 1px solid rgba(16, 158, 96, 0.45);
+  color: #0b5d38;
+  font-weight: 680;
+}
+
+.essay-lead {
+  border-left: 4px solid var(--accent-green);
+  background: rgba(255, 255, 255, 0.58);
+  padding: 16px 18px;
+  font-size: 19px;
+}
+
+.article-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px 14px;
+  align-items: center;
+  color: var(--muted);
+  font-size: 15px;
+}
+
 .explorer {
   border: 1px solid var(--border-strong);
   border-radius: 8px;
@@ -504,6 +542,80 @@ output {
   margin: 28px 0;
 }
 
+.explain-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px;
+}
+
+.explain-item {
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--surface);
+  padding: 16px;
+}
+
+.explain-item strong {
+  display: block;
+  margin-bottom: 8px;
+  color: var(--text);
+  font-size: 16px;
+}
+
+.explain-item p {
+  margin: 8px 0 0;
+  color: #302d29;
+  font-size: 14px;
+  line-height: 1.55;
+}
+
+.explain-item pre {
+  margin: 10px 0 0;
+  padding: 12px;
+  font-size: 12px;
+  line-height: 1.45;
+}
+
+.body-note {
+  margin: 14px 0 0;
+  color: var(--muted);
+  font-size: 15px;
+}
+
+.data-table {
+  width: 100%;
+  border-collapse: collapse;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--surface);
+  overflow: hidden;
+  font-size: 14px;
+}
+
+.data-table th,
+.data-table td {
+  border-bottom: 1px solid var(--border);
+  padding: 12px 14px;
+  text-align: left;
+  vertical-align: top;
+}
+
+.data-table th {
+  background: var(--surface-soft);
+  color: #302d29;
+  font-size: 12px;
+  font-weight: 780;
+  text-transform: uppercase;
+}
+
+.data-table td:first-child {
+  font-weight: 740;
+}
+
+.data-table tr:last-child td {
+  border-bottom: 0;
+}
+
 .figure img {
   display: block;
   width: 100%;
@@ -520,7 +632,8 @@ output {
 }
 
 .check-list,
-.limit-list {
+.limit-list,
+.lesson-list {
   margin: 22px 0 0;
   padding: 0;
 }
@@ -530,11 +643,16 @@ output {
 }
 
 .check-list li,
-.limit-list p {
+.limit-list p,
+.lesson-list p {
   border-top: 1px solid var(--border);
   margin: 0;
   padding: 12px 0;
   color: #302d29;
+}
+
+.lesson-list strong {
+  color: var(--text);
 }
 
 .check-list li::before {
@@ -561,12 +679,17 @@ output {
 
 @media (max-width: 760px) {
   body {
+    overflow-x: hidden;
     font-size: 16px;
   }
 
   .topbar {
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr);
     gap: 10px;
-    overflow: hidden;
+    width: 100vw;
+    max-width: 100vw;
+    overflow: clip;
     padding: 0 16px;
   }
 
@@ -579,9 +702,17 @@ output {
   }
 
   .topnav {
+    flex: 1 1 auto;
     gap: 2px;
     min-width: 0;
+    max-width: 100%;
     overflow-x: auto;
+    overscroll-behavior-x: contain;
+    scrollbar-width: none;
+  }
+
+  .topnav::-webkit-scrollbar {
+    display: none;
   }
 
   .topnav a {
@@ -591,7 +722,20 @@ output {
   }
 
   .shell {
+    width: 100%;
+    max-width: 100vw;
     padding: 24px 16px 72px;
+  }
+
+  .content,
+  .hero,
+  .section,
+  .lead,
+  .notice,
+  .article-prose,
+  .essay-lead {
+    min-width: 0;
+    max-width: 100%;
   }
 
   .hero {
@@ -603,8 +747,18 @@ output {
   }
 
   h1 {
-    font-size: 34px;
-    word-break: keep-all;
+    font-size: 31px;
+    max-width: 100%;
+    overflow-wrap: anywhere;
+    word-break: break-word;
+  }
+
+  .lead,
+  .notice,
+  .article-prose p,
+  .section-head p {
+    overflow-wrap: anywhere;
+    word-break: break-word;
   }
 
   .segmented button {
@@ -621,8 +775,15 @@ output {
   .metric-strip,
   .section-head,
   .controls,
-  .summary-grid {
+  .summary-grid,
+  .explain-grid {
     grid-template-columns: 1fr;
+  }
+
+  .data-table {
+    display: block;
+    overflow-x: auto;
+    white-space: nowrap;
   }
 
   .section {
@@ -646,5 +807,18 @@ output {
 @media (max-width: 420px) {
   .brand span:not(.brand-mark) {
     display: none;
+  }
+}
+
+@media (max-width: 520px) {
+  .brand span:not(.brand-mark) {
+    display: none;
+  }
+
+  .topbar,
+  .shell {
+    margin-left: 0;
+    margin-right: 0;
+    max-width: 390px;
   }
 }
