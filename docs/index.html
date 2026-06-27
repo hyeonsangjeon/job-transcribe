@@ -105,7 +105,7 @@
               이때 별도로 만든 것이 CER/WER 측정 패키지
               <a href="https://github.com/hyeonsangjeon/computing-Korean-STT-error-rates">computing-Korean-STT-error-rates</a>다.
               테스트 코드에서는 이 도구를 <code>nlptutti</code>로 import해 사용했다. 이 프로젝트를 위해 만든
-              NLP2D/nlptutti 계열의 측정 도구는 정답 문장과 STT 결과 사이의 편집 거리를 계산하고,
+              Nlptutti는 정답 문장과 STT 결과 사이의 편집 거리를 계산하고,
               공백과 문장부호 처리 같은 한국어 STT 평가의 민감한 부분을 코드로 고정하기 위한 장치였다.
             </p>
 
@@ -552,7 +552,7 @@
             </p>
             <p>
               <strong>3. 측정 도구를 직접 만든 이유는 반복성 때문이다.</strong>
-              NLP2D/nlptutti 측정 도구를 만든 덕분에 3,922문장과 콜센터 transcript를 같은 함수로 계산하고,
+              Nlptutti 측정 도구를 만든 덕분에 3,922문장과 콜센터 transcript를 같은 함수로 계산하고,
               나중에 다시 분석할 때도 기존 CSV의 <code>cer</code> 값을 추적할 수 있었다.
             </p>
             <p>
