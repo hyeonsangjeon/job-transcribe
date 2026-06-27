@@ -1,4 +1,25 @@
 const THRESHOLDS = [0, 0.01, 0.03, 0.05, 0.1, 0.15, 0.2];
+const SCRIPT_NODE = document.currentScript;
+const DATA_URL = SCRIPT_NODE?.dataset.dataUrl ?? "./data/asr-benchmark.json";
+const LANGUAGE = document.documentElement.lang === "en" ? "en" : "ko";
+const TEXT = {
+  ko: {
+    singleDataset: "단일 화자 3,922문장",
+    callDataset: "콜센터 3개 시나리오",
+    chartSingle: "Pass rate by model",
+    chartCall: "Scenario pass rate by provider",
+    subtitleSuffix: "기준",
+    loadError: "데이터를 불러오지 못했습니다",
+  },
+  en: {
+    singleDataset: "single-speaker 3,922-utterance benchmark",
+    callDataset: "3 call-center scenarios",
+    chartSingle: "Pass rate by model",
+    chartCall: "Scenario pass rate by provider",
+    subtitleSuffix: "threshold",
+    loadError: "Could not load benchmark data",
+  },
+}[LANGUAGE];
 
 const state = {
   dataset: "single",
@@ -259,10 +280,10 @@ function renderChart() {
 
 function renderText() {
   const currentThreshold = threshold();
-  const datasetLabel = state.dataset === "single" ? "단일 화자 3,922문장" : "콜센터 3개 시나리오";
+  const datasetLabel = state.dataset === "single" ? TEXT.singleDataset : TEXT.callDataset;
   els.thresholdOutput.textContent = pct(currentThreshold, currentThreshold < 0.1 ? 0 : 0);
-  els.chartTitle.textContent = state.dataset === "single" ? "Pass rate by model" : "Scenario pass rate by provider";
-  els.chartSubtitle.textContent = `${datasetLabel} · CER <= ${pct(currentThreshold, 0)} 기준`;
+  els.chartTitle.textContent = state.dataset === "single" ? TEXT.chartSingle : TEXT.chartCall;
+  els.chartSubtitle.textContent = `${datasetLabel} · CER <= ${pct(currentThreshold, 0)} ${TEXT.subtitleSuffix}`;
 }
 
 function renderControls() {
@@ -311,7 +332,7 @@ function bindEvents() {
   });
 }
 
-fetch("./data/asr-benchmark.json")
+fetch(DATA_URL)
   .then((response) => {
     if (!response.ok) {
       throw new Error(`Failed to load data: ${response.status}`);
@@ -325,5 +346,5 @@ fetch("./data/asr-benchmark.json")
   })
   .catch((error) => {
     const root = document.querySelector("[data-app-root]");
-    root.innerHTML = `<div class="notice">데이터를 불러오지 못했습니다: ${error.message}</div>`;
+    root.innerHTML = `<div class="notice">${TEXT.loadError}: ${error.message}</div>`;
   });

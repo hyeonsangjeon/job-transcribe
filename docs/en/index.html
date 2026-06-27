@@ -1,0 +1,634 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Revisiting a Korean ASR Benchmark | Job Transcribe</title>
+    <meta
+      name="description"
+      content="A readable English version of a 2023 Korean ASR/STT benchmark using real repository data, CER, thresholds, paired comparisons, and call-center scenarios."
+    />
+    <link rel="alternate" hreflang="ko" href="https://hyeonsangjeon.github.io/job-transcribe/" />
+    <link rel="alternate" hreflang="en" href="https://hyeonsangjeon.github.io/job-transcribe/en/" />
+    <link rel="stylesheet" href="../styles.css" />
+  </head>
+  <body>
+    <header class="topbar">
+      <a class="brand" href="#top" aria-label="Job Transcribe report home">
+        <span class="brand-mark" aria-hidden="true">JT</span>
+        <span>Job Transcribe</span>
+      </a>
+      <nav class="topnav" aria-label="Primary">
+        <a href="#story">Story</a>
+        <a href="#single-speaker">Single</a>
+        <a href="#explorer">Explorer</a>
+        <a href="#settings">Settings</a>
+        <a href="#method">Method</a>
+        <a href="#test">Test</a>
+        <a href="#lessons">Lessons</a>
+        <a href="#limits">Limits</a>
+        <a class="lang-link" href="../" hreflang="ko">한국어</a>
+      </nav>
+    </header>
+
+    <div class="shell" id="top">
+      <aside class="left-nav" aria-label="Sections">
+        <div class="nav-label">Report</div>
+        <a href="#summary">Summary</a>
+        <a href="#story">Story</a>
+        <a href="#dataset">Dataset</a>
+        <a href="#single-speaker">Single speaker</a>
+        <a href="#explorer">Explorer</a>
+        <a href="#settings">Settings</a>
+        <a href="#call-center">Call center</a>
+        <a href="#method">Method</a>
+        <a href="#test">Test</a>
+        <a href="#lessons">Lessons learned</a>
+        <a href="#limits">Limits</a>
+      </aside>
+
+      <main class="content">
+        <section class="hero" id="summary">
+          <div class="kicker">2023 public experiment revisit</div>
+          <h1>Revisiting Korean STT with 3,922 utterances and 3 call-center scenarios</h1>
+          <p class="lead">
+            In 2023, I designed and ran a Korean ASR/STT experiment using publicly available products and open models.
+            This page revisits the real repository data through distributions, thresholds, paired comparisons,
+            worst cases, and numeric-format sensitivity instead of reducing the work to a single average CER.
+          </p>
+          <div class="notice">
+            This is a retrospective analysis of a personal 2023 experiment using publicly accessible products and
+            open-source models. It does not represent current Microsoft/Azure, AWS, Clova, GCP, or OpenAI/Whisper
+            performance, and it is not an official benchmark or internal performance dataset from any company.
+          </div>
+          <div class="metric-strip" aria-label="Key metrics">
+            <div>
+              <span class="metric-value">3,922</span>
+              <span class="metric-label">single-speaker utterances</span>
+            </div>
+            <div>
+              <span class="metric-value">2.22%</span>
+              <span class="metric-label">Whisper large mean CER</span>
+            </div>
+            <div>
+              <span class="metric-value">83.20%</span>
+              <span class="metric-label">Whisper large CER <= 5%</span>
+            </div>
+          </div>
+        </section>
+
+        <section class="section" id="story">
+          <div class="section-head">
+            <div>
+              <div class="kicker">Essay</div>
+              <h2>The work behind the published article</h2>
+            </div>
+            <p>
+              This is not a leaderboard. It is a record of the questions I had to answer while testing Korean speech
+              recognition: what counts as correct, which metric should be trusted, and how much error can a workflow tolerate?
+            </p>
+          </div>
+
+          <article class="article-prose">
+            <p class="essay-lead">
+              The original question sounded simple: if Korean speech-to-text were attached to a real work process,
+              which model would transcribe it well enough? The more important question appeared only after the testing
+              started: what does "well enough" mean, and under which reference text policy should it be measured?
+            </p>
+            <p class="article-links">
+              Original Korean columns:
+              <a href="https://www.itdaily.kr/news/articleView.html?idxno=213297">ITDaily</a>
+              <a href="https://www.comworld.co.kr/news/articleView.html?idxno=50818">ComputerWorld</a>
+            </p>
+
+            <h3>Context: the metric had to come before the model comparison</h3>
+            <p>
+              Cloud STT products and Whisper models all return transcripts, but they do not fail in the same way.
+              Some outputs only changed spacing. Some wrote spoken numbers as digits. Some broke on proper nouns,
+              loanwords, or domain-specific expressions. Reading the transcripts by eye was not enough. I needed
+              the same audio, the same reference text, and the same error formula across every result.
+            </p>
+            <p>
+              That is why I built Compute STT Error Rate, the Nlptutti package. The public repository is
+              <a href="https://github.com/hyeonsangjeon/computing-Korean-STT-error-rates">computing-Korean-STT-error-rates</a>,
+              and the benchmark scripts import it as <code>nlptutti</code>. Nlptutti provides <code>get_cer</code>,
+              <code>get_wer</code>, <code>get_crr</code>, and Korean keyword-pattern utilities. Internally, it uses
+              Levenshtein edit distance to count substitutions, deletions, and insertions, while fixing whitespace
+              and punctuation handling in code.
+            </p>
+            <p>
+              I built it because the denominator mattered. If CER is computed only against the reference length,
+              transcripts with many insertions can exceed 1 or move outside the range I wanted for repeated comparison.
+              Nlptutti keeps <code>S+D+I</code> as the error numerator, but uses <code>S+D+I+C</code> as the denominator,
+              including insertions in the normalized error rate. That small choice made the results easier to compare
+              across thousands of Korean transcripts.
+            </p>
+
+            <h3>Process: two test surfaces, not one</h3>
+            <p>
+              The primary benchmark used 3,922 single-speaker utterances. For each shared <code>file_name</code> and
+              <code>ground_truth</code>, I collected transcripts from AWS Transcribe and Whisper base, medium, and large.
+              Each row kept the reference sentence, model output, and CER, so the data could be analyzed by mean error,
+              threshold pass rate, paired delta, and worst-case examples.
+            </p>
+            <p>
+              The core 3,922 utterances were my own voice data. I read and recorded the sentences one by one as WAV files
+              in a low-reflection environment. The accumulated reading and recording time was close to eight hours.
+              Across roughly three months, I led the experiment design, recording, STT runs, result collection, and metric
+              stabilization.
+            </p>
+            <p>
+              The second surface was a smaller set of three financial call-center personas: PB bond ordering, startup loan
+              guidance, and an auto-insurance premium inquiry. The team used these as short practical persona checks,
+              around 30 minutes in scale. They were not meant to rank providers. They were meant to show how numbers,
+              domain vocabulary, and reference-text policy can move CER in different directions.
+            </p>
+
+            <h3>Action: average CER was not enough</h3>
+            <p>
+              I did not stop at mean CER. A mean gives the general direction, but a workflow cares about different questions:
+              how many sentences can pass automatically, how many remain in a review queue, and where the tail risk lives.
+              So I added perfect recognition rate, 5% pass rate, 10%+ tail risk, paired comparisons, disagreement examples,
+              and call-center heatmaps.
+            </p>
+            <p>
+              The hardest part was not running one model. It was putting different providers' outputs on the same analytical
+              surface. AWS, Azure, Clova, GCP, and Whisper outputs had different file shapes and transcript structures.
+              In Korean, spacing, punctuation, and numeric notation can change CER materially. In the insurance persona,
+              expressions like account numbers, amounts, and dates repeatedly showed the gap between meaning-level similarity
+              and character-level scoring.
+            </p>
+
+            <h3>Conclusion: a benchmark is a measurement rule</h3>
+            <p>
+              On the single-speaker data, Whisper large and medium were strong, while AWS Transcribe was more stable than
+              Whisper base. But that conclusion only applies to this repository's 2023 data, public products and models,
+              and the CER policy used at the time. The more durable lesson is the method: ASR quality should be published
+              with reference-text policy, thresholds, and tail risk, not only an average number.
+            </p>
+          </article>
+        </section>
+
+        <section class="section" id="dataset">
+          <div class="section-head">
+            <div>
+              <div class="kicker">Dataset</div>
+              <h2>Two evaluation surfaces</h2>
+            </div>
+            <p>
+              The single-speaker dataset is the main benchmark for model-level distributions. The call-center dataset is a
+              compact case analysis for number notation and financial-domain sensitivity.
+            </p>
+          </div>
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>Area</th>
+                <th>Samples</th>
+                <th>Compared systems</th>
+                <th>Interpretation</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Single speaker</td>
+                <td>3,922 utterances</td>
+                <td>AWS Transcribe, Whisper base, Whisper medium, Whisper large</td>
+                <td>CER distribution and threshold pass rates under one speaker and recording setup</td>
+              </tr>
+              <tr>
+                <td>Financial call center</td>
+                <td>3 scenarios x 2 reference bases</td>
+                <td>AWS, Azure, Clova, GCP</td>
+                <td>n=3 case analysis for numeric notation and domain sensitivity, not provider ranking</td>
+              </tr>
+            </tbody>
+          </table>
+        </section>
+
+        <section class="section" id="single-speaker">
+          <div class="section-head">
+            <div>
+              <div class="kicker">Single speaker</div>
+              <h2>Look beyond the mean</h2>
+            </div>
+            <p>
+              Whisper large and medium were strong on the 3,922 utterances. For practical use, mean CER should be read
+              together with perfect recognition, a 5% threshold, and the 10%+ tail.
+            </p>
+          </div>
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>Model</th>
+                <th>Mean CER</th>
+                <th>Median CER</th>
+                <th>Perfect</th>
+                <th>&lt;=5% CER</th>
+                <th>&gt;10% CER</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Whisper large</td>
+                <td>2.22%</td>
+                <td>0.00%</td>
+                <td>70.27%</td>
+                <td>83.20%</td>
+                <td>5.69%</td>
+              </tr>
+              <tr>
+                <td>Whisper medium</td>
+                <td>2.64%</td>
+                <td>0.00%</td>
+                <td>65.12%</td>
+                <td>79.50%</td>
+                <td>7.24%</td>
+              </tr>
+              <tr>
+                <td>AWS Transcribe</td>
+                <td>3.73%</td>
+                <td>0.00%</td>
+                <td>56.12%</td>
+                <td>71.01%</td>
+                <td>12.32%</td>
+              </tr>
+              <tr>
+                <td>Whisper base</td>
+                <td>9.35%</td>
+                <td>6.94%</td>
+                <td>29.12%</td>
+                <td>41.13%</td>
+                <td>37.33%</td>
+              </tr>
+            </tbody>
+          </table>
+          <figure class="figure">
+            <img src="../assets/single_speaker_mean_cer.png" alt="Single-speaker mean CER by model" />
+            <figcaption>
+              Figure 1. Mean CER and 95% bootstrap confidence interval on the 3,922 single-speaker utterances.
+              Source: <code>result/*.csv</code>.
+            </figcaption>
+          </figure>
+          <figure class="figure">
+            <img src="../assets/single_speaker_threshold_pass_rates.png" alt="Pass rate by CER threshold" />
+            <figcaption>
+              Figure 2. Pass rate by CER threshold. Thresholds make the operational question more concrete than a mean alone.
+            </figcaption>
+          </figure>
+        </section>
+
+        <section class="section" id="explorer">
+          <div class="section-head">
+            <div>
+              <div class="kicker">Interactive</div>
+              <h2>Model Performance Explorer</h2>
+            </div>
+            <p>
+              Move the threshold to see how pass/fail rates change. In call-center mode, switch the reference-text basis
+              to see how numeric notation affects the scenario pass rate.
+            </p>
+          </div>
+
+          <div class="explorer" data-app-root>
+            <div class="controls" aria-label="Explorer controls">
+              <fieldset>
+                <legend>Dataset</legend>
+                <div class="segmented" role="group" aria-label="Dataset">
+                  <button type="button" class="is-active" data-dataset="single">Single speaker</button>
+                  <button type="button" data-dataset="call">Call center</button>
+                </div>
+              </fieldset>
+
+              <fieldset class="basis-control" hidden>
+                <legend>Ground truth basis</legend>
+                <select id="basis-select" aria-label="Ground truth basis">
+                  <option value="hangul ground truth">Hangul ground truth</option>
+                  <option value="numeric ground truth">Numeric ground truth</option>
+                </select>
+              </fieldset>
+
+              <fieldset>
+                <legend>Model / Provider</legend>
+                <select id="entity-select" aria-label="Model or provider"></select>
+              </fieldset>
+
+              <fieldset>
+                <legend>CER threshold</legend>
+                <div class="slider-row">
+                  <input id="threshold-slider" type="range" min="0" max="6" step="1" value="3" aria-label="CER threshold" />
+                  <output id="threshold-output" for="threshold-slider">5%</output>
+                </div>
+              </fieldset>
+            </div>
+
+            <div class="chart-panel">
+              <div class="chart-title-row">
+                <div>
+                  <h3 id="chart-title">Pass rate by model</h3>
+                  <p id="chart-subtitle">CER <= 5% threshold</p>
+                </div>
+                <div class="legend" aria-label="Chart legend">
+                  <span><i class="swatch pass"></i>Pass</span>
+                  <span><i class="swatch fail"></i>Fail</span>
+                </div>
+              </div>
+              <div class="chart-wrap">
+                <svg id="rate-chart" role="img" aria-labelledby="chart-title chart-subtitle"></svg>
+              </div>
+              <div class="tooltip" id="tooltip" hidden></div>
+            </div>
+
+            <div class="summary-grid" aria-label="Selected summary">
+              <div class="summary-cell">
+                <span class="summary-label">Selected</span>
+                <strong id="selected-label">Whisper large</strong>
+              </div>
+              <div class="summary-cell">
+                <span class="summary-label">Mean CER</span>
+                <strong id="mean-cer">2.22%</strong>
+              </div>
+              <div class="summary-cell">
+                <span class="summary-label">Pass at threshold</span>
+                <strong id="pass-rate">83.20%</strong>
+              </div>
+              <div class="summary-cell">
+                <span class="summary-label">Tail / max risk</span>
+                <strong id="risk-rate">5.69% >10%</strong>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section class="section" id="settings">
+          <div class="section-head">
+            <div>
+              <div class="kicker">Settings</div>
+              <h2>How to read the controls</h2>
+            </div>
+            <p>
+              The controls answer three questions: which dataset, which model or provider, and how much error is still
+              acceptable for a pass. Lower CER means the transcript is closer to the reference text under this metric.
+            </p>
+          </div>
+          <div class="explain-grid">
+            <div class="explain-item">
+              <strong>Dataset</strong>
+              <p><b>Single speaker</b> is the main 3,922-utterance benchmark for model comparison.</p>
+              <p><b>Call center</b> is a small three-scenario financial dataset. It should be read as case analysis, not ranking.</p>
+            </div>
+            <div class="explain-item">
+              <strong>Ground truth basis</strong>
+              <p><b>Hangul</b> uses a Korean-written reference, including numbers written as Korean words.</p>
+              <p><b>Numeric</b> uses digit-style references. The same transcript can receive a different CER depending on notation.</p>
+              <p>For example, "십오억" and "15억" are close in meaning, but different at the character level.</p>
+            </div>
+            <div class="explain-item">
+              <strong>Model / Provider</strong>
+              <p>Choose the row to summarize. Single speaker mode shows models. Call center mode shows providers.</p>
+            </div>
+            <div class="explain-item">
+              <strong>CER threshold</strong>
+              <p>The maximum error rate counted as a pass. At 5%, only outputs with CER less than or equal to 5% pass.</p>
+              <p>Lower values are stricter. Higher values allow more transcripts to pass.</p>
+            </div>
+            <div class="explain-item">
+              <strong>Pass / Fail</strong>
+              <p><b>Pass</b> is at or below the selected threshold. <b>Fail</b> is above it.</p>
+              <p>In call-center mode, the pass rate is the share of the three scenarios that pass.</p>
+            </div>
+            <div class="explain-item">
+              <strong>Mean CER / Tail risk</strong>
+              <p><b>Mean CER</b> is the average error rate. Lower is closer to the reference under this dataset.</p>
+              <p><b>Tail risk</b> shows how much large-error output remains even when the mean looks good.</p>
+            </div>
+            <div class="explain-item">
+              <strong>Nlptutti CER</strong>
+              <p>The original scripts called <code>nlptutti.get_cer(reference, transcript)</code> and stored the returned <code>cer</code> value.</p>
+              <p>The function counts <code>S+D+I</code> as errors and uses <code>S+D+I+C</code> as the denominator so insertion-heavy outputs do not dominate the scale.</p>
+              <p>This page summarizes the stored CER values. It does not recompute a new normalization policy for the blog.</p>
+            </div>
+          </div>
+        </section>
+
+        <section class="section" id="call-center">
+          <div class="section-head">
+            <div>
+              <div class="kicker">Call center</div>
+              <h2>Notation sensitivity, not ranking</h2>
+            </div>
+            <p>
+              The call-center data has only three scenarios. Read the means as compact summaries, then focus on how Hangul
+              and numeric references move CER in different directions.
+            </p>
+          </div>
+          <figure class="figure">
+            <img src="../assets/call_center_provider_mean_cer.png" alt="Call-center mean CER by provider" />
+            <figcaption>
+              Figure 3. Provider mean CER over three financial call-center scenarios. This is an n=3 case summary.
+            </figcaption>
+          </figure>
+          <figure class="figure">
+            <img src="../assets/call_center_scenario_heatmap.png" alt="Call-center CER heatmap by scenario" />
+            <figcaption>
+              Figure 4. Scenario x provider CER heatmap. The PB bond-order scenario remained difficult across several providers.
+            </figcaption>
+          </figure>
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>Insurance persona</th>
+                <th>AWS</th>
+                <th>Azure</th>
+                <th>Clova</th>
+                <th>GCP</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Hangul ground truth CER</td>
+                <td>11.99%</td>
+                <td>11.54%</td>
+                <td>30.80%</td>
+                <td>29.67%</td>
+              </tr>
+              <tr>
+                <td>Numeric ground truth CER</td>
+                <td>14.51%</td>
+                <td>8.79%</td>
+                <td>27.10%</td>
+                <td>28.58%</td>
+              </tr>
+            </tbody>
+          </table>
+          <p class="body-note">
+            In the auto-insurance premium inquiry, changing the reference notation moved providers in different directions:
+            Azure improved from 11.54% to 8.79%, while AWS moved from 11.99% to 14.51%. This is a reference-policy lesson,
+            not a provider ranking.
+          </p>
+        </section>
+
+        <section class="section" id="method">
+          <div class="section-head">
+            <div>
+              <div class="kicker">Reproduce</div>
+              <h2>Only real result files</h2>
+            </div>
+            <p>
+              The JSON and PNG assets on this page are generated from real repository files. No mock CSV is used for the blog.
+            </p>
+          </div>
+          <pre><code>uv run --python /usr/bin/python3 --with pandas --with numpy --with matplotlib python analysis/analyze_asr_benchmarks.py</code></pre>
+          <ul class="check-list">
+            <li>Original measurement used <code>nlptutti.get_cer(...)</code> in <code>measure_nlp_cer_job.py</code>, <code>oepnai_job.py</code>, and <code>measure_cs_job.py</code></li>
+            <li>The reanalysis uses stored <code>cer</code> values from existing result CSV files and does not create new CER values</li>
+            <li>Single-speaker CSV files are checked for matching <code>file_name</code> sets before paired comparison</li>
+            <li>Call-center row counts and scenario counts are checked before summarization</li>
+            <li><code>docs/assets/*.png</code> and <code>docs/data/asr-benchmark.json</code> are regenerated from the analysis script</li>
+          </ul>
+          <div class="explain-grid">
+            <div class="explain-item">
+              <strong>Single speaker measurement flow</strong>
+              <p>The 3,922 recorded WAV files were sent to STT models or services. Each transcript was compared with the reference sentence using Nlptutti CER.</p>
+              <p>Results are stored in <code>result/result_3922.csv</code> and the Whisper-specific <code>result/openai_whisper_*_result_3922.csv</code> files.</p>
+            </div>
+            <div class="explain-item">
+              <strong>Call center measurement flow</strong>
+              <p><code>measure_cs_job.py</code> reads Hangul and numeric references separately, then compares AWS/Azure/Clova/GCP transcripts against each basis.</p>
+              <p>That is why the same insurance transcript can have different CER values in <code>cs_hangul_result.csv</code> and <code>cs_number_result.csv</code>.</p>
+            </div>
+          </div>
+        </section>
+
+        <section class="section" id="test">
+          <div class="section-head">
+            <div>
+              <div class="kicker">Test</div>
+              <h2>How to test the page</h2>
+            </div>
+            <p>
+              The public page can be smoke-tested quickly, and the analysis outputs can be regenerated locally from the repository.
+            </p>
+          </div>
+          <div class="explain-grid">
+            <div class="explain-item">
+              <strong>1. Open the public page</strong>
+              <p>Open <code>https://hyeonsangjeon.github.io/job-transcribe/en/</code>.</p>
+              <p>The title, disclaimer, and three metric cards should be visible on first load.</p>
+            </div>
+            <div class="explain-item">
+              <strong>2. Check Explorer defaults</strong>
+              <p>The default state is Single speaker, CER threshold 5%, and Whisper large.</p>
+              <p>If <b>Pass at threshold</b> is <b>83.20%</b> and <b>Mean CER</b> is <b>2.22%</b>, the default data loaded correctly.</p>
+            </div>
+            <div class="explain-item">
+              <strong>3. Switch to call center</strong>
+              <p>Change Dataset to Call center and set the threshold to 10%.</p>
+              <p>Change Ground truth basis to Numeric, then choose Azure.</p>
+              <p>If Pass is <b>66.67%</b>, Mean CER is <b>10.59%</b>, and Tail / max risk is <b>max 17.43%</b>, the call-center data loaded correctly.</p>
+            </div>
+            <div class="explain-item">
+              <strong>4. Regenerate locally</strong>
+              <p>Run this command at the repository root.</p>
+              <pre><code>uv run --python /usr/bin/python3 --with pandas --with numpy --with matplotlib python analysis/analyze_asr_benchmarks.py</code></pre>
+              <p>If <code>docs/assets/*.png</code> and <code>docs/data/asr-benchmark.json</code> are regenerated, the analysis pipeline is working.</p>
+            </div>
+            <div class="explain-item">
+              <strong>5. Serve locally</strong>
+              <p>Start a static server.</p>
+              <pre><code>python3 -m http.server 8765 --bind 127.0.0.1</code></pre>
+              <p>Open <code>http://127.0.0.1:8765/docs/en/</code> and confirm the same values appear.</p>
+            </div>
+            <div class="explain-item">
+              <strong>6. Interpret carefully</strong>
+              <p>This is a 2023 public-product and open-model experiment. It does not represent current vendor performance.</p>
+              <p>The call-center results have only three scenarios and should not be used as provider ranking.</p>
+            </div>
+          </div>
+        </section>
+
+        <section class="section" id="lessons">
+          <div class="section-head">
+            <div>
+              <div class="kicker">Lessons learned</div>
+              <h2>What stayed with me</h2>
+            </div>
+            <p>
+              The most durable part of this project was not the model-calling code. It was fixing the measurement rule so
+              the experiment could be read again years later.
+            </p>
+          </div>
+          <div class="lesson-list">
+            <p>
+              <strong>1. Mean CER is not enough for operational decisions.</strong>
+              A mean shows the broad direction, but threshold pass rate and tail risk are closer to the decisions a product team makes.
+            </p>
+            <p>
+              <strong>2. Reference-text policy matters as much as model behavior.</strong>
+              Korean spacing, punctuation, number notation, loanwords, and proper nouns can move CER materially. That is why the call-center cases are read as notation sensitivity, not provider ranking.
+            </p>
+            <p>
+              <strong>3. I built the metric tool because repeatability mattered.</strong>
+              Nlptutti made it possible to measure 3,922 utterances and call-center transcripts through the same function.
+              The <code>S+D+I+C</code> denominator kept insertion-heavy results comparable within a 0-1 normalized CER scale.
+            </p>
+            <p>
+              <strong>4. A small case analysis is not a leaderboard.</strong>
+              The three call-center scenarios explain how numbers and domain terms can create errors. They do not generalize to current vendor performance.
+            </p>
+            <p>
+              <strong>5. A reproducible repository can bring an old experiment back to life.</strong>
+              Because the recordings, result files, preprocessing CSVs, scripts, JSON, and PNG outputs were preserved, the three-month experiment could be revisited without inventing mock data.
+            </p>
+          </div>
+        </section>
+
+        <section class="section" id="limits">
+          <div class="section-head">
+            <div>
+              <div class="kicker">Limits</div>
+              <h2>Scope of interpretation</h2>
+            </div>
+            <p>
+              This page does not generalize model or vendor quality. It documents one 2023 experiment and the analysis assets
+              that remained in the repository.
+            </p>
+          </div>
+          <div class="limit-list">
+            <p>It does not represent current Microsoft/Azure, AWS, Clova, GCP, or OpenAI/Whisper performance.</p>
+            <p>It is not an official benchmark, internal performance dataset, or private vendor evaluation.</p>
+            <p>The 3,922 single-speaker utterances share one speaker and recording setup.</p>
+            <p>The call-center dataset is an n=3 case analysis and should not be used as provider ranking.</p>
+            <p>CER does not directly measure semantic preservation, speaker separation, timestamp quality, or punctuation quality.</p>
+          </div>
+        </section>
+      </main>
+
+      <aside class="right-rail" aria-label="On this page">
+        <div class="rail-box">
+          <div class="nav-label">On this page</div>
+          <a href="#summary">Summary</a>
+          <a href="#story">Story</a>
+          <a href="#dataset">Dataset</a>
+          <a href="#single-speaker">Single speaker</a>
+          <a href="#explorer">Explorer</a>
+          <a href="#settings">Settings</a>
+          <a href="#call-center">Call center</a>
+          <a href="#method">Method</a>
+          <a href="#test">Test</a>
+          <a href="#lessons">Lessons learned</a>
+          <a href="#limits">Limits</a>
+        </div>
+        <div class="rail-box">
+          <div class="nav-label">Generated From</div>
+          <p><code>analysis/outputs/*</code></p>
+          <p><code>docs/assets/*.png</code></p>
+          <p><code>docs/data/asr-benchmark.json</code></p>
+        </div>
+      </aside>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/d3@7"></script>
+    <script src="../app.js" data-data-url="../data/asr-benchmark.json"></script>
+  </body>
+</html>

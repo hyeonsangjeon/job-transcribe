@@ -124,6 +124,12 @@ pre code {
   outline: none;
 }
 
+.topnav .lang-link {
+  border: 1px solid rgba(16, 158, 96, 0.26);
+  background: rgba(215, 253, 206, 0.72);
+  color: #0b5d38;
+}
+
 .shell {
   display: grid;
   grid-template-columns: minmax(180px, 220px) minmax(0, 820px) minmax(180px, 240px);

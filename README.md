@@ -34,6 +34,11 @@
 
 목업 CSV는 사용하지 않습니다. `analysis/outputs/*`, `blog/assets/*`, `docs/assets/*`, `blog/interactive/data/asr-benchmark.json`, `docs/data/asr-benchmark.json`은 위 원천 데이터에서 재생성되는 파생 산출물입니다.
 
+## Published Blog
+
+- Korean: https://hyeonsangjeon.github.io/job-transcribe/
+- English: https://hyeonsangjeon.github.io/job-transcribe/en/
+
 ## Measurement Method
 
 CER(Character Error Rate)는 정답 문장과 STT 인식 결과가 문자 단위로 얼마나 다른지 보는 값입니다. 낮을수록 정답과 더 비슷합니다.
