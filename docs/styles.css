@@ -306,6 +306,35 @@ h3 {
   color: var(--muted);
 }
 
+.article-prose {
+  display: grid;
+  gap: 18px;
+  color: #302d29;
+  font-size: 17px;
+}
+
+.article-prose p {
+  margin: 0;
+}
+
+.article-prose h3 {
+  margin-top: 18px;
+  font-size: 22px;
+}
+
+.article-prose a {
+  border-bottom: 1px solid rgba(16, 158, 96, 0.45);
+  color: #0b5d38;
+  font-weight: 680;
+}
+
+.essay-lead {
+  border-left: 4px solid var(--accent-green);
+  background: rgba(255, 255, 255, 0.58);
+  padding: 16px 18px;
+  font-size: 19px;
+}
+
 .explorer {
   border: 1px solid var(--border-strong);
   border-radius: 8px;
@@ -594,7 +623,8 @@ output {
 }
 
 .check-list,
-.limit-list {
+.limit-list,
+.lesson-list {
   margin: 22px 0 0;
   padding: 0;
 }
@@ -604,11 +634,16 @@ output {
 }
 
 .check-list li,
-.limit-list p {
+.limit-list p,
+.lesson-list p {
   border-top: 1px solid var(--border);
   margin: 0;
   padding: 12px 0;
   color: #302d29;
+}
+
+.lesson-list strong {
+  color: var(--text);
 }
 
 .check-list li::before {

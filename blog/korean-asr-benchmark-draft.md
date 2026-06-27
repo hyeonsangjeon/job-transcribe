@@ -12,6 +12,20 @@ Source analysis: `analysis/analyze_asr_benchmarks.py`
 
 중요한 범위부터 분명히 한다. 이 결과는 2023년에 공개적으로 접근 가능한 제품과 오픈소스 모델을 사용해 수행한 개인 프로젝트성 실험 결과다. 2026년 재정리 시점의 Microsoft/Azure, AWS, Clova, GCP, OpenAI/Whisper 제품 성능을 대표하지 않으며, 각 회사의 공식 벤치마크나 내부 성능 데이터가 아니다. 이 글에서 vendor와 model 이름은 당시 실험의 비교 대상 라벨로만 사용한다.
 
+## 실험 기록으로 다시 읽기
+
+당시 공개 기고에서 다뤘던 문제의식은 클라우드 STT와 오픈소스 Whisper가 한국어 음성 텍스트 변환에서 어디까지 실용적인가였다. 처음에는 모델별 인식률을 비교하는 일이 중심처럼 보였다. 하지만 실제로 테스트를 진행해보니 더 어려운 문제는 "무엇을 맞혔다고 볼 것인가"였다.
+
+STT 결과는 단순히 맞거나 틀리는 값이 아니었다. 어떤 모델은 같은 뜻을 유지하면서 띄어쓰기만 다르게 출력했고, 어떤 모델은 숫자를 한글로 풀어썼고, 어떤 모델은 외래어나 고유명사에서 크게 흔들렸다. 금융 상담처럼 숫자와 상품명이 많은 문맥에서는 더 복잡했다. "오육칠팔"과 "5678", "오십만 원"과 "50만 원"은 사람이 보기에는 같은 의미에 가깝지만, 문자 단위 평가에서는 다른 결과가 된다.
+
+그래서 이 테스트를 위해 별도의 CER/WER 측정 도구를 만들었다. 레포 기준으로는 `computing-Korean-STT-error-rates`이고, 실제 코드에서는 `nlptutti` 패키지로 import해 사용했다. 내가 당시 NLP2D/nlptutti 계열로 만들었던 이 도구는 정답 문장과 STT transcript 사이의 편집 거리를 계산하고, 한국어 평가에서 민감한 공백과 문장부호 처리 기준을 코드로 고정하기 위한 장치였다. 이 도구가 있었기 때문에 3,922개 문장과 콜센터 transcript를 같은 기준으로 계산하고, 시간이 지난 뒤에도 기존 CSV의 `cer` 값을 그대로 따라갈 수 있었다.
+
+테스트는 두 면으로 나눴다. 첫 번째는 단일 화자 3,922문장이다. 같은 `file_name`, 같은 `ground_truth`를 기준으로 AWS Transcribe와 Whisper base, medium, large transcript를 모았다. 이 데이터는 모델별 평균 CER뿐 아니라 완전 인식률, threshold pass rate, paired delta, worst/disagreement examples를 계산하는 중심 데이터가 됐다.
+
+두 번째는 금융 콜센터 3개 persona였다. PB 채권 주문 상담, 신생기업 대출 안내 상담, 자동차 보험료 할증 문의 상담을 사용했다. 이 데이터는 표본 수가 작기 때문에 provider ranking을 만들기 위한 데이터가 아니다. 대신 숫자 표기, 도메인 용어, 상담 흐름이 CER를 어떻게 흔드는지 보기 위한 case analysis다.
+
+가장 번거로운 작업은 모델을 한 번 실행하는 일이 아니라, 서로 다른 결과물을 같은 분석 좌표에 올리는 일이었다. AWS, Azure, Clova, GCP 결과는 파일 형식과 transcript 구조가 달랐고, Whisper 결과는 모델 크기별로 별도 CSV를 남겨야 했다. 그 뒤에야 평균 CER, threshold 통과율, tail risk, paired comparison 같은 지표를 계산할 수 있었다. 이 과정에서 배운 점은 분명했다. ASR 벤치마크는 리더보드를 만드는 일이 아니라, 측정 규칙을 공개하고 그 규칙 안에서 결과를 읽는 일이다.
+
 ## 실험 데이터
 
 실험은 두 갈래로 나뉜다.
@@ -32,7 +46,7 @@ Source analysis: `analysis/analyze_asr_benchmarks.py`
 
 기본 지표는 CER(Character Error Rate)다. CER는 정답 문장과 인식 결과 문장 사이의 문자 단위 편집 거리 기반 오류율이다. 한국어 STT에서는 띄어쓰기, 숫자 표기, 영문/고유명사 표기, 문장부호 처리에 따라 CER가 민감하게 변할 수 있다. 그래서 이 글에서는 CER를 핵심 지표로 쓰되, CER 하나로 품질을 단정하지 않는다.
 
-원래 실험에서 CER는 `nlptutti`로 측정했다. 단일 화자 AWS 결과는 `measure_nlp_cer_job.py`에서 Transcribe 결과를 가져온 뒤 `nlptutti.get_cer(ground_truth_sentence, transcribe_sentence)["cer"]`를 저장했다. Whisper 결과도 `oepnai_job.py`에서 모델 transcript를 만든 뒤 같은 방식으로 CER를 저장했다. 콜센터 결과는 `measure_cs_job.py`에서 한글 표기 정답지와 숫자 표기 정답지를 각각 읽고, AWS/Azure/Clova/GCP transcript와 비교해 `cer_aws`, `cer_azure`, `cer_clova`, `cer_gcp` 컬럼을 만들었다.
+원래 실험에서 CER는 직접 만든 `nlptutti` 측정 도구로 계산했다. 단일 화자 AWS 결과는 `measure_nlp_cer_job.py`에서 Transcribe 결과를 가져온 뒤 `nlptutti.get_cer(ground_truth_sentence, transcribe_sentence)["cer"]`를 저장했다. Whisper 결과도 `oepnai_job.py`에서 모델 transcript를 만든 뒤 같은 방식으로 CER를 저장했다. 콜센터 결과는 `measure_cs_job.py`에서 한글 표기 정답지와 숫자 표기 정답지를 각각 읽고, AWS/Azure/Clova/GCP transcript와 비교해 `cer_aws`, `cer_azure`, `cer_clova`, `cer_gcp` 컬럼을 만들었다.
 
 이번 재분석에서는 기존 결과 CSV의 `cer` 값을 그대로 사용한다. 블로그 작성 단계에서 공백, 문장부호, 영문 대소문자, 숫자를 새로 정규화해 CER를 재계산하지 않았다. 향후 다른 정규화 정책을 적용한다면, 2023년 결과와 분리해서 별도 지표로 표시해야 한다.
 
@@ -265,6 +279,16 @@ uv run --python /usr/bin/python3 --with pandas --with numpy --with matplotlib py
 넷째, CER의 한계가 있다. CER는 문자 단위 지표이므로 의미 보존, 화자 분리, 타임스탬프 품질, punctuation quality, downstream task utility를 직접 평가하지 않는다.
 
 다섯째, 정규화 민감도가 있다. 한국어 숫자 표기, 띄어쓰기, 문장부호, 영문/고유명사 표기에 따라 CER가 크게 달라질 수 있다.
+
+## Lessons learned
+
+이 프로젝트를 다시 보면서 가장 먼저 남는 교훈은 평균 CER 하나만으로 ASR 품질을 말하기 어렵다는 점이다. 평균은 전체 성능을 보여주지만, 실제 사용 조건에서는 threshold를 넘는 tail이 얼마나 남는지가 더 중요하다. 그래서 5% 이하 pass rate와 10% 초과 tail risk를 함께 봤다.
+
+두 번째 교훈은 정답지 정책이 모델 성능만큼 중요하다는 점이다. 한국어 STT에서는 공백, 문장부호, 숫자 표기, 고유명사 표기가 CER를 크게 바꾼다. 특히 콜센터 데이터에서는 같은 보험 상담이라도 한글 정답지와 숫자 정답지에서 CER가 다르게 움직였다. 이 결과를 provider 우열이 아니라 정답지 정책의 민감도로 읽어야 하는 이유다.
+
+세 번째 교훈은 측정 도구를 먼저 고정해야 나중에 다시 읽을 수 있다는 점이다. NLP2D/nlptutti 측정 도구를 만들어 CER/WER 계산을 코드로 남겨두었기 때문에, 이번 재분석에서도 mock data를 만들지 않고 기존 결과 CSV를 그대로 따라갈 수 있었다.
+
+마지막 교훈은 작은 case analysis와 큰 benchmark를 분리해야 한다는 점이다. 단일 화자 3,922문장은 분포와 paired comparison을 볼 수 있는 중심 데이터지만, 콜센터 3개 시나리오는 도메인과 숫자 표기의 민감도를 보는 보조 자료다. 둘을 같은 방식으로 순위화하면 오히려 결과를 잘못 읽게 된다.
 
 ## 결론
 
