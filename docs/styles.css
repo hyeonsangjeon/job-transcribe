@@ -517,6 +517,28 @@ output {
   font-size: 12px;
 }
 
+.selected-row .bar-label {
+  font-weight: 800;
+}
+
+.pass-value,
+.fail-value {
+  fill: #ffffff;
+  font-size: 11px;
+  font-weight: 760;
+  pointer-events: none;
+}
+
+.selected-outline {
+  stroke: rgba(19, 18, 16, 0.72);
+  stroke-width: 2;
+  pointer-events: none;
+}
+
+.bar-hitbox {
+  cursor: pointer;
+}
+
 .axis-label {
   fill: var(--muted);
 }
@@ -594,6 +616,14 @@ output {
   margin: 14px 0 0;
   color: var(--muted);
   font-size: 15px;
+}
+
+.story-note {
+  border-left: 4px solid var(--accent-green);
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.64);
+  padding: 14px 16px;
+  color: #302d29;
 }
 
 .data-table {

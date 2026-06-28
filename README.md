@@ -141,7 +141,7 @@ uv run --python /usr/bin/python3 --with pandas --with numpy --with matplotlib py
 2. 첫 화면에 제목, 면책 문구, 3개 metric card가 보이는지 확인합니다.
 3. Explorer 기본값이 `Single speaker`, `CER threshold 5%`, `Whisper large`인지 확인합니다.
 4. `Pass at threshold`가 `83.20%`, `Mean CER`가 `2.22%`이면 기본 데이터 로드가 정상입니다.
-5. Dataset을 `Call center`로 바꾸고 threshold를 `10%`로 둔 뒤, `Ground truth basis`를 `Numeric`, provider를 `Azure`로 바꿉니다.
+5. Dataset을 `Call center`로 바꾸면 `Ground truth basis`는 `Numeric`, provider는 `Azure`, threshold는 `10%`로 잡힙니다.
 6. `Pass`가 `66.67%`, `Mean CER`가 `10.59%`, `Tail / max risk`가 `max 17.43%`이면 call-center 데이터 로드가 정상입니다.
 
 로컬 페이지 테스트:

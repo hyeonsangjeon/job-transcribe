@@ -133,16 +133,20 @@
               문장 단위로 누가 더 자주 낮은 CER를 보였는지 비교할 수 있는 기준면이 됐다.
             </p>
             <p>
-              중심 데이터인 3,922문장은 직접 읽고 녹음한 내 음성 데이터였다. 반향이 적은 환경에서 문장을 하나씩
-              WAV 파일로 남겼고, 누적 리딩과 녹음 시간은 거의 8시간에 가까웠다. 실험 설계부터 녹음, STT 실행,
-              결과 수집, metric 고정까지 약 3개월 동안 직접 리딩한 작업이었다.
+              중심 데이터인 3,922문장은 직접 읽고 녹음한 내 음성 데이터였다. 집 안에서 비교적 조용하고
+              반향이 적은 서재에서 하루 50문장을 목표로 읽었다. 문장은 멀티 패턴 USB 콘덴서 마이크의
+              단일 지향성(cardioid) 수음 모드로 하나씩 WAV 파일로 남겼고, 누적 리딩과 녹음 시간은 거의
+              8시간에 가까웠다. 실험 설계부터 녹음, STT 실행, 결과 수집, metric 고정까지 약 3개월 동안
+              직접 리딩한 작업이었다.
             </p>
             <p>
               두 번째 테스트는 금융 콜센터를 가정한 3개 persona였다. PB 채권 주문, 신생기업 대출 안내,
-              자동차 보험료 할증 문의처럼 숫자와 도메인 용어가 많이 나오는 상담을 팀에서 짧게 추가 녹음하고
-              검증했다. 약 30분 규모의 보조 케이스였기 때문에 provider 순위를 내기 위한 용도가 아니었다.
-              대신 같은 상담이 한글 정답지와 숫자 정답지에서 얼마나 다르게 평가되는지,
-              숫자 표기 정책이 CER를 어떻게 흔드는지 보기 위한 case analysis였다.
+              자동차 보험료 할증 문의처럼 전화번호, 계좌번호, 금액, 날짜 같은 숫자 정보가 자주 등장하는
+              상담을 짧게 검증해보기 위한 간이 테스트였다. 팀원 몇 명과 30분 정도 미팅하고 녹음했고,
+              미팅룸 공간을 고려해 개인 비용으로 준비한 멀티 패턴 USB 콘덴서 마이크를 양방향(bidirectional)
+              수음 모드로 두어 1:1 대화의 양쪽 음성을 균형 있게 담아보려 했다. 표본이 작기 때문에 provider
+              순위를 내기 위한 용도는 아니었다. 대신 같은 상담이 한글 정답지와 숫자 정답지에서 얼마나 다르게
+              평가되는지, 숫자 표기 정책이 CER를 어떻게 흔드는지 보기 위한 case analysis였다.
             </p>
 
             <h3>액션: 평균 하나 대신 운영 가능한 메트릭을 골랐다</h3>
@@ -332,8 +336,8 @@
                   <p id="chart-subtitle">CER <= 5% 기준</p>
                 </div>
                 <div class="legend" aria-label="Chart legend">
-                  <span><i class="swatch pass"></i>Pass</span>
-                  <span><i class="swatch fail"></i>Fail</span>
+                  <span><i class="swatch pass"></i><span data-legend-pass>Pass</span></span>
+                  <span><i class="swatch fail"></i><span data-legend-fail>Fail</span></span>
                 </div>
               </div>
               <div class="chart-wrap">
@@ -422,9 +426,15 @@
             </div>
             <p>
               콜센터 데이터는 3개 시나리오뿐이다. 평균값은 보조 요약으로만 읽고,
-              한글 정답지와 숫자 정답지의 차이, PB/대출/보험 시나리오별 난이도를 본다.
+              실제 상담에서 자주 나오는 숫자, 번호, 금액, 날짜가 정답지 표기에 따라 어떻게 흔들리는지 본다.
             </p>
           </div>
+          <p class="body-note story-note">
+            이 보조 테스트는 팀원 몇 명과 30분 정도 진행한 짧은 시나리오 녹음이었다. PB 채권 주문,
+            신생기업 대출 안내, 자동차 보험료 할증 문의처럼 숫자 입력 정확도가 중요한 상담을 골랐고,
+            미팅룸에서는 개인 비용으로 준비한 멀티 패턴 USB 콘덴서 마이크를 양방향 수음 모드로 두어
+            1:1 대화의 양쪽 음성을 최대한 균형 있게 담으려 했다.
+          </p>
           <figure class="figure">
             <img src="./assets/call_center_provider_mean_cer.png" alt="Call-center mean CER by provider" />
             <figcaption>
@@ -527,8 +537,7 @@
             </div>
             <div class="explain-item">
               <strong>3. Call center 전환 확인</strong>
-              <p>Dataset을 Call center로 바꾸고 threshold를 10%로 둔다.</p>
-              <p>Ground truth basis를 Numeric으로 바꾼 뒤 Azure를 선택한다.</p>
+              <p>Dataset을 Call center로 바꾸면 Ground truth basis는 Numeric, provider는 Azure, threshold는 10%로 잡힌다.</p>
               <p>Pass가 <b>66.67%</b>, Mean CER가 <b>10.59%</b>, Tail / max risk가 <b>max 17.43%</b>이면 정상이다.</p>
               <p>보험 persona만 보면 Numeric 기준 Azure CER는 <b>8.79%</b>, Hangul 기준 Azure CER는 <b>11.54%</b>다.</p>
             </div>

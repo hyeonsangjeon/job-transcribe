@@ -7,7 +7,13 @@ const TEXT = {
     singleDataset: "단일 화자 3,922문장",
     callDataset: "콜센터 3개 시나리오",
     chartSingle: "Pass rate by model",
-    chartCall: "Scenario pass rate by provider",
+    chartCall: "Provider별 시나리오 Pass / Fail",
+    hangulBasis: "Hangul ground truth",
+    numericBasis: "Numeric ground truth",
+    passLabel: "Pass",
+    failLabel: "Fail",
+    legendPass: "Pass: CER 기준 이하",
+    legendFail: "Fail: CER 기준 초과",
     subtitleSuffix: "기준",
     loadError: "데이터를 불러오지 못했습니다",
   },
@@ -15,11 +21,19 @@ const TEXT = {
     singleDataset: "single-speaker 3,922-utterance benchmark",
     callDataset: "3 call-center scenarios",
     chartSingle: "Pass rate by model",
-    chartCall: "Scenario pass rate by provider",
+    chartCall: "Scenario pass/fail by provider",
+    hangulBasis: "Hangul ground truth",
+    numericBasis: "Numeric ground truth",
+    passLabel: "Pass",
+    failLabel: "Fail",
+    legendPass: "Pass: CER within threshold",
+    legendFail: "Fail: CER over threshold",
     subtitleSuffix: "threshold",
     loadError: "Could not load benchmark data",
   },
 }[LANGUAGE];
+
+const PROVIDER_ORDER = ["azure", "aws", "clova", "gcp"];
 
 const state = {
   dataset: "single",
@@ -43,6 +57,8 @@ const els = {
   meanCer: document.querySelector("#mean-cer"),
   passRate: document.querySelector("#pass-rate"),
   riskRate: document.querySelector("#risk-rate"),
+  legendPass: document.querySelector("[data-legend-pass]"),
+  legendFail: document.querySelector("[data-legend-fail]"),
 };
 
 let benchmarkData;
@@ -80,7 +96,12 @@ function modelOptions() {
         { id: row.provider_id, label: row.provider },
       ]),
     ).values(),
-  );
+  ).sort((a, b) => providerOrder(a.id) - providerOrder(b.id));
+}
+
+function providerOrder(providerId) {
+  const index = PROVIDER_ORDER.indexOf(providerId);
+  return index === -1 ? PROVIDER_ORDER.length : index;
 }
 
 function currentRows() {
@@ -158,8 +179,8 @@ function showTooltip(event, row) {
   const title = state.dataset === "single" ? "Model" : "Provider";
   els.tooltip.innerHTML = `
     <strong>${title}: ${row.label}</strong><br>
-    Pass: ${pct(row.passRate)}<br>
-    Fail: ${pct(row.failRate)}<br>
+    ${TEXT.passLabel}: ${pct(row.passRate)}<br>
+    ${TEXT.failLabel}: ${pct(row.failRate)}<br>
     Mean CER: ${pct(row.meanCer)}
   `;
   els.tooltip.hidden = false;
@@ -175,11 +196,23 @@ function hideTooltip() {
 }
 
 function renderChart() {
-  const rows = currentRows().sort((a, b) => b.passRate - a.passRate);
+  const rows = currentRows().sort((a, b) => {
+    const passDelta = b.passRate - a.passRate;
+    if (passDelta !== 0) {
+      return passDelta;
+    }
+    if (state.dataset === "call") {
+      return providerOrder(a.id) - providerOrder(b.id);
+    }
+    return a.label.localeCompare(b.label);
+  });
   const container = els.chart.node().parentElement;
   const width = Math.max(container.clientWidth, 320);
   const height = Math.max(310, rows.length * 62 + 72);
-  const margin = { top: 18, right: 84, bottom: 34, left: 142 };
+  const isCompact = width < 560;
+  const margin = isCompact
+    ? { top: 18, right: 18, bottom: 34, left: 86 }
+    : { top: 18, right: 84, bottom: 34, left: 142 };
   const innerWidth = width - margin.left - margin.right;
   const innerHeight = height - margin.top - margin.bottom;
 
@@ -220,7 +253,7 @@ function renderChart() {
     .selectAll("g.row")
     .data(rows, (row) => row.id)
     .join("g")
-    .attr("class", "row")
+    .attr("class", (row) => (row.id === state.selectedEntity ? "row selected-row" : "row"))
     .attr("transform", (row) => `translate(0,${y(row.label)})`);
 
   rowGroups
@@ -233,24 +266,48 @@ function renderChart() {
 
   rowGroups
     .append("rect")
+    .attr("class", "fail-segment")
     .attr("x", 0)
     .attr("y", 0)
     .attr("width", innerWidth)
     .attr("height", y.bandwidth())
     .attr("rx", 6)
-    .attr("fill", "#f2eee5");
+    .attr("fill", "#d86a63");
 
   rowGroups
+    .filter((row) => row.passRate > 0)
     .append("rect")
+    .attr("class", "pass-segment")
     .attr("x", 0)
     .attr("y", 0)
     .attr("width", (row) => x(row.passRate))
     .attr("height", y.bandwidth())
     .attr("rx", 6)
-    .attr("fill", (row) => (row.id === state.selectedEntity ? "#109e60" : "#2f7fb7"))
+    .attr("fill", "#109e60");
+
+  rowGroups
+    .filter((row) => row.id === state.selectedEntity)
+    .append("rect")
+    .attr("class", "selected-outline")
+    .attr("x", -4)
+    .attr("y", -4)
+    .attr("width", innerWidth + 8)
+    .attr("height", y.bandwidth() + 8)
+    .attr("rx", 9)
+    .attr("fill", "none");
+
+  rowGroups
+    .append("rect")
+    .attr("class", "bar-hitbox")
+    .attr("x", 0)
+    .attr("y", 0)
+    .attr("width", innerWidth)
+    .attr("height", y.bandwidth())
+    .attr("rx", 6)
+    .attr("fill", "transparent")
     .attr("tabindex", 0)
     .attr("role", "img")
-    .attr("aria-label", (row) => `${row.label} pass rate ${pct(row.passRate)}`)
+    .attr("aria-label", (row) => `${row.label} ${TEXT.passLabel} ${pct(row.passRate)}, ${TEXT.failLabel} ${pct(row.failRate)}`)
     .on("mouseenter focus", showTooltip)
     .on("mousemove", showTooltip)
     .on("mouseleave blur", hideTooltip)
@@ -261,29 +318,36 @@ function renderChart() {
     });
 
   rowGroups
+    .filter((row) => row.passRate > 0)
     .append("text")
-    .attr("class", "value-label")
-    .attr("x", (row) => Math.min(x(row.passRate) + 8, innerWidth + 6))
+    .attr("class", "value-label pass-value")
+    .attr("x", (row) => (row.passRate > 0.45 ? x(row.passRate) - 8 : 8))
     .attr("y", y.bandwidth() / 2 + 4)
-    .text((row) => pct(row.passRate));
+    .attr("text-anchor", (row) => (row.passRate > 0.45 ? "end" : "start"))
+    .text((row) => `${pct(row.passRate)}${isCompact ? "" : ` ${TEXT.passLabel}`}`);
 
   rowGroups
     .filter((row) => row.failRate > 0)
-    .append("rect")
+    .append("text")
+    .attr("class", "value-label fail-value")
     .attr("x", (row) => x(row.passRate))
-    .attr("y", y.bandwidth() - 4)
-    .attr("width", (row) => x(row.failRate))
-    .attr("height", 4)
-    .attr("fill", "#c62828")
-    .attr("opacity", 0.65);
+    .attr("y", y.bandwidth() / 2 + 4)
+    .attr("dx", 8)
+    .text((row) => `${pct(row.failRate)}${isCompact ? "" : ` ${TEXT.failLabel}`}`);
 }
 
 function renderText() {
   const currentThreshold = threshold();
   const datasetLabel = state.dataset === "single" ? TEXT.singleDataset : TEXT.callDataset;
+  const basisLabel = state.basis === "numeric ground truth" ? TEXT.numericBasis : TEXT.hangulBasis;
   els.thresholdOutput.textContent = pct(currentThreshold, currentThreshold < 0.1 ? 0 : 0);
   els.chartTitle.textContent = state.dataset === "single" ? TEXT.chartSingle : TEXT.chartCall;
-  els.chartSubtitle.textContent = `${datasetLabel} · CER <= ${pct(currentThreshold, 0)} ${TEXT.subtitleSuffix}`;
+  els.chartSubtitle.textContent =
+    state.dataset === "single"
+      ? `${datasetLabel} · CER <= ${pct(currentThreshold, 0)} ${TEXT.subtitleSuffix}`
+      : `${basisLabel} · ${datasetLabel} · CER <= ${pct(currentThreshold, 0)} ${TEXT.subtitleSuffix}`;
+  els.legendPass.textContent = TEXT.legendPass;
+  els.legendFail.textContent = TEXT.legendFail;
 }
 
 function renderControls() {
@@ -307,7 +371,14 @@ function bindEvents() {
   els.datasetButtons.forEach((button) => {
     button.addEventListener("click", () => {
       state.dataset = button.dataset.dataset;
-      state.selectedEntity = state.dataset === "single" ? "whisper_large" : "aws";
+      if (state.dataset === "call") {
+        state.basis = "numeric ground truth";
+        state.selectedEntity = "azure";
+        state.thresholdIndex = 4;
+      } else {
+        state.selectedEntity = "whisper_large";
+        state.thresholdIndex = 3;
+      }
       render();
     });
   });
