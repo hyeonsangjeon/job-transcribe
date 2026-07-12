@@ -1,16 +1,16 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="ko">
   <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>한국어 ASR 벤치마크 다시 보기 | Job Transcribe</title>
     <meta
       name="description"
       content="2023년 공개 제품과 공개 모델로 수행한 한국어 ASR/STT 벤치마크를 CER, threshold, paired comparison, 콜센터 시나리오 관점에서 다시 분석합니다."
-    />
-    <link rel="alternate" hreflang="ko" href="https://hyeonsangjeon.github.io/job-transcribe/" />
-    <link rel="alternate" hreflang="en" href="https://hyeonsangjeon.github.io/job-transcribe/en/" />
-    <link rel="stylesheet" href="./styles.css" />
+    >
+    <link rel="alternate" hreflang="ko" href="https://hyeonsangjeon.github.io/job-transcribe/">
+    <link rel="alternate" hreflang="en" href="https://hyeonsangjeon.github.io/job-transcribe/en/">
+    <link rel="stylesheet" href="./styles.css">
   </head>
   <body>
     <header class="topbar">
@@ -63,7 +63,7 @@
             GCP, OpenAI/Whisper 제품 성능을 대표하지 않으며, 각 회사의 공식 벤치마크나
             내부 성능 데이터가 아니다.
           </div>
-          <div class="metric-strip" aria-label="Key metrics">
+          <div class="metric-strip" role="group" aria-label="Key metrics">
             <div>
               <span class="metric-value">3,922</span>
               <span class="metric-label">single-speaker utterances</span>
@@ -272,14 +272,14 @@
             </tbody>
           </table>
           <figure class="figure">
-            <img src="./assets/single_speaker_mean_cer.png" alt="Single-speaker mean CER by model" />
+            <img src="./assets/single_speaker_mean_cer.png" alt="Single-speaker mean CER by model">
             <figcaption>
               Figure 1. 단일 화자 3,922문장 기준 평균 CER와 95% bootstrap confidence interval.
               Source: <code>result/*.csv</code>.
             </figcaption>
           </figure>
           <figure class="figure">
-            <img src="./assets/single_speaker_threshold_pass_rates.png" alt="Pass rate by CER threshold" />
+            <img src="./assets/single_speaker_threshold_pass_rates.png" alt="Pass rate by CER threshold">
             <figcaption>
               Figure 2. CER threshold별 pass rate. 운영 기준을 가정하면 평균 CER만 볼 때와 다른 질문을 할 수 있다.
             </figcaption>
@@ -299,7 +299,7 @@
           </div>
 
           <div class="explorer" data-app-root>
-            <div class="controls" aria-label="Explorer controls">
+            <div class="controls" role="group" aria-label="Explorer controls">
               <fieldset>
                 <legend>Dataset</legend>
                 <div class="segmented" role="group" aria-label="Dataset">
@@ -324,7 +324,7 @@
               <fieldset>
                 <legend>CER threshold</legend>
                 <div class="slider-row">
-                  <input id="threshold-slider" type="range" min="0" max="6" step="1" value="3" aria-label="CER threshold" />
+                  <input id="threshold-slider" type="range" min="0" max="6" step="1" value="3" aria-label="CER threshold">
                   <output id="threshold-output" for="threshold-slider">5%</output>
                 </div>
               </fieldset>
@@ -336,7 +336,7 @@
                   <h3 id="chart-title">Pass rate by model</h3>
                   <p id="chart-subtitle">CER &lt;= 5% 기준</p>
                 </div>
-                <div class="legend" aria-label="Chart legend">
+                <div class="legend" role="group" aria-label="Chart legend">
                   <span><i class="swatch pass"></i><span data-legend-pass>Pass</span></span>
                   <span><i class="swatch fail"></i><span data-legend-fail>Fail</span></span>
                 </div>
@@ -347,7 +347,7 @@
               <div class="tooltip" id="tooltip" hidden></div>
             </div>
 
-            <div class="summary-grid" aria-label="Selected summary">
+            <div class="summary-grid" role="group" aria-label="Selected summary">
               <div class="summary-cell">
                 <span class="summary-label">Selected</span>
                 <strong id="selected-label">Whisper large</strong>
@@ -437,13 +437,13 @@
             1:1 대화의 양쪽 음성을 최대한 균형 있게 담으려 했다.
           </p>
           <figure class="figure">
-            <img src="./assets/call_center_provider_mean_cer.png" alt="Call-center mean CER by provider" />
+            <img src="./assets/call_center_provider_mean_cer.png" alt="Call-center mean CER by provider">
             <figcaption>
               Figure 3. 금융 콜센터 3개 시나리오의 provider별 평균 CER. n=3 case summary로만 읽는다.
             </figcaption>
           </figure>
           <figure class="figure">
-            <img src="./assets/call_center_scenario_heatmap.png" alt="Call-center CER heatmap by scenario" />
+            <img src="./assets/call_center_scenario_heatmap.png" alt="Call-center CER heatmap by scenario">
             <figcaption>
               Figure 4. 시나리오 x provider CER heatmap. PB bond order는 여러 provider에서 상대적으로 높은 CER를 보였다.
             </figcaption>
