@@ -38,6 +38,7 @@
 
 - Korean: https://hyeonsangjeon.github.io/job-transcribe/
 - English: https://hyeonsangjeon.github.io/job-transcribe/en/
+- Nlptutti Korean manual: https://hyeonsangjeon.github.io/job-transcribe/nlptutti/
 
 ## Measurement Method
 
@@ -146,6 +147,8 @@ uv run --python /usr/bin/python3 --with pandas --with numpy --with matplotlib py
 
 로컬 페이지 테스트:
 
+Nlptutti 매뉴얼은 https://hyeonsangjeon.github.io/job-transcribe/nlptutti/ 에서 제목, 기본 normalized 안내, 함수별 코드 예제가 보이는지 확인합니다.
+
 ```bash
 python3 -m http.server 8765 --bind 127.0.0.1
 ```
@@ -159,6 +162,7 @@ python3 -m http.server 8765 --bind 127.0.0.1
 현재 산출물:
 
 - GitHub Pages 출판 페이지: [docs/index.html](docs/index.html)
+- Nlptutti 한국어 사용자 매뉴얼: [docs/nlptutti/index.html](docs/nlptutti/index.html)
 - 블로그 초안: [blog/korean-asr-benchmark-draft.md](blog/korean-asr-benchmark-draft.md)
 - 정적 PNG 차트: [blog/assets](blog/assets)
 - D3.js 기반 `Model Performance Explorer`: [blog/interactive/index.html](blog/interactive/index.html)
@@ -189,6 +193,8 @@ docs/
   index.html
   app.js
   styles.css
+  nlptutti/
+    index.html
   assets/
   data/
 preprocess/

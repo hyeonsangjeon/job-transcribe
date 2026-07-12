@@ -1,16 +1,16 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
   <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Revisiting a Korean ASR Benchmark | Job Transcribe</title>
     <meta
       name="description"
       content="A readable English version of a 2023 Korean ASR/STT benchmark using real repository data, CER, thresholds, paired comparisons, and call-center scenarios."
-    />
-    <link rel="alternate" hreflang="ko" href="https://hyeonsangjeon.github.io/job-transcribe/" />
-    <link rel="alternate" hreflang="en" href="https://hyeonsangjeon.github.io/job-transcribe/en/" />
-    <link rel="stylesheet" href="../styles.css" />
+    >
+    <link rel="alternate" hreflang="ko" href="https://hyeonsangjeon.github.io/job-transcribe/">
+    <link rel="alternate" hreflang="en" href="https://hyeonsangjeon.github.io/job-transcribe/en/">
+    <link rel="stylesheet" href="../styles.css">
   </head>
   <body>
     <header class="topbar">
@@ -61,7 +61,7 @@
             open-source models. It does not represent current Microsoft/Azure, AWS, Clova, GCP, or OpenAI/Whisper
             performance, and it is not an official benchmark or internal performance dataset from any company.
           </div>
-          <div class="metric-strip" aria-label="Key metrics">
+          <div class="metric-strip" role="group" aria-label="Key metrics">
             <div>
               <span class="metric-value">3,922</span>
               <span class="metric-label">single-speaker utterances</span>
@@ -72,7 +72,7 @@
             </div>
             <div>
               <span class="metric-value">83.20%</span>
-              <span class="metric-label">Whisper large CER <= 5%</span>
+              <span class="metric-label">Whisper large CER &lt;= 5%</span>
             </div>
           </div>
         </section>
@@ -268,14 +268,14 @@
             </tbody>
           </table>
           <figure class="figure">
-            <img src="../assets/single_speaker_mean_cer.png" alt="Single-speaker mean CER by model" />
+            <img src="../assets/single_speaker_mean_cer.png" alt="Single-speaker mean CER by model">
             <figcaption>
               Figure 1. Mean CER and 95% bootstrap confidence interval on the 3,922 single-speaker utterances.
               Source: <code>result/*.csv</code>.
             </figcaption>
           </figure>
           <figure class="figure">
-            <img src="../assets/single_speaker_threshold_pass_rates.png" alt="Pass rate by CER threshold" />
+            <img src="../assets/single_speaker_threshold_pass_rates.png" alt="Pass rate by CER threshold">
             <figcaption>
               Figure 2. Pass rate by CER threshold. Thresholds make the operational question more concrete than a mean alone.
             </figcaption>
@@ -295,7 +295,7 @@
           </div>
 
           <div class="explorer" data-app-root>
-            <div class="controls" aria-label="Explorer controls">
+            <div class="controls" role="group" aria-label="Explorer controls">
               <fieldset>
                 <legend>Dataset</legend>
                 <div class="segmented" role="group" aria-label="Dataset">
@@ -320,7 +320,7 @@
               <fieldset>
                 <legend>CER threshold</legend>
                 <div class="slider-row">
-                  <input id="threshold-slider" type="range" min="0" max="6" step="1" value="3" aria-label="CER threshold" />
+                  <input id="threshold-slider" type="range" min="0" max="6" step="1" value="3" aria-label="CER threshold">
                   <output id="threshold-output" for="threshold-slider">5%</output>
                 </div>
               </fieldset>
@@ -330,9 +330,9 @@
               <div class="chart-title-row">
                 <div>
                   <h3 id="chart-title">Pass rate by model</h3>
-                  <p id="chart-subtitle">CER <= 5% threshold</p>
+                  <p id="chart-subtitle">CER &lt;= 5% threshold</p>
                 </div>
-                <div class="legend" aria-label="Chart legend">
+                <div class="legend" role="group" aria-label="Chart legend">
                   <span><i class="swatch pass"></i><span data-legend-pass>Pass</span></span>
                   <span><i class="swatch fail"></i><span data-legend-fail>Fail</span></span>
                 </div>
@@ -343,7 +343,7 @@
               <div class="tooltip" id="tooltip" hidden></div>
             </div>
 
-            <div class="summary-grid" aria-label="Selected summary">
+            <div class="summary-grid" role="group" aria-label="Selected summary">
               <div class="summary-cell">
                 <span class="summary-label">Selected</span>
                 <strong id="selected-label">Whisper large</strong>
@@ -433,13 +433,13 @@
             bidirectional pickup mode to capture both sides of the one-to-one conversation as evenly as possible.
           </p>
           <figure class="figure">
-            <img src="../assets/call_center_provider_mean_cer.png" alt="Call-center mean CER by provider" />
+            <img src="../assets/call_center_provider_mean_cer.png" alt="Call-center mean CER by provider">
             <figcaption>
               Figure 3. Provider mean CER over three financial call-center scenarios. This is an n=3 case summary.
             </figcaption>
           </figure>
           <figure class="figure">
-            <img src="../assets/call_center_scenario_heatmap.png" alt="Call-center CER heatmap by scenario" />
+            <img src="../assets/call_center_scenario_heatmap.png" alt="Call-center CER heatmap by scenario">
             <figcaption>
               Figure 4. Scenario x provider CER heatmap. The PB bond-order scenario remained difficult across several providers.
             </figcaption>
