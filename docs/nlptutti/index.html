@@ -1,0 +1,476 @@
+<!DOCTYPE html>
+<html lang="ko">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Nlptutti 한국어 STT 평가 매뉴얼</title>
+    <meta
+      name="description"
+      content="Nlptutti의 CER, WER, CRR, 코퍼스 평가, 키워드·개체명 보존 평가, 오류 상세 분석을 예제로 설명하는 한국어 매뉴얼입니다."
+    >
+    <link rel="canonical" href="https://hyeonsangjeon.github.io/job-transcribe/nlptutti/">
+    <link rel="stylesheet" href="../styles.css">
+  </head>
+  <body class="manual-page">
+    <header class="topbar">
+      <a class="brand" href="../" aria-label="Job Transcribe 홈으로 이동">
+        <span class="brand-mark" aria-hidden="true">NT</span>
+        <span>Nlptutti Manual</span>
+      </a>
+      <nav class="topnav" aria-label="주요 메뉴">
+        <a href="#quick-start">빠른 시작</a>
+        <a href="#rate-mode">계산식</a>
+        <a href="#functions">함수 선택</a>
+        <a href="../">벤치마크</a>
+        <a class="lang-link" href="https://github.com/hyeonsangjeon/computing-Korean-STT-error-rates">GitHub</a>
+      </nav>
+    </header>
+
+    <div class="shell" id="top">
+      <aside class="left-nav" aria-label="매뉴얼 목차">
+        <div class="nav-label">Manual</div>
+        <a href="#summary">소개</a>
+        <a href="#quick-start">설치와 빠른 시작</a>
+        <a href="#rate-mode">정규화 방식</a>
+        <a href="#get-cer">get_cer</a>
+        <a href="#get-wer">get_wer</a>
+        <a href="#get-crr">get_crr</a>
+        <a href="#keyword-pattern">make_keyword_pattern</a>
+        <a href="#corpus">evaluate_corpus</a>
+        <a href="#keywords">evaluate_keywords</a>
+        <a href="#explain">explain_errors</a>
+        <a href="#legacy">기존 키워드 API</a>
+        <a href="#preprocessing">전처리</a>
+        <a href="#functions">함수 선택표</a>
+      </aside>
+
+      <main class="content">
+        <section class="hero" id="summary">
+          <div class="kicker">Nlptutti 0.0.0.12+</div>
+          <h1>Nlptutti <span class="manual-title-line">한국어 STT 평가 매뉴얼</span></h1>
+          <p class="lead">
+            한 문장의 CER부터 여러 문장의 micro/macro 평가, 고유명사 보존율,
+            실제 치환·삭제·삽입 위치까지 한 흐름에서 확인하는 방법을 정리했다.
+          </p>
+          <div class="notice">
+            <strong>기존 사용자 호환성:</strong>
+            <code>rate_mode</code>를 생략하면 과거 버전과 동일한
+            <code>"normalized"</code> 계산식이 적용된다. 표준 CER/WER는
+            <code>rate_mode="standard"</code>를 직접 적은 경우에만 사용된다.
+            유니코드 정규화도 기본적으로 켜지지 않는다.
+          </div>
+          <div class="metric-strip" role="group" aria-label="매뉴얼 핵심 정책">
+            <div>
+              <span class="metric-value">동일</span>
+              <span class="metric-label">기존 기본 호출의 계산 결과</span>
+            </div>
+            <div>
+              <span class="metric-value">2 modes</span>
+              <span class="metric-label">normalized 기본 / standard 선택</span>
+            </div>
+            <div>
+              <span class="metric-value">3.8+</span>
+              <span class="metric-label">지원 Python 버전</span>
+            </div>
+          </div>
+          <div class="manual-links">
+            <a href="https://pypi.org/project/nlptutti/">PyPI 패키지</a>
+            <a href="https://github.com/hyeonsangjeon/computing-Korean-STT-error-rates">소스 코드</a>
+            <a href="../">개발 배경과 벤치마크</a>
+          </div>
+        </section>
+
+        <section class="section" id="quick-start">
+          <div class="section-head">
+            <div>
+              <div class="kicker">Quick start</div>
+              <h2>설치하고 첫 점수 확인하기</h2>
+            </div>
+            <p>
+              패키지명은 <code>nlptutti</code>다. 정답 문장을 첫 번째 인자,
+              STT 결과를 두 번째 인자로 전달한다.
+            </p>
+          </div>
+          <article class="article-prose">
+            <pre><code>pip install -U nlptutti</code></pre>
+            <pre><code>import nlptutti as nt
+
+result = nt.get_cer("아키택트", "아키택쳐")
+
+print(result["cer"])            # 0.25
+print(result["substitutions"])  # 1
+print(result["deletions"])      # 0
+print(result["insertions"])     # 0</code></pre>
+            <p class="result-line">
+              점수는 낮을수록 좋다. <code>0.0</code>은 완전 일치이며,
+              상세 편집 횟수는 같은 결과 딕셔너리에서 확인한다.
+            </p>
+          </article>
+        </section>
+
+        <section class="section" id="rate-mode">
+          <div class="section-head">
+            <div>
+              <div class="kicker">Compatibility</div>
+              <h2>정규화 방식 선택</h2>
+            </div>
+            <p>
+              두 방식은 삽입 오류를 분모에 포함하는지가 다르다.
+              보고서나 논문에서 표준 CER/WER가 필요할 때만 standard를 명시한다.
+            </p>
+          </div>
+          <div class="formula-grid">
+            <article class="formula-panel">
+              <h3>normalized</h3>
+              <span class="formula">(S + D + I) / (S + D + I + C)</span>
+              <p>Nlptutti의 역사적 기본값이다. 삽입을 분모에도 포함하므로 0과 1 사이에서 비교하기 쉽다.</p>
+            </article>
+            <article class="formula-panel">
+              <h3>standard</h3>
+              <span class="formula">(S + D + I) / (S + D + C)</span>
+              <p>참조 길이를 분모로 사용한다. 삽입이 많으면 1보다 커질 수 있다.</p>
+            </article>
+          </div>
+          <article class="article-prose">
+            <h3>같은 입력 비교</h3>
+            <pre><code>import nlptutti as nt
+
+default_result = nt.get_cer("STEAM", "STREAM")
+standard_result = nt.get_cer(
+    "STEAM",
+    "STREAM",
+    rate_mode="standard",
+)
+
+print(default_result["cer"])   # 0.16666666666666666
+print(standard_result["cer"])  # 0.2</code></pre>
+            <p class="result-line">
+              기존 코드는 수정할 필요가 없다. 옵션을 생략한 호출은 계속 normalized로 계산된다.
+              한 프로젝트 안에서는 두 방식을 섞지 말고 결과와 함께 <code>rate_mode</code>를 기록한다.
+            </p>
+          </article>
+        </section>
+
+        <section class="section" id="get-cer">
+          <div class="section-head">
+            <div>
+              <div class="kicker">Character</div>
+              <h2><span class="api-name">get_cer</span></h2>
+            </div>
+            <p>
+              문자 단위 오류율을 계산한다. 한국어 띄어쓰기 차이에 덜 민감하도록 공백은 항상 제거한다.
+            </p>
+          </div>
+          <article class="article-prose">
+            <pre><code>import nlptutti as nt
+
+result = nt.get_cer(
+    "제이 차 세계 대전",
+    "제이차 세계대전",
+)
+
+print(result)
+# {"cer": 0.0, "substitutions": 0, "deletions": 0, "insertions": 0}</code></pre>
+            <p class="result-line">
+              띄어쓰기 자체도 오류로 평가해야 한다면 CER보다 별도 전처리 정책이나 WER를 함께 검토한다.
+            </p>
+          </article>
+        </section>
+
+        <section class="section" id="get-wer">
+          <div class="section-head">
+            <div>
+              <div class="kicker">Word</div>
+              <h2><span class="api-name">get_wer</span></h2>
+            </div>
+            <p>
+              공백으로 구분한 단어 단위 오류율을 계산한다. 띄어쓰기 차이가 단어 경계를 바꾸면 점수에도 반영된다.
+            </p>
+          </div>
+          <article class="article-prose">
+            <pre><code>import nlptutti as nt
+
+result = nt.get_wer(
+    "오늘 날씨가 좋습니다",
+    "오늘 정말 날씨가 좋습니다",
+)
+
+print(result["wer"])         # 0.25
+print(result["insertions"])  # 1</code></pre>
+            <p class="result-line">
+              표준 WER가 필요하면 같은 호출에 <code>rate_mode="standard"</code>를 추가한다.
+            </p>
+          </article>
+        </section>
+
+        <section class="section" id="get-crr">
+          <div class="section-head">
+            <div>
+              <div class="kicker">Recognition</div>
+              <h2><span class="api-name">get_crr</span></h2>
+            </div>
+            <p>
+              문자 오류율의 보수인 <code>1 - CER</code>을 반환한다. 기존 호환성을 위해 소수점 둘째 자리로 반올림한다.
+            </p>
+          </div>
+          <article class="article-prose">
+            <pre><code>import nlptutti as nt
+
+result = nt.get_crr("아키택트", "아키택쳐")
+
+print(result["crr"])           # 0.75
+print(result["substitutions"]) # 1</code></pre>
+            <p class="result-line">
+              standard 모드에서는 CER가 1을 넘을 수 있으므로 CRR가 0보다 작아질 수도 있다.
+              0과 1 사이의 정답률이 필요하면 기본 normalized 모드를 사용한다.
+            </p>
+          </article>
+        </section>
+
+        <section class="section" id="keyword-pattern">
+          <div class="section-head">
+            <div>
+              <div class="kicker">Korean keyword</div>
+              <h2><span class="api-name">make_keyword_pattern</span></h2>
+            </div>
+            <p>
+              조사 결합과 키워드 내부의 불규칙한 띄어쓰기를 허용하는 정규식 패턴을 만든다.
+            </p>
+          </div>
+          <article class="article-prose">
+            <pre><code>import nlptutti as nt
+
+pattern = nt.make_keyword_pattern("메리츠 화재")
+
+print(bool(pattern.search("메리츠화재의 주가")))  # True
+print(bool(pattern.search("메리츠 화재는 상승"))) # True
+print(bool(pattern.search("비메리츠화재상품")))    # False</code></pre>
+            <p class="result-line">
+              조사 목록을 생략하면 <code>COMPLEX_JOSA</code>가 사용된다.
+              직접 제어하려면 두 번째 인자에 조사 목록을, 세 번째 인자에 어미 목록을 전달한다.
+            </p>
+          </article>
+        </section>
+
+        <section class="section" id="corpus">
+          <div class="section-head">
+            <div>
+              <div class="kicker">Corpus</div>
+              <h2><span class="api-name">evaluate_corpus</span></h2>
+            </div>
+            <p>
+              여러 문장을 한 번에 평가해 전체 편집 횟수 기반 micro와 문장 평균 macro를 함께 반환한다.
+            </p>
+          </div>
+          <article class="article-prose">
+            <pre><code>import nlptutti as nt
+
+report = nt.evaluate_corpus(
+    ["가나", "다라"],
+    ["가마", "다라바"],
+)
+
+print(report["rate_mode"])          # normalized
+print(report["cer"]["micro"])       # 0.4
+print(report["cer"]["macro"])       # 0.41666666666666663
+print(report["perfect_sentences"])  # 0
+print(report["sentence_error_rate"]) # 1.0</code></pre>
+            <ul class="manual-list">
+              <li><strong>micro:</strong> 모든 문장의 편집 횟수를 합친 뒤 한 번 계산한다.</li>
+              <li><strong>macro:</strong> 문장별 오류율을 동일한 가중치로 평균한다.</li>
+              <li><strong>sentence_error_rate:</strong> CER 전처리 후 하나라도 문자 오류가 있는 문장의 비율이다.</li>
+            </ul>
+          </article>
+        </section>
+
+        <section class="section" id="keywords">
+          <div class="section-head">
+            <div>
+              <div class="kicker">Entity preservation</div>
+              <h2><span class="api-name">evaluate_keywords</span></h2>
+            </div>
+            <p>
+              지정한 고유명사나 핵심어가 STT 결과에 몇 번 보존됐고, 몇 번 빠지거나 추가됐는지 문장별로 집계한다.
+            </p>
+          </div>
+          <article class="article-prose">
+            <pre><code>import nlptutti as nt
+
+report = nt.evaluate_keywords(
+    [
+        "삼성전자와 삼성전자가 협력했다.",
+        "애플이 발표했다.",
+    ],
+    [
+        "삼성전자가 협력했다.",
+        "애플과 삼성전자가 발표했다.",
+    ],
+    {"ORG": ["삼성전자", "애플"]},
+)
+
+samsung = report["keywords"]["삼성전자"]
+print(samsung["true_positives"])   # 1
+print(samsung["false_negatives"])  # 1
+print(samsung["false_positives"])  # 1
+print(samsung["f1"])               # 0.5
+print(report["labels"]["ORG"]["f1"])  # 0.6666666666666666</code></pre>
+            <div class="notice">
+              이 함수는 NER 모델이 아니다. 사용자가 지정한 키워드 목록의 언급 횟수를 평가한다.
+              같은 문장 안에서는 reference와 hypothesis의 등장 횟수 중 작은 값을 true positive로 본다.
+              실제 토큰 span 기반 NER 평가가 필요하면 별도의 NER 출력과 평가기가 필요하다.
+              조사와 어미 목록을 생략하면 각각 <code>COMPLEX_JOSA</code>와
+              <code>COMPLEX_EOMI</code>가 사용되며, 빈 목록을 전달하면 해당 접미사 매칭을 끌 수 있다.
+            </div>
+          </article>
+        </section>
+
+        <section class="section" id="explain">
+          <div class="section-head">
+            <div>
+              <div class="kicker">Diagnostics</div>
+              <h2><span class="api-name">explain_errors</span></h2>
+            </div>
+            <p>
+              점수의 원인이 된 문자 또는 단어를 정렬하고 반복되는 치환·삭제·삽입을 빈도순으로 확인한다.
+            </p>
+          </div>
+          <article class="article-prose">
+            <pre><code>import nlptutti as nt
+
+detail = nt.explain_errors(
+    "아키택트",
+    "아키택쳐",
+)
+
+print(detail["rate"])   # 0.25
+print(detail["counts"])
+# {"hits": 3, "substitutions": 1, "deletions": 0, "insertions": 0}
+
+print(detail["error_frequencies"]["substitutions"])
+# [{"reference": "트", "hypothesis": "쳐", "count": 1}]</code></pre>
+            <p class="result-line">
+              단어 단위 분석은 <code>unit="word"</code>를 지정한다.
+              반환되는 <code>alignment</code>에는 equal, substitute, delete, insert가 순서대로 담긴다.
+            </p>
+          </article>
+        </section>
+
+        <section class="section" id="legacy">
+          <div class="section-head">
+            <div>
+              <div class="kicker">Compatibility API</div>
+              <h2><span class="api-name">calculate_keyword_error_rate_with_pattern</span></h2>
+            </div>
+            <p>
+              기존 사용자를 위해 유지되는 문장 존재 여부 기반 키워드 평가 함수다.
+            </p>
+          </div>
+          <article class="article-prose">
+            <pre><code>import nlptutti as nt
+
+result = nt.calculate_keyword_error_rate_with_pattern(
+    ["삼성전자가 발표했다."],
+    ["삼성전자가 발표했다."],
+    ["삼성전자"],
+    nt.COMPLEX_JOSA,
+)
+
+print(result["keywords"]["삼성전자"]["accuracy"]) # 1.0</code></pre>
+            <p class="result-line">
+              이 함수는 한 문장에 같은 키워드가 여러 번 나와도 1회로 집계하며,
+              hypothesis에만 등장한 키워드는 false positive로 세지 않는다.
+              새 코드에서는 <code>evaluate_keywords</code>를 권장한다.
+            </p>
+          </article>
+        </section>
+
+        <section class="section" id="preprocessing">
+          <div class="section-head">
+            <div>
+              <div class="kicker">Preprocessing</div>
+              <h2>전처리 옵션을 명시적으로 기록하기</h2>
+            </div>
+            <p>
+              점수 비교에서는 모델 이름만큼 공백, 문장부호, 유니코드 정규화 정책을 함께 남기는 것이 중요하다.
+            </p>
+          </div>
+          <article class="article-prose">
+            <h3>문장부호</h3>
+            <pre><code>result = nt.get_wer(
+    "안녕하세요!",
+    "안녕하세요",
+    rm_punctuation=True,  # 기본값
+)</code></pre>
+            <h3>유니코드 NFC</h3>
+            <pre><code>result = nt.get_cer(
+    reference,
+    hypothesis,
+    unicode_normalization="NFC",
+)</code></pre>
+            <ul class="manual-list">
+              <li><code>unicode_normalization=None</code>이 기본값이며 과거 결과를 그대로 보존한다.</li>
+              <li>NFC/NFD/NFKC/NFKD를 선택할 수 있다. 일반적인 한글 조합형 차이에는 NFC가 적합하다.</li>
+              <li>CER와 CRR은 공백을 항상 제거한다. WER는 공백을 단어 경계로 사용한다.</li>
+              <li>코퍼스와 키워드 평가의 reference/hypothesis 문장 수가 다르면 ValueError가 발생한다.</li>
+            </ul>
+          </article>
+        </section>
+
+        <section class="section" id="functions">
+          <div class="section-head">
+            <div>
+              <div class="kicker">Choose</div>
+              <h2>목적에 맞는 함수 선택</h2>
+            </div>
+            <p>
+              한 문장 점수, 전체 데이터셋 평가, 특정 용어 보존, 오류 원인 분석을 분리하면 결과 해석이 선명해진다.
+            </p>
+          </div>
+          <div class="function-grid">
+            <article class="function-item">
+              <h3 class="api-name">get_cer / get_wer / get_crr</h3>
+              <p>한 쌍의 문장을 빠르게 점수화할 때 사용한다.</p>
+            </article>
+            <article class="function-item">
+              <h3 class="api-name">evaluate_corpus</h3>
+              <p>데이터셋 전체의 micro/macro 성능과 완전 일치 문장 비율을 볼 때 사용한다.</p>
+            </article>
+            <article class="function-item">
+              <h3 class="api-name">evaluate_keywords</h3>
+              <p>회사명, 상품명, 전문용어의 누락과 추가 인식을 언급 횟수 기준으로 평가할 때 사용한다.</p>
+            </article>
+            <article class="function-item">
+              <h3 class="api-name">explain_errors</h3>
+              <p>점수가 나빠진 실제 문자·단어와 반복 오류를 찾을 때 사용한다.</p>
+            </article>
+          </div>
+          <div class="manual-links">
+            <a href="#quick-start">처음부터 다시 보기</a>
+            <a href="https://github.com/hyeonsangjeon/computing-Korean-STT-error-rates/issues">질문과 이슈</a>
+            <a href="../">벤치마크로 돌아가기</a>
+          </div>
+        </section>
+      </main>
+
+      <aside class="right-rail" aria-label="핵심 안내">
+        <div class="rail-box">
+          <div class="nav-label">Default contract</div>
+          <p><code>rate_mode="normalized"</code></p>
+          <p><code>rm_punctuation=True</code></p>
+          <p><code>unicode_normalization=None</code></p>
+        </div>
+        <div class="rail-box">
+          <div class="nav-label">Rate modes</div>
+          <a href="#rate-mode">normalized와 standard</a>
+          <a href="#preprocessing">전처리 정책</a>
+        </div>
+        <div class="rail-box">
+          <div class="nav-label">Project</div>
+          <a href="https://pypi.org/project/nlptutti/">PyPI</a>
+          <a href="https://github.com/hyeonsangjeon/computing-Korean-STT-error-rates">GitHub</a>
+          <a href="../">Job Transcribe</a>
+        </div>
+      </aside>
+    </div>
+  </body>
+</html>

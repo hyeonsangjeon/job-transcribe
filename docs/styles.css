@@ -709,6 +709,135 @@ output {
   background: var(--accent-green);
 }
 
+.manual-page .hero {
+  padding-bottom: 58px;
+}
+
+.manual-page .hero,
+.manual-page .section {
+  scroll-margin-top: 96px;
+}
+
+.manual-page h1 {
+  font-size: 50px;
+}
+
+.manual-title-line {
+  display: block;
+  white-space: nowrap;
+}
+
+.manual-page .section-head h2 .api-name {
+  font-size: inherit;
+}
+
+.manual-page .section {
+  padding: 66px 0;
+}
+
+.manual-page .section-head {
+  align-items: start;
+}
+
+.manual-page .article-prose {
+  gap: 16px;
+}
+
+.manual-page .article-prose pre {
+  margin: 2px 0 8px;
+}
+
+.formula-grid,
+.function-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px;
+}
+
+.formula-panel,
+.function-item {
+  min-width: 0;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--surface);
+  padding: 18px;
+}
+
+.formula-panel h3,
+.function-item h3 {
+  margin-bottom: 10px;
+}
+
+.formula-panel p,
+.function-item p {
+  margin: 8px 0 0;
+  color: var(--muted);
+  font-size: 14px;
+}
+
+.formula {
+  display: block;
+  margin: 14px 0 0;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background: var(--surface-soft);
+  padding: 12px;
+  color: #183c2e;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 14px;
+  font-weight: 720;
+  overflow-wrap: anywhere;
+}
+
+.api-name {
+  color: #0b5d38;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 15px;
+  font-weight: 760;
+}
+
+.result-line {
+  border-left: 4px solid var(--accent-green);
+  border-radius: 6px;
+  background: rgba(255, 255, 255, 0.68);
+  padding: 12px 14px;
+  color: #302d29;
+  font-size: 14px;
+}
+
+.manual-list {
+  margin: 0;
+  padding-left: 22px;
+  color: #302d29;
+}
+
+.manual-list li + li {
+  margin-top: 8px;
+}
+
+.manual-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 22px;
+}
+
+.manual-links a {
+  border: 1px solid var(--border-strong);
+  border-radius: 8px;
+  background: var(--surface);
+  padding: 9px 12px;
+  color: #0b5d38;
+  font-size: 14px;
+  font-weight: 720;
+}
+
+.manual-links a:hover,
+.manual-links a:focus-visible {
+  border-color: rgba(16, 158, 96, 0.55);
+  outline: none;
+}
+
 @media (max-width: 1120px) {
   .shell {
     grid-template-columns: minmax(0, 1fr);
@@ -804,6 +933,15 @@ output {
     word-break: break-word;
   }
 
+  .manual-page h1 {
+    font-size: 32px;
+  }
+
+  .manual-title-line {
+    white-space: normal;
+    word-break: keep-all;
+  }
+
   .lead,
   .notice,
   .article-prose p,
@@ -823,7 +961,9 @@ output {
   .section-head,
   .controls,
   .summary-grid,
-  .explain-grid {
+  .explain-grid,
+  .formula-grid,
+  .function-grid {
     grid-template-columns: 1fr;
   }
 
