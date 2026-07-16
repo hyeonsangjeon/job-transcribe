@@ -728,7 +728,7 @@ output {
 }
 
 .manual-page .section-head h2 .api-name {
-  font-size: inherit;
+  font-size: clamp(23px, 2.6vw, 28px);
 }
 
 .manual-page .section {

@@ -6,10 +6,10 @@
     <title>Nlptutti 한국어 STT 평가 매뉴얼</title>
     <meta
       name="description"
-      content="Nlptutti의 CER, WER, CRR, 코퍼스 평가, 키워드·개체명 보존 평가, 오류 상세 분석을 예제로 설명하는 한국어 매뉴얼입니다."
+      content="Nlptutti의 CER, WER, CRR, 코퍼스 평가, Entity CER·개체명 F1, 키워드 보존 평가, 오류 상세 분석을 예제로 설명하는 한국어 매뉴얼입니다."
     >
     <link rel="canonical" href="https://hyeonsangjeon.github.io/job-transcribe/nlptutti/">
-    <link rel="stylesheet" href="../styles.css">
+    <link rel="stylesheet" href="../styles.css?v=0.0.0.12">
   </head>
   <body class="manual-page">
     <header class="topbar">
@@ -37,10 +37,12 @@
         <a href="#get-crr">get_crr</a>
         <a href="#keyword-pattern">make_keyword_pattern</a>
         <a href="#corpus">evaluate_corpus</a>
+        <a href="#entities">evaluate_entities</a>
         <a href="#keywords">evaluate_keywords</a>
         <a href="#explain">explain_errors</a>
         <a href="#legacy">기존 키워드 API</a>
         <a href="#preprocessing">전처리</a>
+        <a href="#references">논문과 참고 자료</a>
         <a href="#functions">함수 선택표</a>
       </aside>
 
@@ -49,7 +51,7 @@
           <div class="kicker">Nlptutti 0.0.0.12+</div>
           <h1>Nlptutti <span class="manual-title-line">한국어 STT 평가 매뉴얼</span></h1>
           <p class="lead">
-            한 문장의 CER부터 여러 문장의 micro/macro 평가, 고유명사 보존율,
+            한 문장의 CER부터 여러 문장의 micro/macro 평가, 개체명 span의 Entity CER와 F1,
             실제 치환·삭제·삽입 위치까지 한 흐름에서 확인하는 방법을 정리했다.
           </p>
           <div class="notice">
@@ -283,6 +285,75 @@ print(report["sentence_error_rate"]) # 1.0</code></pre>
           </article>
         </section>
 
+        <section class="section" id="entities">
+          <div class="section-head">
+            <div>
+              <div class="kicker">Entity-aware ASR</div>
+              <h2><span class="api-name">evaluate_entities</span></h2>
+            </div>
+            <p>
+              전체 문장 점수와 별도로 회사명, 사람 이름, 상품명처럼 중요한 개체명의 문자 오류와 언급 보존 성능을 함께 평가한다.
+            </p>
+          </div>
+          <article class="article-prose">
+            <div class="notice">
+              이 함수는 NER 모델을 실행하지 않는다. 사용자가 제공한 개체명 사전을 문장에서 찾아
+              참조 개체명 span의 Entity CER와 정확한 언급 기준 precision, recall, F1을 계산한다.
+            </div>
+            <pre><code>import nlptutti as nt
+
+report = nt.evaluate_entities(
+    ["삼성전자의 갤럭시 S26 발표"],
+    ["삼성전다의 갤럭시 에스 이십육 발표와 애플"],
+    {
+        "ORG": ["삼성전자", "애플"],
+        "PRODUCT": ["갤럭시 S26"],
+    },
+    aliases={
+        "갤럭시 S26": ["갤럭시 에스 이십육"],
+    },
+)
+
+print(report["entity_cer"]["micro"])  # 0.1
+print(report["summary"]["f1"])  # 0.5
+print(report["labels"]["PRODUCT"]["f1"])  # 1.0
+print([(e["type"], e["entity"]) for e in report["errors"]])
+# [("misrecognition", "삼성전자"), ("addition", "애플")]</code></pre>
+
+            <h3>결과 읽기</h3>
+            <ul class="manual-list">
+              <li><strong>entity_cer.micro:</strong> 모든 참조 개체명 span의 편집 횟수를 합쳐 계산한다.</li>
+              <li><strong>entity_cer.macro:</strong> 참조 개체명 언급별 CER를 동일한 가중치로 평균한다.</li>
+              <li><strong>계산식 선택:</strong> 기본 <code>normalized</code>는 기존 패키지 호환용이다. 논문의 NE-WER처럼 참조 개체명 문자 수를 분모로 보고할 때는 <code>rate_mode="standard"</code>를 지정한다.</li>
+              <li><strong>summary:</strong> 개체명 언급의 precision, recall, F1과 false positive, false negative를 제공한다.</li>
+              <li><strong>labels:</strong> ORG, PERSON, PRODUCT처럼 사용자가 지정한 유형별 결과를 제공한다.</li>
+              <li><strong>errors:</strong> omission, addition, misrecognition과 해당 문장 인덱스 및 편집 횟수를 보여준다.</li>
+            </ul>
+
+            <h3>한국어와 별칭 정책</h3>
+            <ul class="manual-list">
+              <li>개체명 내부 띄어쓰기와 기본 조사·어미 결합을 허용하며, 조사는 개체명 span에 포함하지 않는다.</li>
+              <li><code>aliases</code>를 생략하면 정확한 개체명 표기만 인정한다. 발음 유사도나 퍼지 매칭은 적용하지 않는다.</li>
+              <li>숫자 읽기나 영문 표기의 허용 가능한 전사형처럼 실제로 같은 개체인 경우에만 별칭을 등록한다.</li>
+              <li>별칭은 문자 정렬 전에 대표 개체명으로 바뀌므로 등록된 별칭의 Entity CER는 <code>0.0</code>이다.</li>
+              <li>참조에 없는 개체명 추가는 Entity CER가 아니라 precision/F1과 <code>addition</code> 오류로 확인한다.</li>
+            </ul>
+
+            <h3>왜 두 점수를 함께 보나</h3>
+            <p>
+              <a href="https://aclanthology.org/L16-1297/">LREC 2016의 NE-WER 연구</a>는
+              전체 WER 대신 참조 개체명 span에 속한 오류를 따로 계산한다. Nlptutti는 한국어의 불안정한
+              단어 경계를 줄이기 위해 이 개념을 문자 단위 Entity CER로 응용했다. 이는 논문 구현을 그대로 재현한 지표는 아니다.
+              다만 참조 span 밖에 새로 생긴 개체명은 이 CER에 포함되지 않으므로 언급 precision/F1을 함께 반환한다.
+            </p>
+            <p>
+              <a href="https://aclanthology.org/2025.naacl-industry.59/">NAACL 2025의 Spoken NER 연구</a>도
+              개체명 오류율을 전체 WER의 대체제가 아닌 보완 지표로 설명한다. 따라서 보고서에는 전체 CER,
+              Entity CER, 개체명 F1과 평가 정책을 함께 기록하는 것이 좋다.
+            </p>
+          </article>
+        </section>
+
         <section class="section" id="keywords">
           <div class="section-head">
             <div>
@@ -317,7 +388,8 @@ print(report["labels"]["ORG"]["f1"])  # 0.6666666666666666</code></pre>
             <div class="notice">
               이 함수는 NER 모델이 아니다. 사용자가 지정한 키워드 목록의 언급 횟수를 평가한다.
               같은 문장 안에서는 reference와 hypothesis의 등장 횟수 중 작은 값을 true positive로 본다.
-              실제 토큰 span 기반 NER 평가가 필요하면 별도의 NER 출력과 평가기가 필요하다.
+              문자 단위 Entity CER, 명시적 별칭, 누락·추가·오인식 목록이 필요하면
+              <code>evaluate_entities</code>를 사용한다. 실제 NER 모델의 span 예측 평가는 별도의 평가기가 필요하다.
               조사와 어미 목록을 생략하면 각각 <code>COMPLEX_JOSA</code>와
               <code>COMPLEX_EOMI</code>가 사용되며, 빈 목록을 전달하면 해당 접미사 매칭을 끌 수 있다.
             </div>
@@ -411,7 +483,28 @@ print(result["keywords"]["삼성전자"]["accuracy"]) # 1.0</code></pre>
               <li><code>unicode_normalization=None</code>이 기본값이며 과거 결과를 그대로 보존한다.</li>
               <li>NFC/NFD/NFKC/NFKD를 선택할 수 있다. 일반적인 한글 조합형 차이에는 NFC가 적합하다.</li>
               <li>CER와 CRR은 공백을 항상 제거한다. WER는 공백을 단어 경계로 사용한다.</li>
-              <li>코퍼스와 키워드 평가의 reference/hypothesis 문장 수가 다르면 ValueError가 발생한다.</li>
+              <li>코퍼스, 키워드, 개체명 평가의 reference/hypothesis 문장 수가 다르면 ValueError가 발생한다.</li>
+            </ul>
+          </article>
+        </section>
+
+        <section class="section" id="references">
+          <div class="section-head">
+            <div>
+              <div class="kicker">References</div>
+              <h2>논문과 참고 자료</h2>
+            </div>
+            <p>
+              Entity CER 설계와 한국어 문자 단위 평가를 설명할 때 참고한 1차 자료다.
+            </p>
+          </div>
+          <article class="article-prose">
+            <ul class="manual-list">
+              <li><a href="https://aclanthology.org/L16-1297/">Galibert et al., LREC 2016</a>: NE-WER를 참조 개체명 span에 제한된 WER로 설명한다.</li>
+              <li><a href="https://aclanthology.org/2025.naacl-industry.59/">Le-Duc et al., NAACL 2025</a>: WER·KER를 보완하는 Named-Entity-Error-Rate를 논의한다.</li>
+              <li><a href="https://aclanthology.org/2023.acl-long.98/">Szymański et al., ACL 2023</a>: ASR 오류와 개체명 인식 오류의 관계 및 오류 유형을 분석한다.</li>
+              <li><a href="https://www.isca-archive.org/interspeech_2025/gong25_interspeech.html">Gong et al., Interspeech 2025</a>: 일반 WER와 별도로 bias word 성능을 보고한다.</li>
+              <li><a href="https://aclanthology.org/2025.findings-naacl.277/">K et al., NAACL 2025 Findings</a>: 단어 경계와 형태가 다양한 다국어 ASR에서 CER 병행의 근거를 제시한다.</li>
             </ul>
           </article>
         </section>
@@ -436,8 +529,12 @@ print(result["keywords"]["삼성전자"]["accuracy"]) # 1.0</code></pre>
               <p>데이터셋 전체의 micro/macro 성능과 완전 일치 문장 비율을 볼 때 사용한다.</p>
             </article>
             <article class="function-item">
+              <h3 class="api-name">evaluate_entities</h3>
+              <p>개체명 span의 문자 오류, 언급 F1, 별칭과 실제 오류 목록을 함께 평가할 때 사용한다.</p>
+            </article>
+            <article class="function-item">
               <h3 class="api-name">evaluate_keywords</h3>
-              <p>회사명, 상품명, 전문용어의 누락과 추가 인식을 언급 횟수 기준으로 평가할 때 사용한다.</p>
+              <p>회사명, 상품명, 전문용어의 누락과 추가 인식만 간단히 언급 횟수 기준으로 평가할 때 사용한다.</p>
             </article>
             <article class="function-item">
               <h3 class="api-name">explain_errors</h3>
@@ -463,6 +560,7 @@ print(result["keywords"]["삼성전자"]["accuracy"]) # 1.0</code></pre>
           <div class="nav-label">Rate modes</div>
           <a href="#rate-mode">normalized와 standard</a>
           <a href="#preprocessing">전처리 정책</a>
+          <a href="#references">논문과 참고 자료</a>
         </div>
         <div class="rail-box">
           <div class="nav-label">Project</div>

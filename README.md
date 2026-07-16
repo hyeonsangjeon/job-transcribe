@@ -49,7 +49,7 @@ CER(Character Error Rate)는 정답 문장과 STT 인식 결과가 문자 단위
 - 단일 화자 AWS 결과는 [measure_nlp_cer_job.py](measure_nlp_cer_job.py)에서 STT 결과를 가져온 뒤 `nlptutti.get_cer(ground_truth_sentence, transcribe_sentence)["cer"]`로 측정했습니다.
 - Whisper 결과는 [oepnai_job.py](oepnai_job.py)에서 모델 transcript를 만든 뒤 같은 방식으로 CER를 저장했습니다.
 - 콜센터 결과는 [measure_cs_job.py](measure_cs_job.py)에서 `preprocess/cs_hangul_data.csv`와 `preprocess/cs_num_data.csv`를 각각 읽고, AWS/Azure/Clova/GCP transcript와 정답지를 비교했습니다.
-- CER/WER 계산은 별도 프로젝트인 [Compute STT Error Rate](https://github.com/hyeonsangjeon/computing-Korean-STT-error-rates)의 `Nlptutti` 패키지로 수행했습니다. 이 패키지는 `get_cer`, `get_wer`, `get_crr`와 한국어 키워드 패턴 유틸리티를 제공하며, CER 계산에서 `S+D+I`를 오류항으로 세고 denominator에 insertion을 포함한 `S+D+I+C`를 사용합니다.
+- CER/WER 계산은 별도 프로젝트인 [Compute STT Error Rate](https://github.com/hyeonsangjeon/computing-Korean-STT-error-rates)의 `Nlptutti` 패키지로 수행했습니다. 이 패키지는 `get_cer`, `get_wer`, `get_crr`, 코퍼스 평가, Entity CER·개체명 F1과 한국어 키워드 패턴 유틸리티를 제공하며, 기본 CER 계산에서 `S+D+I`를 오류항으로 세고 denominator에 insertion을 포함한 `S+D+I+C`를 사용합니다.
 
 현재 재분석 방식:
 
@@ -147,7 +147,7 @@ uv run --python /usr/bin/python3 --with pandas --with numpy --with matplotlib py
 
 로컬 페이지 테스트:
 
-Nlptutti 매뉴얼은 https://hyeonsangjeon.github.io/job-transcribe/nlptutti/ 에서 제목, 기본 normalized 안내, 함수별 코드 예제가 보이는지 확인합니다.
+Nlptutti 매뉴얼은 https://hyeonsangjeon.github.io/job-transcribe/nlptutti/ 에서 제목, 기본 normalized 안내, `evaluate_entities` 예제와 논문 참고 자료, 함수별 코드 예제가 보이는지 확인합니다.
 
 ```bash
 python3 -m http.server 8765 --bind 127.0.0.1
