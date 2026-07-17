@@ -147,7 +147,7 @@ uv run --python /usr/bin/python3 --with pandas --with numpy --with matplotlib py
 
 로컬 페이지 테스트:
 
-Nlptutti 매뉴얼은 https://hyeonsangjeon.github.io/job-transcribe/nlptutti/ 에서 제목, 기본 normalized 안내, `evaluate_entities` 예제와 논문 참고 자료, 함수별 코드 예제가 보이는지 확인합니다.
+Nlptutti 매뉴얼은 https://hyeonsangjeon.github.io/job-transcribe/nlptutti/ 에서 제목, 기본 normalized 안내, `evaluate_entities` 예제, 관련 공개 구현 비교, 논문 참고 자료와 함수별 코드 예제가 보이는지 확인합니다.
 
 ```bash
 python3 -m http.server 8765 --bind 127.0.0.1
