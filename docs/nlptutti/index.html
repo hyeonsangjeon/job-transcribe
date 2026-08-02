@@ -6,10 +6,10 @@
     <title>Nlptutti 한국어 STT 평가 매뉴얼</title>
     <meta
       name="description"
-      content="Nlptutti의 CER, WER, CRR, 코퍼스 평가, Entity CER·개체명 F1, 키워드 보존 평가, 오류 상세 분석을 예제로 설명하는 한국어 매뉴얼입니다."
+      content="Nlptutti의 CER, WER, CRR, JSON·SRT·TSV 입력, 재현 가능한 평가 여권, 개체명·키워드 보존 평가를 예제로 설명하는 한국어 매뉴얼입니다."
     >
     <link rel="canonical" href="https://hyeonsangjeon.github.io/job-transcribe/nlptutti/">
-    <link rel="stylesheet" href="../styles.css?v=0.0.0.12">
+    <link rel="stylesheet" href="../styles.css?v=0.0.0.18">
   </head>
   <body class="manual-page">
     <header class="topbar">
@@ -19,8 +19,8 @@
       </a>
       <nav class="topnav" aria-label="주요 메뉴">
         <a href="#quick-start">빠른 시작</a>
+        <a href="#structured">구조화 입력</a>
         <a href="#rate-mode">계산식</a>
-        <a href="#functions">함수 선택</a>
         <a href="../">벤치마크</a>
         <a class="lang-link" href="https://github.com/hyeonsangjeon/computing-Korean-STT-error-rates">GitHub</a>
       </nav>
@@ -31,6 +31,7 @@
         <div class="nav-label">Manual</div>
         <a href="#summary">소개</a>
         <a href="#quick-start">설치와 빠른 시작</a>
+        <a href="#structured">구조화 입력과 평가 여권</a>
         <a href="#rate-mode">정규화 방식</a>
         <a href="#get-cer">get_cer</a>
         <a href="#get-wer">get_wer</a>
@@ -49,11 +50,11 @@
 
       <main class="content">
         <section class="hero" id="summary">
-          <div class="kicker">Nlptutti 0.0.0.12+</div>
+          <div class="kicker">Nlptutti 0.0.0.18+</div>
           <h1>Nlptutti <span class="manual-title-line">한국어 STT 평가 매뉴얼</span></h1>
           <p class="lead">
-            한 문장의 CER부터 여러 문장의 micro/macro 평가, 개체명 span의 Entity CER와 F1,
-            실제 치환·삭제·삽입 위치까지 한 흐름에서 확인하는 방법을 정리했다.
+            한 문장의 CER부터 JSON·SRT·TSV 결과의 재현 평가, 여러 문장의 micro/macro 평가,
+            개체명 span의 Entity CER와 실제 치환·삭제·삽입 위치까지 한 흐름에서 확인하는 방법을 정리했다.
           </p>
           <div class="notice">
             <strong>기존 사용자 호환성:</strong>
@@ -68,8 +69,8 @@
               <span class="metric-label">기존 기본 호출의 계산 결과</span>
             </div>
             <div>
-              <span class="metric-value">2 modes</span>
-              <span class="metric-label">normalized 기본 / standard 선택</span>
+              <span class="metric-value">4 formats</span>
+              <span class="metric-label">text / JSON / SRT / TSV</span>
             </div>
             <div>
               <span class="metric-value">3.8+</span>
@@ -107,6 +108,152 @@ print(result["insertions"])     # 0</code></pre>
             <p class="result-line">
               점수는 낮을수록 좋다. <code>0.0</code>은 완전 일치이며,
               상세 편집 횟수는 같은 결과 딕셔너리에서 확인한다.
+            </p>
+          </article>
+        </section>
+
+        <section class="section" id="structured">
+          <div class="section-head">
+            <div>
+              <div class="kicker">Structured transcript</div>
+              <h2>구조화 입력과 평가 여권</h2>
+            </div>
+            <p>
+              <code>parse_transcript</code>로 평가 문장을 읽고 <code>evaluate_transcript</code>로 사용한 옵션과 패키지 버전을 함께 기록한다.
+            </p>
+          </div>
+          <article class="article-prose">
+            <div class="notice">
+              <strong>범위:</strong> 이 기능은 음성을 전사하거나 STT 모델을 내려받지 않는다.
+              일반 문자열 또는 지원 계약에 맞는 JSON·SRT·TSV 결과를 기존 CER·WER·CRR 함수로 연결한다.
+            </div>
+
+            <h3>1. 일반 텍스트</h3>
+            <pre><code>import nlptutti as nt
+
+transcript = nt.parse_transcript(
+    "오늘 날씨는 맑습니다",
+    "text",
+)</code></pre>
+            <p>
+              입력 문자열을 바꾸지 않고 가설문장으로 사용한다. <code>txt</code>도 같은 형식 이름으로 사용할 수 있다.
+            </p>
+
+            <h3>2. JSON</h3>
+            <pre><code>transcript = nt.parse_transcript(
+    {
+        "text": "오늘 날씨는 맑습니다",
+        "segments": [
+            {"start": 0, "end": 1200, "text": "오늘 날씨는"},
+            {"start": 1200, "end": 2500, "text": "맑습니다"},
+        ],
+        "model": "example-model",
+        "language": "ko",
+    },
+    "json",
+)</code></pre>
+            <p>
+              기본값은 최상위 <code>text</code>만 평가 문장으로 사용한다. <code>file</code>,
+              <code>model</code>, <code>language</code>, <code>duration_s</code>가 실제로 있으면 provenance에 보존한다.
+              JSON 타임스탬프의 단위는 추정하지 않는다.
+            </p>
+            <pre><code># 최상위 text가 없는 경우에만 명시적으로 선택한다.
+transcript = nt.parse_transcript(
+    {
+        "segments": [
+            {"text": "오늘 날씨는"},
+            {"text": "맑습니다"},
+        ]
+    },
+    "json",
+    json_text_policy="segments_fallback",
+)</code></pre>
+
+            <h3>3. SRT</h3>
+            <pre><code>srt = """1
+00:00:00,000 --&gt; 00:00:01,200
+오늘 날씨는
+
+2
+00:00:01,200 --&gt; 00:00:02,500
+맑습니다
+"""
+
+transcript = nt.parse_transcript(srt, "srt")</code></pre>
+            <p>
+              cue 텍스트를 순서대로 ASCII 공백 하나로 연결한다. 타임코드는 점수에 섞지 않고 provenance에만 보존한다.
+            </p>
+
+            <h3>4. TSV</h3>
+            <pre><code>tsv = """start\tend\ttext
+0.0\t1.2\t오늘 날씨는
+1.2\t2.5\t맑습니다
+"""
+
+transcript = nt.parse_transcript(tsv, "tsv")</code></pre>
+            <p>
+              <code>start</code>, <code>end</code>, <code>text</code> 헤더가 필요하다.
+              시간 값은 초 단위의 유한한 숫자로 검증하고 <code>text</code> 열만 평가 문장으로 사용한다.
+            </p>
+
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th>형식</th>
+                  <th>평가 문자열</th>
+                  <th>시간 정보</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>text / txt</td>
+                  <td>입력 문자열 그대로</td>
+                  <td>없음</td>
+                </tr>
+                <tr>
+                  <td>JSON</td>
+                  <td>최상위 text 기본, segments fallback 선택</td>
+                  <td>원래 값을 단위 추정 없이 보존</td>
+                </tr>
+                <tr>
+                  <td>SRT</td>
+                  <td>cue 텍스트를 공백 하나로 연결</td>
+                  <td>SRT timecode로 보존</td>
+                </tr>
+                <tr>
+                  <td>TSV</td>
+                  <td>text 열을 공백 하나로 연결</td>
+                  <td>초 단위로 검증해 보존</td>
+                </tr>
+              </tbody>
+            </table>
+
+            <h3>평가 여권 만들기</h3>
+            <pre><code>report = nt.evaluate_transcript(
+    "오늘 날씨가 맑습니다",
+    transcript,
+    rate_mode="standard",
+)
+
+print(round(report["metrics"]["cer"]["value"], 4))  # 0.1111
+print(round(report["metrics"]["wer"]["value"], 4))  # 0.3333
+print(report["schema_version"])                      # 1.0
+print(report["options"]["rate_mode"])               # standard</code></pre>
+            <ul class="manual-list">
+              <li><strong>evaluator:</strong> 실제 평가에 사용한 <code>nlptutti</code> 버전을 기록한다.</li>
+              <li><strong>options:</strong> <code>rate_mode</code>, 문장부호 제거, 유니코드 정규화 설정을 기록한다.</li>
+              <li><strong>metrics:</strong> CER·WER·CRR 값과 각 치환·삭제·삽입 횟수를 기록한다.</li>
+              <li><strong>provenance:</strong> 입력 형식, 선택한 JSON 정책, 구간 수, 제공된 메타데이터와 시간 정보를 기록한다.</li>
+              <li><strong>원문 보호:</strong> reference와 hypothesis 원문 대신 SHA-256, 문자 수, UTF-8 byte 수를 기록한다. 해시는 익명화 수단이 아니므로 민감한 짧은 문장의 접근 권한은 별도로 관리한다.</li>
+            </ul>
+            <p class="result-line">
+              JSON 문법 오류, 필수 필드 누락, 잘못된 SRT 타임코드, TSV 헤더 누락은
+              <code>TranscriptFormatError</code>로 알린다. 잘못된 입력을 빈 가설문장으로 조용히 바꾸지 않는다.
+            </p>
+            <p>
+              형식 계약은 FunASR 고정 커밋 <code>d1007c3</code>의
+              <a href="https://github.com/modelscope/FunASR/blob/d1007c323068d0c5aaa8e0f198668aaebc1a4fc2/docs/cli.md">CLI 출력 문서</a>를
+              검토해 공급자 중립적으로 독립 구현했다. FunASR 모델이나 런타임은 패키지 의존성에 포함하지 않는다.
             </p>
           </article>
         </section>
@@ -562,13 +709,17 @@ print(result["keywords"]["삼성전자"]["accuracy"]) # 1.0</code></pre>
               <h2>목적에 맞는 함수 선택</h2>
             </div>
             <p>
-              한 문장 점수, 전체 데이터셋 평가, 특정 용어 보존, 오류 원인 분석을 분리하면 결과 해석이 선명해진다.
+              한 문장 점수, 구조화 결과 재현, 전체 데이터셋 평가, 특정 용어 보존, 오류 원인 분석을 분리하면 결과 해석이 선명해진다.
             </p>
           </div>
           <div class="function-grid">
             <article class="function-item">
               <h3 class="api-name">get_cer / get_wer / get_crr</h3>
               <p>한 쌍의 문장을 빠르게 점수화할 때 사용한다.</p>
+            </article>
+            <article class="function-item">
+              <h3 class="api-name">parse_transcript / evaluate_transcript</h3>
+              <p>text·JSON·SRT·TSV 결과를 같은 규칙으로 평가하고 재현 가능한 JSON 기록을 남길 때 사용한다.</p>
             </article>
             <article class="function-item">
               <h3 class="api-name">evaluate_corpus</h3>
@@ -603,8 +754,9 @@ print(result["keywords"]["삼성전자"]["accuracy"]) # 1.0</code></pre>
           <p><code>unicode_normalization=None</code></p>
         </div>
         <div class="rail-box">
-          <div class="nav-label">Rate modes</div>
+          <div class="nav-label">Evaluation</div>
           <a href="#rate-mode">normalized와 standard</a>
+          <a href="#structured">구조화 입력과 평가 여권</a>
           <a href="#preprocessing">전처리 정책</a>
           <a href="#implementations">공개 구현 비교</a>
           <a href="#references">논문과 참고 자료</a>
