@@ -6,10 +6,10 @@
     <title>Nlptutti 한국어 STT 평가 매뉴얼</title>
     <meta
       name="description"
-      content="Nlptutti의 CER, WER, CRR, JSON·SRT·TSV 입력, 재현 가능한 평가 여권, 개체명·키워드 보존 평가를 예제로 설명하는 한국어 매뉴얼입니다."
+      content="Nlptutti CER, WER, CRR의 입력·반환값·사용 경계와 한국어 정규화, JSON·SRT·TSV 평가를 예제로 설명하는 한국어 매뉴얼입니다."
     >
     <link rel="canonical" href="https://hyeonsangjeon.github.io/job-transcribe/nlptutti/">
-    <link rel="stylesheet" href="../styles.css?v=0.0.0.18">
+    <link rel="stylesheet" href="../styles.css?v=0.0.0.19">
   </head>
   <body class="manual-page">
     <header class="topbar">
@@ -18,6 +18,7 @@
         <span>Nlptutti Manual</span>
       </a>
       <nav class="topnav" aria-label="주요 메뉴">
+        <a href="#metric-guide">지표 선택</a>
         <a href="#quick-start">빠른 시작</a>
         <a href="#structured">구조화 입력</a>
         <a href="#rate-mode">계산식</a>
@@ -30,9 +31,10 @@
       <aside class="left-nav" aria-label="매뉴얼 목차">
         <div class="nav-label">Manual</div>
         <a href="#summary">소개</a>
+        <a href="#metric-guide">CER·WER·CRR 선택</a>
         <a href="#quick-start">설치와 빠른 시작</a>
         <a href="#structured">구조화 입력과 평가 여권</a>
-        <a href="#rate-mode">정규화 방식</a>
+        <a href="#rate-mode">오류율 분모 방식</a>
         <a href="#get-cer">get_cer</a>
         <a href="#get-wer">get_wer</a>
         <a href="#get-crr">get_crr</a>
@@ -50,7 +52,7 @@
 
       <main class="content">
         <section class="hero" id="summary">
-          <div class="kicker">Nlptutti 0.0.0.18+</div>
+          <div class="kicker">Nlptutti 0.0.0.19+</div>
           <h1>Nlptutti <span class="manual-title-line">한국어 STT 평가 매뉴얼</span></h1>
           <p class="lead">
             한 문장의 CER부터 JSON·SRT·TSV 결과의 재현 평가, 여러 문장의 micro/macro 평가,
@@ -84,6 +86,61 @@
           </div>
         </section>
 
+        <section class="section" id="metric-guide">
+          <div class="section-head">
+            <div>
+              <div class="kicker">Metric guide</div>
+              <h2>CER·WER·CRR 먼저 고르기</h2>
+            </div>
+            <p>
+              세 함수는 정답 문장과 STT 결과를 같은 순서로 받지만, 평가 단위와 점수 방향이 다르다.
+            </p>
+          </div>
+          <article class="article-prose">
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th>API</th>
+                  <th>입력과 반환값</th>
+                  <th>선택할 때</th>
+                  <th>사용 경계</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><code>get_cer</code></td>
+                  <td>문자열 2개 → <code>cer</code>와 치환·삭제·삽입 횟수</td>
+                  <td>띄어쓰기 차이를 제외하고 문자 전사 품질을 비교할 때</td>
+                  <td>공백을 항상 제거하므로 띄어쓰기 품질은 평가하지 못한다. 낮을수록 좋다.</td>
+                </tr>
+                <tr>
+                  <td><code>get_wer</code></td>
+                  <td>문자열 2개 → <code>wer</code>와 치환·삭제·삽입 횟수</td>
+                  <td>공백으로 나뉜 단어와 띄어쓰기 차이까지 포함할 때</td>
+                  <td>서로 다른 토큰화 정책의 결과를 그대로 비교하면 안 된다. 낮을수록 좋다.</td>
+                </tr>
+                <tr>
+                  <td><code>get_crr</code></td>
+                  <td>문자열 2개 → <code>crr</code>와 치환·삭제·삽입 횟수</td>
+                  <td>문자 품질을 높을수록 좋은 보조 지표로 표시할 때</td>
+                  <td><code>round(1 - CER, 2)</code>이며 별도 정렬 지표가 아니다.</td>
+                </tr>
+              </tbody>
+            </table>
+            <div class="notice">
+              <strong>정규화 옵션 구분:</strong>
+              <code>rate_mode="normalized"</code>는 삽입 오류를 분모에도 넣는 기존 계산식의 이름이며
+              입력 문자열을 바꾸지 않는다. 실제 Unicode 문자열 변환은 기본값이 <code>None</code>인
+              <code>unicode_normalization</code>에 <code>"NFC"</code> 등을 직접 지정할 때만 적용된다.
+            </div>
+            <p>
+              세 함수는 기본적으로 문장부호를 제거한다. 문장부호도 오류로 평가하려면
+              <code>rm_punctuation=False</code>를 지정한다. 여러 문장은 <code>evaluate_corpus</code>의
+              <code>micro</code>와 <code>macro</code>를 목적에 맞게 사용한다.
+            </p>
+          </article>
+        </section>
+
         <section class="section" id="quick-start">
           <div class="section-head">
             <div>
@@ -99,15 +156,19 @@
             <pre><code>pip install -U nlptutti</code></pre>
             <pre><code>import nlptutti as nt
 
-result = nt.get_cer("아키택트", "아키택쳐")
+reference = "오늘 날씨가 맑습니다"
+hypothesis = "오늘 날씨는 맑습니다"
 
-print(result["cer"])            # 0.25
-print(result["substitutions"])  # 1
-print(result["deletions"])      # 0
-print(result["insertions"])     # 0</code></pre>
+cer = nt.get_cer(reference, hypothesis, rate_mode="standard")
+wer = nt.get_wer(reference, hypothesis, rate_mode="standard")
+crr = nt.get_crr(reference, hypothesis, rate_mode="standard")
+
+print(round(cer["cer"], 4), cer["substitutions"])  # 0.1111 1
+print(round(wer["wer"], 4), wer["substitutions"])  # 0.3333 1
+print(crr["crr"], crr["substitutions"])            # 0.89 1</code></pre>
             <p class="result-line">
-              점수는 낮을수록 좋다. <code>0.0</code>은 완전 일치이며,
-              상세 편집 횟수는 같은 결과 딕셔너리에서 확인한다.
+              CER·WER는 낮을수록, CRR는 높을수록 좋다. 완전 일치는 각각 <code>0.0</code>,
+              <code>0.0</code>, <code>1.0</code>이며 상세 편집 횟수는 같은 결과 딕셔너리에서 확인한다.
             </p>
           </article>
         </section>
@@ -262,7 +323,7 @@ print(report["options"]["rate_mode"])               # standard</code></pre>
           <div class="section-head">
             <div>
               <div class="kicker">Compatibility</div>
-              <h2>정규화 방식 선택</h2>
+              <h2>오류율 분모 방식 선택</h2>
             </div>
             <p>
               두 방식은 삽입 오류를 분모에 포함하는지가 다르다.
@@ -756,6 +817,7 @@ print(result["keywords"]["삼성전자"]["accuracy"]) # 1.0</code></pre>
         <div class="rail-box">
           <div class="nav-label">Evaluation</div>
           <a href="#rate-mode">normalized와 standard</a>
+          <a href="#metric-guide">CER·WER·CRR 선택</a>
           <a href="#structured">구조화 입력과 평가 여권</a>
           <a href="#preprocessing">전처리 정책</a>
           <a href="#implementations">공개 구현 비교</a>
