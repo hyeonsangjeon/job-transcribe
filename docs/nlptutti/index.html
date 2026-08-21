@@ -6,10 +6,10 @@
     <title>Nlptutti 한국어 STT 평가 매뉴얼</title>
     <meta
       name="description"
-      content="Nlptutti CER, WER, CRR의 입력·반환값·사용 경계와 한국어 정규화, JSON·SRT·TSV 평가를 예제로 설명하는 한국어 매뉴얼입니다."
+      content="Nlptutti CER, WER, CRR의 입력·반환값·사용 경계와 두 STT 시스템 비교, 한국어 정규화, JSON·SRT·TSV 평가를 예제로 설명하는 한국어 매뉴얼입니다."
     >
     <link rel="canonical" href="https://hyeonsangjeon.github.io/job-transcribe/nlptutti/">
-    <link rel="stylesheet" href="../styles.css?v=0.0.0.19">
+    <link rel="stylesheet" href="../styles.css?v=0.0.0.20">
   </head>
   <body class="manual-page">
     <header class="topbar">
@@ -20,6 +20,7 @@
       <nav class="topnav" aria-label="주요 메뉴">
         <a href="#metric-guide">지표 선택</a>
         <a href="#quick-start">빠른 시작</a>
+        <a href="#compare">시스템 비교</a>
         <a href="#structured">구조화 입력</a>
         <a href="#rate-mode">계산식</a>
         <a href="../">벤치마크</a>
@@ -33,6 +34,7 @@
         <a href="#summary">소개</a>
         <a href="#metric-guide">CER·WER·CRR 선택</a>
         <a href="#quick-start">설치와 빠른 시작</a>
+        <a href="#compare">두 시스템 비교와 저장</a>
         <a href="#structured">구조화 입력과 평가 여권</a>
         <a href="#rate-mode">오류율 분모 방식</a>
         <a href="#get-cer">get_cer</a>
@@ -52,10 +54,10 @@
 
       <main class="content">
         <section class="hero" id="summary">
-          <div class="kicker">Nlptutti 0.0.0.19+</div>
+          <div class="kicker">Nlptutti 0.0.0.20+</div>
           <h1>Nlptutti <span class="manual-title-line">한국어 STT 평가 매뉴얼</span></h1>
           <p class="lead">
-            한 문장의 CER부터 JSON·SRT·TSV 결과의 재현 평가, 여러 문장의 micro/macro 평가,
+            한 문장의 CER부터 두 STT 시스템 비교, JSON·SRT·TSV 결과의 재현 평가, 여러 문장의 micro/macro 평가,
             개체명 span의 Entity CER와 실제 치환·삭제·삽입 위치까지 한 흐름에서 확인하는 방법을 정리했다.
           </p>
           <div class="notice">
@@ -169,6 +171,65 @@ print(crr["crr"], crr["substitutions"])            # 0.89 1</code></pre>
             <p class="result-line">
               CER·WER는 낮을수록, CRR는 높을수록 좋다. 완전 일치는 각각 <code>0.0</code>,
               <code>0.0</code>, <code>1.0</code>이며 상세 편집 횟수는 같은 결과 딕셔너리에서 확인한다.
+            </p>
+          </article>
+        </section>
+
+        <section class="section" id="compare">
+          <div class="section-head">
+            <div>
+              <div class="kicker">System comparison</div>
+              <h2>두 STT 결과를 같은 corpus로 비교하기</h2>
+            </div>
+            <p>
+              <code>compare_systems</code>는 문장별 reference와 두 개 이상 시스템의 출력을 맞춰
+              micro/macro CER·WER·CRR과 pairwise delta를 계산한다.
+            </p>
+          </div>
+          <article class="article-prose">
+            <pre><code>import nlptutti as nt
+
+report = nt.compare_systems(
+    ["오늘 날씨가 맑습니다", "서울은 따뜻합니다"],
+    {
+        "baseline": ["오늘 날씨는 맑습니다", "서울은 춥습니다"],
+        "candidate": ["오늘 날씨가 맑습니다", "서울은 따뜻합니다"],
+    },
+    rate_mode="standard",
+)
+
+for system in report["systems"]:
+    print(
+        system["id"],
+        round(system["metrics"]["cer"]["micro"], 4),
+        round(system["metrics"]["wer"]["micro"], 4),
+    )
+
+# baseline 0.2353 0.4
+# candidate 0.0 0.0</code></pre>
+            <p class="result-line">
+              이 예제는 패키지 저장소의
+              <a href="https://github.com/hyeonsangjeon/computing-Korean-STT-error-rates/blob/main/examples/comparison_input.json">고정 comparison fixture</a>와
+              같다. 문서와 CI가 같은 기대값을 검사한다.
+            </p>
+
+            <h3>JSON과 Markdown 결과 저장</h3>
+            <pre><code>python -c "from urllib.request import urlretrieve; urlretrieve('https://raw.githubusercontent.com/hyeonsangjeon/computing-Korean-STT-error-rates/main/examples/comparison_input.json', 'comparison_input.json')"
+nlptutti compare comparison_input.json \
+  --rate-mode standard \
+  --output-dir comparison-report</code></pre>
+            <pre><code>comparison-report/report.json
+comparison-report/report.md</code></pre>
+            <ul class="manual-list">
+              <li><strong>micro:</strong> corpus 전체 편집 횟수를 합산한 점수다.</li>
+              <li><strong>macro:</strong> 문장별 점수의 단순 평균이다.</li>
+              <li><strong>delta:</strong> candidate에서 baseline을 뺀 값이다. CER·WER는 음수, CRR은 양수일수록 candidate가 좋다.</li>
+              <li><strong>기본값:</strong> 기존 결과를 위해 <code>rate_mode="normalized"</code>를 유지한다. 공식 비교에서는 <code>"standard"</code>를 직접 적는다.</li>
+              <li><strong>원문:</strong> 기본 보고서에서 제외한다. 필요할 때만 <code>include_transcripts=True</code>를 명시한다.</li>
+            </ul>
+            <p>
+              입력 ID 계약, paired bootstrap, 한국어 진단과 결과 schema는
+              <a href="https://github.com/hyeonsangjeon/computing-Korean-STT-error-rates/blob/main/docs/comparison.md">비교 매뉴얼 원본</a>에서 확인한다.
             </p>
           </article>
         </section>
@@ -818,6 +879,7 @@ print(result["keywords"]["삼성전자"]["accuracy"]) # 1.0</code></pre>
           <div class="nav-label">Evaluation</div>
           <a href="#rate-mode">normalized와 standard</a>
           <a href="#metric-guide">CER·WER·CRR 선택</a>
+          <a href="#compare">두 시스템 비교와 저장</a>
           <a href="#structured">구조화 입력과 평가 여권</a>
           <a href="#preprocessing">전처리 정책</a>
           <a href="#implementations">공개 구현 비교</a>
