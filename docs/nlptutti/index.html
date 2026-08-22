@@ -225,6 +225,8 @@ comparison-report/report.md</code></pre>
               <li><strong>macro:</strong> 문장별 점수의 단순 평균이다.</li>
               <li><strong>delta:</strong> candidate 점수에서 baseline 점수를 뺀 값이다. CER·WER는 음수, CRR은 양수일수록 candidate가 좋다.</li>
               <li><strong>기본값:</strong> 기존 결과와 호환되도록 <code>rate_mode="normalized"</code>를 유지한다. 공식 비교에서는 <code>"standard"</code>를 직접 적는다.</li>
+              <li><strong>ID mapping:</strong> ID 문자열을 정렬한 순서로 계산하므로 mapping에 넣은 순서가 fingerprint나 bootstrap 결과를 바꾸지 않는다.</li>
+              <li><strong>선택 평가 설정:</strong> 키워드·개체명·별칭을 사용하면 설정 전체의 SHA-256을 결과에 남긴다.</li>
               <li><strong>원문:</strong> 기본 보고서에는 넣지 않는다. 필요할 때만 <code>include_transcripts=True</code>를 켠다.</li>
             </ul>
             <p>
