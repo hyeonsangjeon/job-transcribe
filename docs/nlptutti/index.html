@@ -187,22 +187,29 @@ print(crr["crr"], crr["substitutions"])            # 0.89 1</code></pre>
             </p>
           </div>
           <article class="article-prose">
-            <pre><code>import nlptutti as nt
+            <pre data-nlptutti-example="comparison"><code>import nlptutti as nt
 
 report = nt.compare_systems(
     ["오늘 날씨가 맑습니다", "서울은 따뜻합니다"],
     {
-        "baseline": ["오늘 날씨는 맑습니다", "서울은 춥습니다"],
-        "candidate": ["오늘 날씨가 맑습니다", "서울은 따뜻합니다"],
+        "baseline": [
+            "오늘 날씨는 맑습니다",
+            "서울은 춥습니다",
+        ],
+        "candidate": [
+            "오늘 날씨가 맑습니다",
+            "서울은 따뜻합니다",
+        ],
     },
     rate_mode="standard",
 )
 
 for system in report["systems"]:
+    metrics = system["metrics"]
     print(
         system["id"],
-        round(system["metrics"]["cer"]["micro"], 4),
-        round(system["metrics"]["wer"]["micro"], 4),
+        round(metrics["cer"]["micro"], 4),
+        round(metrics["wer"]["micro"], 4),
     )
 
 # baseline 0.2353 0.4
@@ -214,7 +221,8 @@ for system in report["systems"]:
             </p>
 
             <h3>JSON과 Markdown 결과 저장</h3>
-            <pre><code>python -c "from urllib.request import urlretrieve; urlretrieve('https://raw.githubusercontent.com/hyeonsangjeon/computing-Korean-STT-error-rates/main/examples/comparison_input.json', 'comparison_input.json')"
+            <p>0.0.0.24부터 예제가 설치본에 포함된다. 설치 후에는 GitHub 파일이나 모델을 내려받지 않고 실행한다.</p>
+            <pre><code>nlptutti sample --output comparison_input.json
 nlptutti compare comparison_input.json \
   --rate-mode standard \
   --output-dir comparison-report</code></pre>
@@ -254,6 +262,40 @@ print(summary["f1"])  # 1.0</code></pre>
               시스템 이름은 입력 순서대로 바꾸며 진단 토큰은 <code>[redacted]</code>로 표시한다.
               CLI에서는 <code>--privacy-mode aggregate</code>를 지정한다.
               원문 포함 옵션과 함께 쓸 수 없으며, 해시와 집계값도 익명성을 보장하지 않는다.
+            </p>
+            <h3>파일·문장별 비교와 CI 판정: 0.0.0.24부터</h3>
+            <p>
+              저장된 STT 파일은 <code>--input-format manifest</code>로 연결한다.
+              파일마다 ID, 경로, 형식을 적고 공급자 응답에는 provider와 schema도 명시한다.
+              경로는 목록 파일이 있는 폴더 기준이며, 보고서에는 경로 대신 파일 해시와 형식만 남긴다.
+              <a href="https://github.com/hyeonsangjeon/computing-Korean-STT-error-rates/blob/main/docs/file-comparison.md">파일 목록 예제</a>에서 시작할 수 있다.
+            </p>
+            <pre><code>nlptutti compare manifest.json \
+  --input-format manifest \
+  --rate-mode standard \
+  --output-dir comparison-report</code></pre>
+            <p>
+              <code>include_items=True</code>는 문장별 점수와 상위 악화·개선 ID를 추가한다.
+              <code>labels</code>는 사용자가 붙인 도메인·잡음 등의 조건별 집계다.
+              음성을 분석해 라벨을 추정하지 않으며, 표본 수가 작은 조건은 따로 해석해야 한다.
+              ID와 라벨도 민감할 수 있어 집계 전용 모드에서는 두 옵션을 거부한다.
+              <a href="https://github.com/hyeonsangjeon/computing-Korean-STT-error-rates/blob/main/docs/item-comparison.md">숫자·띄어쓰기·이름 예제</a>로 결과를 읽어 보자.
+            </p>
+            <pre><code>nlptutti gate \
+  comparison-report/report.json \
+  --policy examples/gate_policy.json \
+  --output decision.json</code></pre>
+            <p>
+              gate는 직접 정한 허용치를 검사한다. 종료 코드 0은 통과, 3은 품질 기준 미달,
+              2는 입력이나 설정 오류다. 2%p는 <code>0.02</code>로 적는다.
+              <a href="https://github.com/hyeonsangjeon/computing-Korean-STT-error-rates/blob/main/docs/quality-gate.md">정책 파일과 CI 예제</a>를 참고하자.
+              이 판정은 통계적 유의성 검정이 아니다.
+            </p>
+            <p>
+              JSON과 Markdown은 같은 보고서 검증을 거친다. 필수 필드나 숫자가 잘못되면
+              필드 경로를 포함한 오류가 난다. Bootstrap은 여전히 문장 단위이며 같은 화자의
+              여러 문장은 독립 표본이 아닐 수 있다. 소표본·낮은 재표집 횟수·폭이 0인 구간은
+              <a href="https://github.com/hyeonsangjeon/computing-Korean-STT-error-rates/blob/main/docs/bootstrap-interpretation.md">해석 안내</a>를 함께 확인한다.
             </p>
             <p>
               입력 ID 규칙, paired bootstrap, 한국어 진단과 결과 schema는
@@ -582,6 +624,28 @@ print(report["sentence_error_rate"]) # 1.0</code></pre>
               <li><strong>macro:</strong> 문장별 오류율을 동일한 가중치로 평균한다.</li>
               <li><strong>sentence_error_rate:</strong> CER 전처리 후 하나라도 문자 오류가 있는 문장의 비율이다.</li>
             </ul>
+            <h3>띄어쓰기만 다르면 왜 문장 오류율이 0일까?</h3>
+            <p>
+              기존 문장 오류율은 공백을 제거하는 문자 기준이다. 그 의미는 유지하고,
+              0.0.0.24부터 공백으로 나눈 어절 기준을 별도 필드로 제공한다.
+            </p>
+            <pre data-nlptutti-example="sentence-errors"><code>import nlptutti as nt
+
+result = nt.evaluate_corpus(
+    ["가 나"], ["가나"],
+)
+# 문자 기준: 0.0, 1
+print(result["sentence_error_rate"])
+print(result["perfect_sentences"])
+# 어절 기준: 1.0, 0
+print(result["word_sentence_error_rate"])
+print(result["word_perfect_sentences"])</code></pre>
+            <p>
+              <code>sentence_error_unit</code>은 <code>character</code>로 기록한다.
+              구두점만 다르면 기본 설정에서는 두 기준 모두 일치다.
+              <code>rate_mode="normalized"</code>는 분모 선택이며 Unicode 문자열 변환과는 다르다.
+              두 예제의 출력은 패키지 <code>docs/manual-examples.json</code>의 공통 기대값으로 검사한다.
+            </p>
           </article>
         </section>
 
