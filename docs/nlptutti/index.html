@@ -10,6 +10,19 @@
     >
     <link rel="canonical" href="https://hyeonsangjeon.github.io/job-transcribe/nlptutti/">
     <link rel="stylesheet" href="../styles.css?v=0.0.0.20">
+    <style>
+      #calculator iframe {
+        display: block;
+        width: 100%;
+        border: 0;
+        border-radius: 8px;
+      }
+      a[href="#calculator"]:focus-visible,
+      #calculator a:focus-visible {
+        outline: 3px solid #0b5d38;
+        outline-offset: 2px;
+      }
+    </style>
   </head>
   <body class="manual-page">
     <header class="topbar">
@@ -18,6 +31,7 @@
         <span>Nlptutti Manual</span>
       </a>
       <nav class="topnav" aria-label="주요 메뉴">
+        <a href="#calculator">오류율 계산기</a>
         <a href="#metric-guide">지표 선택</a>
         <a href="#quick-start">빠른 시작</a>
         <a href="#compare">시스템 비교</a>
@@ -32,6 +46,7 @@
       <aside class="left-nav" aria-label="매뉴얼 목차">
         <div class="nav-label">Manual</div>
         <a href="#summary">소개</a>
+        <a href="#calculator">한 문장 오류율 계산기</a>
         <a href="#metric-guide">CER·WER·CRR 선택</a>
         <a href="#quick-start">설치와 빠른 시작</a>
         <a href="#compare">두 시스템 비교와 저장</a>
@@ -86,6 +101,39 @@
             <a href="https://github.com/hyeonsangjeon/computing-Korean-STT-error-rates">소스 코드</a>
             <a href="../">개발 배경과 벤치마크</a>
           </div>
+        </section>
+
+        <section class="section" id="calculator" tabindex="-1" aria-labelledby="calculator-title">
+          <div class="section-head">
+            <div>
+              <div class="kicker">Calculator</div>
+              <h2 id="calculator-title">한 문장 오류율 계산기</h2>
+            </div>
+            <p>
+              기준 문장과 음성 인식 결과를 넣으면 CER·WER·CRR을 확인할 수 있다.
+              계산은 브라우저에서만 이루어지며 입력한 문장은 전송하거나 저장하지 않는다.
+            </p>
+          </div>
+          <div class="article-prose">
+            <div class="manual-links">
+              <a href="calculator.html">계산기만 열기</a>
+              <a href="https://github.com/hyeonsangjeon/computing-Korean-STT-error-rates/releases/download/0.0.0.25/nlptutti-calculator.html">오프라인용 HTML 다운로드</a>
+            </div>
+            <!-- Keep the release HTML byte-for-byte intact. SHA-256: fcb7ca83825a4cc84e1d2ae226cde38799fe3e59ca82983567117d950aec8ad1 -->
+            <iframe src="calculator.html" title="한국어 STT 한 문장 오류율 계산기" height="900" loading="lazy"></iframe>
+            <p><small>출처: <a href="https://github.com/hyeonsangjeon/computing-Korean-STT-error-rates/blob/0.0.0.25/docs/index.html">Nlptutti 0.0.0.25 계산기 원본</a> · <a href="calculator-LICENSE.txt">MIT 라이선스</a></small></p>
+          </div>
+          <script>
+            const frame = document.querySelector("#calculator iframe");
+            frame.addEventListener("load", () => {
+              const body = frame.contentDocument?.body;
+              if (body && window.ResizeObserver) {
+                new ResizeObserver(() => {
+                  frame.height = Math.ceil(body.getBoundingClientRect().height);
+                }).observe(body);
+              }
+            });
+          </script>
         </section>
 
         <section class="section" id="metric-guide">
